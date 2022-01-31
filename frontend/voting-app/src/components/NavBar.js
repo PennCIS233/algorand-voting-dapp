@@ -3,9 +3,11 @@ import Container from "react-bootstrap/Container";
 
 function NavBar() {
   return (
-    <Navbar bg="dark" variant="dark">
+    <Navbar style={{ backgroundColor: "#201f48" }}>
       <Container>
-        <Navbar.Brand href="/">AlgoVoter</Navbar.Brand>
+        <Navbar.Brand style={{ color: "#0dcaf0" }} href="/">
+          AlgoVoter
+        </Navbar.Brand>
       </Container>
     </Navbar>
   );

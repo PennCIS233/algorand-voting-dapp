@@ -1,21 +1,24 @@
-import Container from "react-bootstrap/Container";
+import Card from "react-bootstrap/Card";
 import { PieChart } from "react-minimal-pie-chart";
 
 function VoteChart(props) {
   return (
-    <Container className="pr-5">
+    <Card bg="light">
       <PieChart
         data={props.currVotes}
-        label={({ dataEntry }) => dataEntry.value}
+        label={({ dataEntry }) =>
+          dataEntry.title + ": " + `${Math.round(dataEntry.percentage)} %`
+        }
         labelStyle={(index) => ({
           fill: props.currVotes[index].color,
-          fontSize: "5px",
+          fontSize: "3px",
           fontFamily: "sans-serif",
         })}
-        radius={42}
+        radius={30}
         labelPosition={112}
+        animate
       />
-    </Container>
+    </Card>
   );
 }
 
