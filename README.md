@@ -60,4 +60,13 @@ pip3 install pyteal
 ```
 
 
-### Step 0.5 - Install Node.js
+### Step 0.5 - Install Node.js and set up environment
+
+First, check if you have Node installed by running `node -v; npm -v`. You should have a Node version of at least x.x.x.
+
+If you do not have Node.js, you can download it [here] (https://nodejs.org/en/download/).
+
+Next, download the files for this project. Open your terminal, and `cd` into the TODO directory. Once inside the directory, type `npm install`, which will download all the dependencies required for the project. Specifically, the dependencies specified in package.json will be downloaded into a node_modules/ directory.
+
+To see i fyou have everything working, type `npm start`. You should see a basic webpage appear in your browser at localhost:3000. If you made it this far, then your setup has been successful!
+
