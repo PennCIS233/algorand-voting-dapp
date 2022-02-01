@@ -23,9 +23,9 @@ The webapp frontend will allow users to easily interact with the smart contract 
   
 ### Step 0.0 - Complete Practical Homework
 
-1 In practical homework 1 you install **Python** and **Pip**, setup your **PureStake account**, and install **PyCharm**.  
+1 In [Practical Homework 1](https://github.com/PennCIS233/Practical-HW1) you install **Python** and **Pip**, setup your **PureStake account**, and install **PyCharm**.
       
-If you have not setup any of those please refer to the practical homework 1.  
+If you have not setup any of those please refer to the [Practical HW 1](https://github.com/PennCIS233/Practical-HW1).  
       
 ### Step 0.1 - Download Chrome and AlgoSigner  
   
@@ -33,16 +33,16 @@ If you have not setup any of those please refer to the practical homework 1.
       
 [AlgoSigner](https://www.purestake.com/technology/algosigner/) is a Chrome browser extension created by PureStake which manages a user's Algorand keys, allowing that user to sign and send transactions (sending Algos or smart contract interactions) from their browser. Websites can prompt a transaction, and the user can see the transaction's details and choose whether or not to sign and send it from the AlgoSigner extension.    
     
-Once you have Google Chrome installed    
+Once you have Google Chrome installed add the AlgoSigner extension at this [link](https://chrome.google.com/webstore/detail/algosigner/kmmolakhbgdlpkjkcjkebenjheonagdm?hl=en-US).
     
 ### Step 0.2 - Setup AlgoSigner Accounts  
   
  In practical homework 1 you created two Algorand accounts. Account A and Account B. Once you have Algorand installed on Chrome do the following.    
     
  - Import Account A and Account B into AlgoSigner **on the TestNet**    
-- Save the addresses in form.md    
+   - Save the addresses in form.md    
  - Create 2 new accounts Account C and Account D using AlgoSigner **on the TestNet**    
-- Save the addresses in form.md    
+   - Save the addresses in form.md    
     
 A walkthrough on how to do both of these can be seen here:    
 [https://www.youtube.com/watch?v=tG-xzG8r770](https://www.youtube.com/watch?v=tG-xzG8r770)    
