@@ -39,7 +39,8 @@ def approval_program():
     # value of whether or not the sender can vote ("yes", "no", or "maybe")
     get_sender_can_vote = App.localGetEx(Int(0), App.id(), Bytes("can_vote"))
 
-
+    # if the user closes out of program before the end of voting period
+    # remove their vote from the correct vote tally
     on_closeout = Seq(
         [
             get_vote_of_sender,
@@ -49,8 +50,8 @@ def approval_program():
                     get_vote_of_sender.hasValue(),
                 ),
                 App.globalPut(
-                    get_vote_of_sender.value(),
-                    App.globalGet(get_vote_of_sender.value()) - Int(1),
+                    Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value())),
+                    App.globalGet(Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value()))) - Int(1)
                 ),
             ),
             Return(Int(1)),
