@@ -81,8 +81,8 @@ def approval_program():
     )
 
     address_to_approve = Txn.application_args[1]
-    is_user_approved = Txn.application_args[2] # "Yes" or "No"
-    new_approval_queue = Txn.application_args[3]
+    is_user_approved = Txn.application_args[2] # "yes" or "no"
+    new_approval_queue = Txn.application_args[3] # new approval queue without the address that was just approved
     on_update_user_status = Seq(
         get_sender_can_vote,
         Assert(
