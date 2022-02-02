@@ -1,3 +1,4 @@
+from operator import is_
 import pyteal
 from pyteal import *
 
@@ -43,13 +44,29 @@ def approval_program():
         ]
     )
 
-    user_address = Txn.application_args[0] #pass in as argument when user opts in 
+    address_to_approve = Txn.application_args[1]
+    approved_or_not = Txn.application_args[2] #byte slice of whether creator approves
+    on_opt_in = Seq(
+        App.localPut(Int(0), Bytes("CanIVote"), Bytes("maybe"))
+        #concatenate the address
+        App.globalPut(Bytes("addresses"), App.globalGet(Bytes("addresses").concatenate(Txn.sender()))) #finish syntax
+    )
+    approve_user = Seq(
+        Assert(
+            is_creator,
+        ),
+        App.localPut(address_to_approve, ) #finish this
+    )
     on_register = Return(
-        And(
-            Global.round() >= App.globalGet(Bytes("RegBegin")),
-            Global.round() <= App.globalGet(Bytes("RegEnd")),
-            # add in here another check that the user is one that we creator already approves of
+        Assert(
+            And(approved_or_not == Byte("approved"),  # add in here another check that the user is one that we creator already approves of
+                And(
+                    Global.round() >= App.globalGet(Bytes("RegBegin")),
+                    Global.round() <= App.globalGet(Bytes("RegEnd")),
+                )
+            )
         )
+        
     )
 
     choice = Txn.application_args[1]
