@@ -1,30 +1,43 @@
-from operator import is_
-import pyteal
 from pyteal import *
 
 
 def approval_program():
+    i = ScratchVar(TealType.uint64) # i-variable for for-loop
+
     on_creation = Seq(
         [
             App.globalPut(Bytes("Creator"), Txn.sender()),
-            Assert(Txn.application_args.length() == Int(4)),
+            Assert(Txn.application_args.length() == Int(6)),
             App.globalPut(Bytes("RegBegin"), Btoi(Txn.application_args[0])),
             App.globalPut(Bytes("RegEnd"), Btoi(Txn.application_args[1])),
             App.globalPut(Bytes("VoteBegin"), Btoi(Txn.application_args[2])),
             App.globalPut(Bytes("VoteEnd"), Btoi(Txn.application_args[3])),
-            # define voting choices on creation
-            App.globalPut(Bytes("VoteOption1"), Bytes("A"))),
-            App.globalPut(Bytes("VoteOption2"), Bytes("B"))),
-            App.globalPut(Bytes("VoteOption3"), Bytes("C"))),
-            App.globalPut(Bytes("VoteOption4"), Bytes("D"))),
-            App.globalPut(Bytes("VoteOption5"), Bytes("E"))),
+
+            # number of options there are to vote for
+            App.globalPut(Bytes("NumVoteOptions"), Btoi(Txn.application_args[4])),
+
+            # set all initial vote tallies to 0 for all vote options
+            For(
+                i.store(Int(0)),
+                i.load() < Btoi(Txn.application_args[4]),
+                i.store(i.load() + Int(1))
+            ).Do(
+                App.globalPut(Concat(Bytes("VotesFor"), Itob(i.load())), Int(0))
+            ),
+
+            # string of options separated by commas ie: "Tim,John,Max,Sally"
+            App.globalPut(Bytes("VoteOptions"), Txn.application_args[5]),
+
             Return(Int(1)),
         ]
     )
 
     is_creator = Txn.sender() == App.globalGet(Bytes("Creator"))
 
+    # value sender voted for, a number indicating index in the VoteOptions string faux-array
     get_vote_of_sender = App.localGetEx(Int(0), App.id(), Bytes("voted"))
+    # value of whether or not the sender can vote ("yes", "no", or "maybe")
+    get_sender_can_vote = App.localGetEx(Int(0), App.id(), Bytes("can_vote"))
 
 
     on_closeout = Seq(
@@ -44,71 +57,75 @@ def approval_program():
         ]
     )
 
-    address_to_approve = Txn.application_args[1]
-    approved_or_not = Txn.application_args[2] #byte slice of whether creator approves
-    on_opt_in = Seq(
-        App.localPut(Int(0), Bytes("CanIVote"), Bytes("maybe"))
-        #concatenate the address
-        App.globalPut(Bytes("addresses"), App.globalGet(Bytes("addresses").concatenate(Txn.sender()))) #finish syntax
-    )
-    approve_user = Seq(
+
+    on_register = Seq(
+        # ensure users are registering during registration period
         Assert(
-            is_creator,
-        ),
-        App.localPut(address_to_approve, ) #finish this
-    )
-    on_register = Return(
-        Assert(
-            And(approved_or_not == Byte("approved"),  # add in here another check that the user is one that we creator already approves of
-                And(
-                    Global.round() >= App.globalGet(Bytes("RegBegin")),
-                    Global.round() <= App.globalGet(Bytes("RegEnd")),
-                )
+            And(
+                Global.round() >= App.globalGet(Bytes("RegBegin")),
+                Global.round() <= App.globalGet(Bytes("RegEnd")),
             )
-        )
-        
+        ),
+
+        # Set users voting status to maybe
+        App.localPut(Int(0), Bytes("can_vote"), Bytes("maybe")),
+
+        # Add user to approval queue
+        App.globalPut(
+            Bytes("ApprovalQueue"),
+            App.globalGet(Bytes("ApprovalQueue").concatenate(Txn.sender()))
+        ),
+
+        Return(Int(1))
     )
 
-    choice = Txn.application_args[1]
-    choice_tally = App.globalGet(choice)
+    address_to_approve = Txn.application_args[1]
+    is_user_approved = Txn.application_args[2] # "Yes" or "No"
+    new_approval_queue = Txn.application_args[3]
+    on_update_user_status = Seq(
+        get_sender_can_vote,
+        Assert(
+            And(
+                is_creator, # only the creator can approve/disapprove users
+                get_sender_can_vote.value() == Bytes("maybe") # creator can only change status once
+            )
+        ),
+
+        # edit the user's local data on whether they can vote or not
+        App.localPut(address_to_approve, Bytes("can_vote"), is_user_approved),
+
+        # update the new queue
+        App.globalPut(Bytes("ApprovalQueue"), new_approval_queue),
+
+        Return(Int(1))
+    )
+
+    choice = Btoi(Txn.application_args[1])
     on_vote = Seq(
         [
             Assert(
                 And(
                     Global.round() >= App.globalGet(Bytes("VoteBegin")),
                     Global.round() <= App.globalGet(Bytes("VoteEnd")),
-                    
+
+                    # ensure user is allowed to vote
+                    get_sender_can_vote.value() == Bytes("yes")
                 )
             ),
             get_vote_of_sender,
-            If(get_vote_of_sender.hasValue(), Return(Int(0))),
-            Cond(
-                [choice == App.globalGet(Bytes("VoteOption1")), Seq([
-                App.globalPut(choice, choice_tally + Int(1)),
-                App.localPut(Int(0), Bytes("voted"), choice),
-                Return(Int(1)),
-                ])],
-                [choice == App.globalGet(Bytes("VoteOption2")), Seq([
-                    App.globalPut(choice, choice_tally + Int(1)),
-                    App.localPut(Int(0), Bytes("voted"), choice),
-                    Return(Int(1)),
-                ])],
-                [choice == App.globalGet(Bytes("VoteOption3")), Seq([
-                    App.globalPut(choice, choice_tally + Int(1)),
-                    App.localPut(Int(0), Bytes("voted"), choice),
-                    Return(Int(1)),
-                ])],
-                [choice == App.globalGet(Bytes("VoteOption4")), Seq([
-                    App.globalPut(choice, choice_tally + Int(1)),
-                    App.localPut(Int(0), Bytes("voted"), choice),
-                    Return(Int(1)),
-                ])],
-                [choice == App.globalGet(Bytes("VoteOption5")), Seq([
-                    App.globalPut(choice, choice_tally + Int(1)),
-                    App.localPut(Int(0), Bytes("voted"), choice),
-                    Return(Int(1)),
-                ])]
+            If(get_vote_of_sender.hasValue(), Return(Int(0))), # ensure user hasn't already voted
+            Assert(
+                And(
+                    # Not(get_vote_of_sender.hasValue()), # ensure user hasn't already voted
+                    choice >= Int(0), # ensure vote choice is within index bounds
+                    choice < App.globalGet(Bytes("NumVoteOptions")),
+                )
             ),
+            App.globalPut(
+                Concat(Bytes("VotesFor"), Itob(choice)),
+                App.globalGet(Concat(Bytes("VotesFor"), Itob(choice))) + Int(1)
+            ),
+            App.localPut(Int(0), Bytes("voted"), choice),
 
             Return(Int(1))
         ]
@@ -121,6 +138,7 @@ def approval_program():
         [Txn.on_completion() == OnComplete.CloseOut, on_closeout],
         [Txn.on_completion() == OnComplete.OptIn, on_register],
         [Txn.application_args[0] == Bytes("vote"), on_vote],
+        [Txn.application_args[0] == Bytes("update_user_status"), on_update_user_status],
     )
 
     return program
@@ -128,6 +146,9 @@ def approval_program():
 
 def clear_state_program():
     get_vote_of_sender = App.localGetEx(Int(0), App.id(), Bytes("voted"))
+
+    # if the user clears state of program before the end of voting period
+    # remove their vote from the correct vote tally
     program = Seq(
         [
             get_vote_of_sender,
@@ -137,8 +158,8 @@ def clear_state_program():
                     get_vote_of_sender.hasValue(),
                 ),
                 App.globalPut(
-                    get_vote_of_sender.value(),
-                    App.globalGet(get_vote_of_sender.value()) - Int(1),
+                    Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value())),
+                    App.globalGet(Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value()))) - Int(1)
                 ),
             ),
             Return(Int(1)),
