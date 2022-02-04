@@ -9,15 +9,15 @@ from algosdk.v2client import algod
 from pyteal import compileTeal, Mode
 from vote import approval_program, clear_state_program
 
-import private_keys # import your own file that has your private keys, mnemonics, etc
+import ENV # import your own file that has your private keys, mnemonics, etc
 
 # user declared account mnemonics
-creator_mnemonic = private_keys.accountMnemonics[0]
+creator_mnemonic = ENV.accountMnemonics[0]
 
 
 # user declared algod connection parameters. Node must have EnableDeveloperAPI set to true in its config
 algod_address = "http://localhost:4001"
-algod_token = private_keys.algod_token
+algod_token = ENV.algod_token
 
 # helper function to compile program source
 def compile_program(client, source_code):

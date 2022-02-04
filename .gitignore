@@ -136,5 +136,4 @@ dmypy.json
 .idea/
 
 # Private data
-private_keys.py
 ENV.py
