@@ -134,3 +134,6 @@ dmypy.json
 
 # Pycharm
 .idea/
+
+# Private data
+private_keys.py
