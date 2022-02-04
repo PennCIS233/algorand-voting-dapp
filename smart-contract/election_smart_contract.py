@@ -1,4 +1,5 @@
 from pyteal import *
+from pyteal_helper import itoa
 
 # Election Smart Contract Simplified Overview
 # 1.  Creator deploys smart contract
@@ -8,7 +9,6 @@ from pyteal import *
 # 4b. Approved user who voted can remove their vote (potentially then revote) if they closeout or clear program
 # 5.  Repeat 2 to 4 for each user who opts-in before the election end
 # 6.  Election ends and no further changes (opt-ins, votes, approvals/rejects) can be made to the election
-
 
 
 # approval_program handles the main logic of the application
@@ -35,7 +35,7 @@ def approval_program():
                 i.load() < Btoi(Txn.application_args[1]),
                 i.store(i.load() + Int(1))
             ).Do(
-                App.globalPut(Concat(Bytes("VotesFor"), Itob(i.load())), Int(0))
+                App.globalPut(Concat(Bytes("VotesFor"), itoa(i.load())), Int(0))
             ),
 
             # string of options separated by commas ie: "A,B,C,D". Note that index-wise, A=0, B=1, C=2, D=3
@@ -154,6 +154,7 @@ def approval_program():
     )
 
     return program
+
 
 # clear_state_program is when an account clears its participation in a smart contract
 def clear_state_program():
