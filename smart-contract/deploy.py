@@ -7,7 +7,7 @@ from algosdk.future import transaction
 from algosdk import account, mnemonic
 from algosdk.v2client import algod
 from pyteal import compileTeal, Mode
-from election_smart_contract_v2 import approval_program, clear_state_program
+from election_smart_contract import approval_program, clear_state_program
 
 import ENV # import your own file that has your private keys, mnemonics, etc
 
