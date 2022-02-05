@@ -13,7 +13,6 @@ class AlgoHandler {
     console.log('New AlgoHandler');
 
     this.accounts = [];
-    this.mainAccount = null;
     
     const algodToken = { 
       'X-API-Key': 'OtAhhF0GEa3GnYbsgghbx4L9qO9Ebq6J9m1sjOS0'
@@ -56,11 +55,6 @@ class AlgoHandler {
     return this.accounts;
   }
 
-  // use for when switching accounts
-  selectMainAccount(address) {
-    this.mainAccount = address;
-  }
-
   // isCreator
   // electionAddress - address of the specified election
   // accountAddress - address of the specified user's account
@@ -80,10 +74,12 @@ class AlgoHandler {
     return false;
   }
 
+  // decodes bytes to strings
   decode(encoded) {
     return Buffer.from(encoded, "base64").toString();
   }
 
+  // retrieve global variables of election
   async getElectionState(appID, creatorAddress) {
     let newState = {};
 
@@ -93,8 +89,7 @@ class AlgoHandler {
         console.log("Application's global state:");
         for (let x of accountInfoResponse['created-apps'][i]['params']['global-state']) {
           console.log(x);
-          // console.log(Buffer.from(x['value']['bytes'], '64').toString());
-          // console.log(Number(x['value']['uint']));
+
           let key = this.decode(x['key']);
           let bytesVal = (key == 'Creator') ? algosdk.encodeAddress(Buffer.from(x['value']['bytes'], "base64")) : this.decode(x['value']['bytes']);
           let uintVal = x['value']['uint'];
