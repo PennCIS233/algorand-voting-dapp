@@ -12,6 +12,9 @@ import VoteChart from "./components/VoteChart";
 
 import "./App.css";
 
+import mainAlgoHandler from "./components/AlgoHandler";
+import TestAlgoComponent from "./components/TestAlgoComponent";
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -78,6 +81,7 @@ class App extends React.Component {
     return (
       <div className="background-color">
         <NavBar />
+        <TestAlgoComponent />
         <Container className="px-5">
           {!this.state.disableElection && (
             <Row className="px-5">
