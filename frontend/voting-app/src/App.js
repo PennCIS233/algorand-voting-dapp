@@ -1,14 +1,11 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import ListGroup from "react-bootstrap/ListGroup";
 
 import NavBar from "./components/NavBar";
-import VoteChart from "./components/VoteChart";
+import VoterPage from "./pages/VoterPage";
+import ConnectPage from "./pages/ConnectPage";
+import ElectionPage from "./pages/ElectionPage";
+import CreatorPage from "./pages/CreatorPage";
 
 import "./App.css";
 
@@ -20,70 +17,25 @@ class App extends React.Component {
     super(props);
     this.state = {
       electionId: 0,
-      disableElection: false,
-      user: 0,
-      disableUser: false,
-      currVotes: [
-        { title: "1", value: 2, color: "#3181ba" },
-        { title: "2", value: 5, color: "#45134c" },
-        { title: "3", value: 1, color: "#632656" },
-        { title: "4", value: 5, color: "#4dc8e9" },
-        { title: "5", value: 3, color: "#aa21b9" },
-      ],
-      voteChoice: 0,
-      disableVote: true,
     };
-    this.handleElectionChange = this.handleElectionChange.bind(this);
-    this.handleElectionSubmit = this.handleElectionSubmit.bind(this);
-    this.handleRegisterChange = this.handleRegisterChange.bind(this);
-    this.handleRegisterSubmit = this.handleRegisterSubmit.bind(this);
-    this.handleVoteSelect = this.handleVoteSelect.bind(this);
-    this.handleVoteSubmit = this.handleVoteSubmit.bind(this);
-  }
-
-  handleElectionChange(e) {
-    this.setState({ electionId: e.target.value });
-  }
-
-  handleElectionSubmit(e) {
-    e.preventDefault();
-    console.log(this.state.electionId);
-    this.setState({ disableElection: true });
-    // TODO: search for election on blockchain
-  }
-
-  handleRegisterChange(e) {
-    this.setState({ user: e.target.value });
-  }
-
-  handleRegisterSubmit(e) {
-    e.preventDefault();
-    this.setState({ disableUser: true, disableVote: false });
-
-    console.log(this.state.user);
-    // TODO: create/find user
-  }
-
-  handleVoteSelect(e) {
-    this.setState({
-      voteChoice: e.target.value,
-    });
-  }
-
-  handleVoteSubmit(e) {
-    e.preventDefault();
-    this.setState({ disableVote: true });
-    console.log(this.state.voteChoice);
-    // TODO: send vote to blockchain
   }
 
   render() {
     return (
       <div className="background-color">
         <NavBar />
-        <TestAlgoComponent />
-        <Container className="px-5">
-          {!this.state.disableElection && (
+        <Container>
+          <CreatorPage />
+        </Container>
+      </div>
+    );
+  }
+}
+
+export default App;
+
+/*
+{!this.state.disableElection && (
             <Row className="px-5">
               <Container className="px-5">
                 <Card className="mt-5" bg="light">
@@ -200,10 +152,4 @@ class App extends React.Component {
               </Row>
             </div>
           )}
-        </Container>
-      </div>
-    );
-  }
-}
-
-export default App;
+          */

@@ -4,6 +4,7 @@ import { PieChart } from "react-minimal-pie-chart";
 function VoteChart(props) {
   return (
     <Card bg="light">
+      <Card.Header>Current Votes</Card.Header>
       <PieChart
         data={props.currVotes}
         label={({ dataEntry }) =>
