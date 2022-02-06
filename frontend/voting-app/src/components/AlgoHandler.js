@@ -80,27 +80,23 @@ class AlgoHandler {
   }
 
   // retrieve global variables of election
-  async getElectionState(appID, creatorAddress) {
+  async getElectionState(appID) {
     let newState = {};
 
-    let accountInfoResponse = await this.algodClient.accountInformation(creatorAddress).do();
-    for (let i = 0; i < accountInfoResponse['created-apps'].length; i++) { 
-      if (accountInfoResponse['created-apps'][i].id == appID) {
-        console.log("Application's global state:");
-        for (let x of accountInfoResponse['created-apps'][i]['params']['global-state']) {
-          console.log(x);
+    let app = await this.algodClient.getApplicationByID(appID).do();
 
-          let key = this.decode(x['key']);
-          let bytesVal = (key == 'Creator') ? algosdk.encodeAddress(Buffer.from(x['value']['bytes'], "base64")) : this.decode(x['value']['bytes']);
-          let uintVal = x['value']['uint'];
-          let valType = x['value']['type'];
+    console.log("Application's global state:");
+    for (let x of app['params']['global-state']) {
+      console.log(x);
 
-          newState[key] = (valType == 1) ? bytesVal : uintVal;
-        }
+      let key = this.decode(x['key']);
+      let bytesVal = (key == 'Creator') ? algosdk.encodeAddress(Buffer.from(x['value']['bytes'], "base64")) : this.decode(x['value']['bytes']);
+      let uintVal = x['value']['uint'];
+      let valType = x['value']['type'];
 
-        return newState;
-      }
+      newState[key] = (valType == 1) ? bytesVal : uintVal;
     }
+    return newState;
   }
 }
 

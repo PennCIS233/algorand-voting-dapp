@@ -42,7 +42,7 @@ function TestAlgoComponent() {
     setCreatorAddress(formDataObj['creatorAddress']);
 
 
-    setIsCreator(await mainAlgoHandler.isCreator(formDataObj['appID'], formDataObj['creatorAddress']));
+    setIsCreator(await mainAlgoHandler.isCreator(formDataObj['appID'], mainAccount));
 
     // await getElectionState();
   };
