@@ -97,7 +97,7 @@ function TestAlgoComponent() {
       <Row>
         <h3>Election State</h3>
         <Button onClick={async () => await getElectionState()}>Get Election State</Button>
-        <p>{JSON.stringify(electionState)}</p>
+        <p><pre>{JSON.stringify(electionState, null, 2)}</pre></p>
       </Row>
     </Container>
   );
