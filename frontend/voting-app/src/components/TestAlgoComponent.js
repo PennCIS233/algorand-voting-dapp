@@ -61,6 +61,10 @@ function TestAlgoComponent() {
     setOptedInAccounts(newOptedInAccounts)
   }
 
+  const hasUserOptedIn = (e) => {
+    return (JSON.stringify(optedInAccounts).includes(mainAccount));
+  }
+
   return (
     <Container className="mb-3">
         <Row className="mt-3">
@@ -111,6 +115,18 @@ function TestAlgoComponent() {
         <div><pre>{JSON.stringify(electionState, null, 2)}</pre></div>
         <h5>Opted-In Accounts can_vote Status</h5>
         <div><pre>{JSON.stringify(optedInAccounts, null, 2)}</pre></div>
+      </Row>
+      <Row>
+        <h3>Opt-In</h3>
+        {(!hasUserOptedIn() && 
+          <div>
+            <p><b>You have NOT opted-in</b></p>
+            <Button>Opt-In</Button>
+          </div>
+          ) 
+          || 
+          <p><b>You have opted-in</b></p>}
+        {/* {hasUserOptedIn() && <p><b>You have opted-in</b></p>} */}
       </Row>
     </Container>
   );
