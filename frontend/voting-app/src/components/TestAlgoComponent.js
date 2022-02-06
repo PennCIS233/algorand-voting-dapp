@@ -38,14 +38,12 @@ function TestAlgoComponent() {
     e.preventDefault();
 
     const formData = new FormData(e.target);
-    console.log(formData);
     const formDataObj = Object.fromEntries(formData.entries());
-    console.log(formDataObj);
 
     let newElectionState = await mainAlgoHandler.getElectionState(formDataObj['appID']);
     let newOptedInAccounts = await mainAlgoHandler.getOptedInAccounts(formDataObj['appID']);
 
-    setAppID(formDataObj['appID']);
+    setAppID(Number(formDataObj['appID']));
     setElectionState(newElectionState);
     setCreatorAddress(newElectionState['Creator']);
     setOptedInAccounts(newOptedInAccounts)
@@ -59,6 +57,21 @@ function TestAlgoComponent() {
 
     setElectionState(newElectionState);
     setOptedInAccounts(newOptedInAccounts)
+  }
+
+  const hasUserOptedIn = () => {
+    return (JSON.stringify(optedInAccounts).includes(mainAccount));
+  }
+
+  const getUserOptInStatus = () => {
+    for (let key in optedInAccounts) {
+      if (optedInAccounts[key].includes(mainAccount)) return key;
+    }
+    return null;
+  }
+
+  const optInAccount = async () => {
+    await mainAlgoHandler.optInAccount(mainAccount, appID);
   }
 
   return (
@@ -111,6 +124,26 @@ function TestAlgoComponent() {
         <div><pre>{JSON.stringify(electionState, null, 2)}</pre></div>
         <h5>Opted-In Accounts can_vote Status</h5>
         <div><pre>{JSON.stringify(optedInAccounts, null, 2)}</pre></div>
+      </Row>
+      <Row>
+        <h3>Opt-In</h3>
+        {(!hasUserOptedIn() && 
+          <div>
+            <p><b>You have NOT opted-in</b></p>
+            <Button onClick={async () => {await optInAccount()}}>Opt-In</Button>
+            <p>After clicking this button wait 10 seconds then press the  'Get Election State' button</p>
+          </div>
+          ) 
+          || 
+          <div>
+            <p>You have opted in.</p>
+            {getUserOptInStatus() == 'yes' && <p>You are allowed to vote</p>}
+            {getUserOptInStatus() == 'no' && <p>You are NOT allowed to vote</p>}
+            {getUserOptInStatus() == 'maybe' && <p>Your voting status is still being determined</p>}
+          </div>
+          
+          }
+        {/* {hasUserOptedIn() && <p><b>You have opted-in</b></p>} */}
       </Row>
     </Container>
   );

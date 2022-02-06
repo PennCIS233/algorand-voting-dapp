@@ -132,6 +132,27 @@ class AlgoHandler {
 
     return optedInAccounts;
   }
+
+  async optInAccount(address, appID) {
+    console.log(`Attempting to opt-in account ${address} to ${appID}`)
+    let params = await this.algodClient.getTransactionParams().do();
+
+    let txn = algosdk.makeApplicationOptInTxn(address, params, appID);
+    console.log(txn);
+
+    let txn_b64 = window.AlgoSigner.encoding.msgpackToBase64(txn.toByte())
+
+    let signedTxs = await window.AlgoSigner.signTxn([{txn: txn_b64}]);
+    console.log(signedTxs);
+
+    let tx = await window.AlgoSigner.send({
+      ledger: 'TestNet',
+      tx: signedTxs[0].blob
+    });
+
+    console.log(tx);
+
+  }
 }
 
 var mainAlgoHandler = new AlgoHandler();
