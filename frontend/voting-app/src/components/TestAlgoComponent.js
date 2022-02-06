@@ -31,20 +31,19 @@ function TestAlgoComponent() {
 
   const connectElection = async (e) => {
     e.preventDefault();
-    // e.stopPropagation();
 
     const formData = new FormData(e.target);
     console.log(formData);
     const formDataObj = Object.fromEntries(formData.entries());
     console.log(formDataObj);
 
+    let newElectionState = await mainAlgoHandler.getElectionState(formDataObj['appID']);
+
     setAppID(formDataObj['appID']);
-    setCreatorAddress(formDataObj['creatorAddress']);
+    setElectionState(newElectionState);
+    setCreatorAddress(newElectionState['Creator']);
 
-
-    setIsCreator(await mainAlgoHandler.isCreator(formDataObj['appID'], formDataObj['creatorAddress']));
-
-    // await getElectionState();
+    setIsCreator(newElectionState['Creator'] == mainAccount);
   };
 
   const getElectionState = async (e) => {
@@ -78,11 +77,6 @@ function TestAlgoComponent() {
         <Row className="mb-3">
           <h3>Connect to Election</h3>
           <Form onSubmit={async (e) => await connectElection(e)}>
-            <Form.Group className="mb-3" controlId="formCreatorAddress">
-              <Form.Label>Smart Contract Creator Address:</Form.Label>
-              <Form.Control name="creatorAddress" type="lg" placeholder="Creator's Address" />
-            </Form.Group>
-
             <Form.Group className="mb-3" controlId="formAppID">
               <Form.Label>Smart Contract App ID</Form.Label>
               <Form.Control name="appID" type="lg" placeholder="App ID" />
@@ -103,7 +97,7 @@ function TestAlgoComponent() {
       <Row>
         <h3>Election State</h3>
         <Button onClick={async () => await getElectionState()}>Get Election State</Button>
-        <p>{JSON.stringify(electionState)}</p>
+        <p><pre>{JSON.stringify(electionState, null, 2)}</pre></p>
       </Row>
     </Container>
   );
