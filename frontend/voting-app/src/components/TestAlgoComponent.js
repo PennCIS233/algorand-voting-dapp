@@ -38,9 +38,7 @@ function TestAlgoComponent() {
     e.preventDefault();
 
     const formData = new FormData(e.target);
-    console.log(formData);
     const formDataObj = Object.fromEntries(formData.entries());
-    console.log(formDataObj);
 
     let newElectionState = await mainAlgoHandler.getElectionState(formDataObj['appID']);
     let newOptedInAccounts = await mainAlgoHandler.getOptedInAccounts(formDataObj['appID']);
@@ -61,8 +59,16 @@ function TestAlgoComponent() {
     setOptedInAccounts(newOptedInAccounts)
   }
 
-  const hasUserOptedIn = (e) => {
+  const hasUserOptedIn = () => {
     return (JSON.stringify(optedInAccounts).includes(mainAccount));
+  }
+
+  const getUserOptInStatus = () => {
+    for (let key in optedInAccounts) {
+      console.log(key);
+      if (optedInAccounts[key].includes(mainAccount)) return key;
+    }
+    return null;
   }
 
   return (
@@ -125,7 +131,13 @@ function TestAlgoComponent() {
           </div>
           ) 
           || 
-          <p><b>You have opted-in</b></p>}
+          <div>
+            {getUserOptInStatus() == 'yes' && <p>You are allowed to vote</p>}
+            {getUserOptInStatus() == 'no' && <p>You are NOT allowed to vote</p>}
+            {getUserOptInStatus() == 'maybe' && <p>Your voting status is still being determined</p>}
+          </div>
+          
+          }
         {/* {hasUserOptedIn() && <p><b>You have opted-in</b></p>} */}
       </Row>
     </Container>
