@@ -5,7 +5,6 @@ import NavBar from "../components/NavBar";
 import InfoCard from "../components/InfoCard";
 import VoterCard from "../components/VoterCard";
 import VoteChart from "../components/VoteChart";
-
 import RequestCard from "../components/RequestCard";
 import AcceptCard from "../components/AcceptCard";
 
@@ -13,7 +12,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 function ElectionPage() {
   let location = useLocation();
-  let navigate = useNavigate();
+  let navigate = useNavigate(); // TODO: create a back to start button
 
   const [electionState, setElectionState] = useState({});
   const [accounts, setAccounts] = useState([]);
@@ -44,9 +43,22 @@ function ElectionPage() {
     setElectionState(newElectionState);
   };
 
+  const changeMainAccount = async (acc) => {
+    setMainAccount(acc);
+    if (electionId != "")
+      setIsCreator(await mainAlgoHandler.isCreator(electionId, acc));
+  };
+
+  // TODO: fix props to VoteChart, RequestCard, and AcceptCards and add it back in (need to see what election values are given)
   return (
     <>
-      <NavBar connected />
+      <NavBar
+        connected
+        handleUserUpdate={changeMainAccount}
+        accounts={accounts}
+        mainAccount={mainAccount}
+        handlePageChange={setIsVotePage}
+      />
       {isVotePage && (
         <Container>
           <Row className="px-3 mt-3">
@@ -59,7 +71,7 @@ function ElectionPage() {
               </Row>
             </Col>
             <Col className="px-1">
-              <VoteChart currVotes={this.state.currVotes} />
+              <VoteChart></VoteChart>
             </Col>
           </Row>
         </Container>
@@ -81,6 +93,8 @@ function ElectionPage() {
 export default ElectionPage;
 
 /*
+
+// TODO: keeping this here to get format of currVotes (which is pretty specific to the pie chart maker)
 
 constructor(props) {
     super(props);
