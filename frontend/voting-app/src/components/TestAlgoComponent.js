@@ -43,7 +43,7 @@ function TestAlgoComponent() {
     let newElectionState = await mainAlgoHandler.getElectionState(formDataObj['appID']);
     let newOptedInAccounts = await mainAlgoHandler.getOptedInAccounts(formDataObj['appID']);
 
-    setAppID(formDataObj['appID']);
+    setAppID(Number(formDataObj['appID']));
     setElectionState(newElectionState);
     setCreatorAddress(newElectionState['Creator']);
     setOptedInAccounts(newOptedInAccounts)
@@ -65,10 +65,13 @@ function TestAlgoComponent() {
 
   const getUserOptInStatus = () => {
     for (let key in optedInAccounts) {
-      console.log(key);
       if (optedInAccounts[key].includes(mainAccount)) return key;
     }
     return null;
+  }
+
+  const optInAccount = async () => {
+    await mainAlgoHandler.optInAccount(mainAccount, appID);
   }
 
   return (
@@ -127,11 +130,13 @@ function TestAlgoComponent() {
         {(!hasUserOptedIn() && 
           <div>
             <p><b>You have NOT opted-in</b></p>
-            <Button>Opt-In</Button>
+            <Button onClick={async () => {await optInAccount()}}>Opt-In</Button>
+            <p>After clicking this button wait 10 seconds then press the  'Get Election State' button</p>
           </div>
           ) 
           || 
           <div>
+            <p>You have opted in.</p>
             {getUserOptInStatus() == 'yes' && <p>You are allowed to vote</p>}
             {getUserOptInStatus() == 'no' && <p>You are NOT allowed to vote</p>}
             {getUserOptInStatus() == 'maybe' && <p>Your voting status is still being determined</p>}
