@@ -20,6 +20,9 @@ class AlgoHandler {
     const algodServer = 'https://testnet-algorand.api.purestake.io/ps2';
     const algodPort = '';
     this.algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
+
+    const indexerServer = 'https://testnet-algorand.api.purestake.io/idx2';
+    this.indexerClient = new algosdk.Indexer(algodToken, indexerServer, algodPort);
   }
 
   // connects to AlgoSigner accounts on TestNet
@@ -97,6 +100,37 @@ class AlgoHandler {
       newState[key] = (valType == 1) ? bytesVal : uintVal;
     }
     return newState;
+  }
+
+  async getOptedInAccounts(appID) {
+    let optedInAccounts = {
+      'yes': [],
+      'no': [],
+      'maybe': []
+    };
+
+    let accountInfo = await this.indexerClient.searchAccounts().applicationID(appID).do();
+
+    let accounts = accountInfo['accounts'];
+    console.log(accounts);
+
+    // go through all the accounts looking at 'can_vote' variable and add account to correct array
+    for (let acc of accounts) {
+      let apps = acc['apps-local-state'];
+      for (let app of apps) {
+        if (app['id'] == appID) {
+          for (let keyValue of app['key-value']) {
+            let key = this.decode(keyValue['key']);
+            if (key == 'can_vote') {
+              let value = this.decode(keyValue['value']['bytes']);
+              optedInAccounts[value].push(acc['address'])
+            }
+          }
+        }
+      }
+    }
+
+    return optedInAccounts;
   }
 }
 
