@@ -18,10 +18,7 @@ from election_smart_contract import approval_program, clear_state_program
 user_mnemonic = "enjoy face require vibrant fun detect solid divert police gasp clown entire vital mandate soccer ready oven proud breeze key mountain civil number absent whale"
 creator_mnemonic = "jelly move shuffle prevent vocal garden escape leave obvious shop ostrich lecture filter cake lamp strategy swim keen marble abstract inspire wife fossil about lamp"
 user_address = "ZY2RCEOGP5YTCTY2SW4UZ272VBZB2B3DYIG22JLBXSTFS3RTT67IZCZZV4"
-
-#user_address_2 = "6LYXJHIDT3TPYMUM6C3FIA2CBWHUOFCEFXZ6A4MNNNAXQZN7DRWSBNMG6Q"
-#decode_address('6LYXJHIDT3TPYMUM6C3FIA2CBWHUOFCEFXZ6A4MNNNAXQZN7DRWSBNMG6Q')
-#decoded_user_address = decode_address('ZY2RCEOGP5YTCTY2SW4UZ272VBZB2B3DYIG22JLBXSTFS3RTT67IZCZZV4')
+decoded_user_address = decode_address('ZY2RCEOGP5YTCTY2SW4UZ272VBZB2B3DYIG22JLBXSTFS3RTT67IZCZZV4')
 #print("decoded")
 
 # user declared algod connection parameters. Node must have EnableDeveloperAPI set to true in its config
