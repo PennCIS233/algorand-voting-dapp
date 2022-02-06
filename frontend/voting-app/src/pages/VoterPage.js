@@ -1,5 +1,6 @@
 import React from "react";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Container } from "react-bootstrap";
+import NavBar from "../components/NavBar";
 
 import InfoCard from "../components/InfoCard";
 import VoterCard from "../components/VoterCard";
@@ -24,19 +25,22 @@ class VoterPage extends React.Component {
   render() {
     return (
       <>
-        <Row className="px-3 mt-3">
-          <Col>
-            <Row className="px-1">
-              <InfoCard electionId={this.state.electionId} />
-            </Row>
-            <Row className="px-1 mt-3">
-              <VoterCard user={this.state.currUser} />
-            </Row>
-          </Col>
-          <Col className="px-1">
-            <VoteChart currVotes={this.state.currVotes} />
-          </Col>
-        </Row>
+        <NavBar connected />
+        <Container>
+          <Row className="px-3 mt-3">
+            <Col>
+              <Row className="px-1">
+                <InfoCard electionId={this.state.electionId} />
+              </Row>
+              <Row className="px-1 mt-3">
+                <VoterCard user={this.state.currUser} />
+              </Row>
+            </Col>
+            <Col className="px-1">
+              <VoteChart currVotes={this.state.currVotes} />
+            </Col>
+          </Row>
+        </Container>
       </>
     );
   }

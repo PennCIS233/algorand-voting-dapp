@@ -1,12 +1,6 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
 
-import NavBar from "./components/NavBar";
-import VoterPage from "./pages/VoterPage";
-import ConnectPage from "./pages/ConnectPage";
-import ElectionPage from "./pages/ElectionPage";
-import CreatorPage from "./pages/CreatorPage";
-
 import "./App.css";
 
 import mainAlgoHandler from "./components/AlgoHandler";
@@ -23,7 +17,6 @@ class App extends React.Component {
   render() {
     return (
       <div className="background-color">
-        <NavBar />
         <Container>
           <CreatorPage />
         </Container>

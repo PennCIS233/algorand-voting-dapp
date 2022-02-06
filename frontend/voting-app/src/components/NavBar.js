@@ -21,31 +21,47 @@ class NavBar extends React.Component {
   render() {
     return (
       <Navbar style={{ backgroundColor: "#201f48" }}>
-        <Container>
-          <Navbar.Brand style={{ color: "#0dcaf0", fontSize: "30px" }} href="/">
-            AlgoVoter
-          </Navbar.Brand>
-          <Nav className="me-auto">
-            <Nav.Item>
-              <Nav.Link style={{ color: "#0dcaf0" }}>Creator</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link style={{ color: "#0dcaf0" }}>Voter</Nav.Link>
-            </Nav.Item>
-          </Nav>
+        {this.props.connected && (
+          <Container>
+            <Navbar.Brand
+              style={{ color: "#0dcaf0", fontSize: "30px" }}
+              href="/"
+            >
+              AlgoVoter
+            </Navbar.Brand>
 
-          <DropdownButton
-            variant="info"
-            id="choose-user"
-            title={this.state.currUser}
-          >
-            {this.state.users.map((user) => (
-              <Dropdown.Item onClick={() => this.handleClick(user)}>
-                {user}
-              </Dropdown.Item>
-            ))}
-          </DropdownButton>
-        </Container>
+            <Nav className="me-auto">
+              <Nav.Item>
+                <Nav.Link style={{ color: "#0dcaf0" }}>Creator</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link style={{ color: "#0dcaf0" }}>Voter</Nav.Link>
+              </Nav.Item>
+            </Nav>
+
+            <DropdownButton
+              variant="info"
+              id="choose-user"
+              title={this.state.currUser}
+            >
+              {this.state.users.map((user) => (
+                <Dropdown.Item onClick={() => this.handleClick(user)}>
+                  {user}
+                </Dropdown.Item>
+              ))}
+            </DropdownButton>
+          </Container>
+        )}
+        {!this.props.connected && (
+          <Container>
+            <Navbar.Brand
+              style={{ color: "#0dcaf0", fontSize: "30px" }}
+              href="/"
+            >
+              AlgoVoter
+            </Navbar.Brand>
+          </Container>
+        )}
       </Navbar>
     );
   }
