@@ -13,6 +13,11 @@ function TestAlgoComponent() {
   const [appID, setAppID] = useState('');
   const [isCreator, setIsCreator] = useState(false);
   const [electionState, setElectionState] = useState({});
+  const [optedInAccounts, setOptedInAccounts] = useState({
+    'yes': [],
+    'no': [],
+    'maybe': []
+  });
 
   useEffect(() => {
     
@@ -38,17 +43,22 @@ function TestAlgoComponent() {
     console.log(formDataObj);
 
     let newElectionState = await mainAlgoHandler.getElectionState(formDataObj['appID']);
+    let newOptedInAccounts = await mainAlgoHandler.getOptedInAccounts(formDataObj['appID']);
 
     setAppID(formDataObj['appID']);
     setElectionState(newElectionState);
     setCreatorAddress(newElectionState['Creator']);
+    setOptedInAccounts(newOptedInAccounts)
 
     setIsCreator(newElectionState['Creator'] == mainAccount);
   };
 
   const getElectionState = async (e) => {
-    let newElectionState = await mainAlgoHandler.getElectionState(appID, creatorAddress);
+    let newElectionState = await mainAlgoHandler.getElectionState(appID);
+    let newOptedInAccounts = await mainAlgoHandler.getOptedInAccounts(appID);
+
     setElectionState(newElectionState);
+    setOptedInAccounts(newOptedInAccounts)
   }
 
   return (
@@ -97,7 +107,10 @@ function TestAlgoComponent() {
       <Row>
         <h3>Election State</h3>
         <Button onClick={async () => await getElectionState()}>Get Election State</Button>
-        <p><pre>{JSON.stringify(electionState, null, 2)}</pre></p>
+        <h5>Global Variables</h5>
+        <div><pre>{JSON.stringify(electionState, null, 2)}</pre></div>
+        <h5>Opted-In Accounts can_vote Status</h5>
+        <div><pre>{JSON.stringify(optedInAccounts, null, 2)}</pre></div>
       </Row>
     </Container>
   );
