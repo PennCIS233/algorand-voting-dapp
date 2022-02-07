@@ -104,12 +104,13 @@ class AlgoHandler {
     return newState;
   }
 
-  async getOptedInAccounts(appID) {
+  async getOptedInAccountsAndVotes(appID) {
     let optedInAccounts = {
       'yes': [],
       'no': [],
       'maybe': []
     };
+    let allVotes = {}
 
     let accountInfo = await this.indexerClient.searchAccounts().applicationID(appID).do();
 
@@ -126,13 +127,15 @@ class AlgoHandler {
             if (key == 'can_vote') {
               let value = this.decode(keyValue['value']['bytes']);
               optedInAccounts[value].push(acc['address'])
+            } else if (key == 'voted') {
+              allVotes[acc['address']] = keyValue['value']['uint'];
             }
           }
         }
       }
     }
 
-    return optedInAccounts;
+    return [optedInAccounts, allVotes];
   }
 
   async signAndSend(txn) {
@@ -182,6 +185,31 @@ class AlgoHandler {
       [senderAddress, approvingAccount]
     )
     console.log(txn);
+
+    let tx = await this.signAndSend(txn);
+    console.log(tx);
+
+    return tx;
+  }
+
+  async vote(senderAddress, optionIndex, appID) {
+    console.log(`${senderAddress} attempting to vote for option ${optionIndex}`);
+
+    let params = await this.algodClient.getTransactionParams().do();
+
+    let appArgs = [];
+    appArgs.push(new Uint8Array(Buffer.from('vote')));
+    appArgs.push(algosdk.encodeUint64(optionIndex));
+    console.log(appArgs);
+
+    let txn = algosdk.makeApplicationNoOpTxn(
+      senderAddress,
+      params,
+      appID,
+      appArgs
+    )
+    console.log(txn);
+
 
     let tx = await this.signAndSend(txn);
     console.log(tx);
