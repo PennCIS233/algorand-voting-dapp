@@ -95,8 +95,7 @@ def approval_program():
             And(
                 is_creator, # only the creator can approve/disapprove users
                 Global.round() <= App.globalGet(Bytes("ElectionEnd")), # can only approve users before election ends
-                App.localGetEx(address_to_approve, App.id(), Bytes("can_vote")).hasValue(),
-                App.localGetEx(address_to_approve, App.id(), Bytes("can_vote")).value() == Bytes("maybe") # creator can only change status once
+                App.localGet(address_to_approve, Bytes("can_vote")) == Bytes("maybe") # creator can only change status once
             )
         ),
 
