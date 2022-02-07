@@ -1,3 +1,5 @@
+import { decodeAddress } from 'algosdk';
+
 const algosdk = require('algosdk')
 
 // This will handle all algosdk and algosigner code
@@ -133,14 +135,8 @@ class AlgoHandler {
     return optedInAccounts;
   }
 
-  async optInAccount(address, appID) {
-    console.log(`Attempting to opt-in account ${address} to ${appID}`)
-    let params = await this.algodClient.getTransactionParams().do();
-
-    let txn = algosdk.makeApplicationOptInTxn(address, params, appID);
-    console.log(txn);
-
-    let txn_b64 = window.AlgoSigner.encoding.msgpackToBase64(txn.toByte())
+  async signAndSend(txn) {
+    let txn_b64 = window.AlgoSigner.encoding.msgpackToBase64(txn.toByte());
 
     let signedTxs = await window.AlgoSigner.signTxn([{txn: txn_b64}]);
     console.log(signedTxs);
@@ -150,8 +146,46 @@ class AlgoHandler {
       tx: signedTxs[0].blob
     });
 
+    return tx;
+  }
+
+  async optInAccount(address, appID) {
+    console.log(`Attempting to opt-in account ${address} to ${appID}`);
+    let params = await this.algodClient.getTransactionParams().do();
+
+    let txn = algosdk.makeApplicationOptInTxn(address, params, appID);
+    console.log(txn);
+
+    let tx = await this.signAndSend(txn);
     console.log(tx);
 
+    return tx;
+  }
+
+  async creatorApprove(senderAddress, approvingAccount, yesOrNo, appID) {
+    console.log(`${senderAddress} attempting to ${yesOrNo == 'yes' ? 'approve' : 'deny'} account ${approvingAccount}`);
+
+    let params = await this.algodClient.getTransactionParams().do();
+    let appArgs = [];
+
+    let decodedAddress = algosdk.decodeAddress(approvingAccount);
+    appArgs.push(new Uint8Array(Buffer.from('update_user_status')));
+    appArgs.push(decodedAddress.publicKey);
+    appArgs.push(new Uint8Array(Buffer.from(yesOrNo)));
+    console.log(appArgs);
+
+    let txn = algosdk.makeApplicationNoOpTxn(
+      senderAddress,
+      params,
+      appID,
+      appArgs
+    )
+    console.log(txn);
+
+    let tx = await this.signAndSend(txn);
+    console.log(tx);
+
+    return tx;
   }
 }
 
