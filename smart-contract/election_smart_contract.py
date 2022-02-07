@@ -131,8 +131,8 @@ def approval_program():
 
             # update vote tally for user's choice
             App.globalPut(
-                Concat(Bytes("VotesFor"), Itob(choice)),
-                App.globalGet(Concat(Bytes("VotesFor"), Itob(choice))) + Int(1)
+                Concat(Bytes("VotesFor"), itoa(choice)),
+                App.globalGet(Concat(Bytes("VotesFor"), itoa(choice))) + Int(1)
             ),
 
             # update user's voted variable to reflect their choice
