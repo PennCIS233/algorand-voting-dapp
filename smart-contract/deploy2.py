@@ -377,7 +377,7 @@ def main():
 
     # configure election end period
     status = algod_client.status()
-    electionEnd = status["last-round"] + 30
+    electionEnd = status["last-round"] + 8000
 
     print(f"Election from rounds: {status['last-round']} to {electionEnd}")
 
