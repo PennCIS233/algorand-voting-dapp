@@ -1,6 +1,7 @@
 import Card from "react-bootstrap/Card";
 import { PieChart } from "react-minimal-pie-chart";
 
+// TODO: handle when sum of all currvotes is 0
 function VoteChart(props) {
   const currVotes = [
     { title: "A", value: props.currVotes[0], color: "#3181ba" },

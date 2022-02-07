@@ -8,11 +8,10 @@ import VoterCard from "../components/VoterCard";
 import VoteChart from "../components/VoteChart";
 import RequestCard from "../components/RequestCard";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 function ElectionPage() {
   let location = useLocation();
-  let navigate = useNavigate(); // TODO: create a back to start button
 
   const [electionState, setElectionState] = useState({});
   const [accounts, setAccounts] = useState([]);
@@ -31,7 +30,7 @@ function ElectionPage() {
         console.log(JSON.stringify(res), JSON.stringify(electionState));
         setElectionState(res);
         setCreatorAddress(res["Creator"]);
-        setIsCreator(res["Creator"] == mainAccount);
+        setIsCreator(res["Creator"] === mainAccount);
         setCurrVotes([
           res["VotesFor0"],
           res["VotesFor1"],
@@ -40,7 +39,14 @@ function ElectionPage() {
         ]);
       }
     });
-  }, [electionState, creatorAddress, isCreator, currVotes, electionId]);
+  }, [
+    electionState,
+    creatorAddress,
+    isCreator,
+    currVotes,
+    electionId,
+    mainAccount,
+  ]);
 
   const getElectionState = async (e) => {
     mainAlgoHandler.getElectionState(location.state.electionId).then((res) => {

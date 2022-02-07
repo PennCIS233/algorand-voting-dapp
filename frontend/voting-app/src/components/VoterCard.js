@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Button, Form } from "react-bootstrap";
-import { decode, signAndSend } from "./Helpers";
+import mainAlgoHandler from "../components/AlgoHandler";
 
 // TODO: change into hook
 class VoterCard extends React.Component {
@@ -20,8 +20,6 @@ class VoterCard extends React.Component {
     this.handleVoteSubmit = this.handleVoteSubmit.bind(this);
     this.handleOptIn = this.handleOptIn.bind(this);
     this.handleClear = this.handleClear.bind(this);
-    this.optInAccount = this.optInAccount.bind(this);
-    this.vote = this.vote.bind(this);
   }
 
   handleVoteSelect(e) {
@@ -34,78 +32,17 @@ class VoterCard extends React.Component {
     e.preventDefault();
     this.setState({ voted: true });
     console.log(this.state.voteChoice);
-    // TODO: send vote to blockchain
-  }
-
-  async vote(senderAddress, optionIndex, electionId) {
-    const algosdk = require("algosdk");
-    console.log(
-      `${senderAddress} attempting to vote for option ${optionIndex}`
+    mainAlgoHandler.vote(
+      this.props.user,
+      this.state.voteChoice,
+      this.props.electionId
     );
-
-    const algodToken = {
-      "X-API-Key": "OtAhhF0GEa3GnYbsgghbx4L9qO9Ebq6J9m1sjOS0",
-    };
-    const algodServer = "https://testnet-algorand.api.purestake.io/ps2";
-    const algodPort = "";
-    let algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
-
-    let params = await algodClient.getTransactionParams().do();
-
-    let appArgs = [];
-    appArgs.push(new Uint8Array(Buffer.from("vote")));
-    appArgs.push(algosdk.encodeUint64(optionIndex));
-    console.log(appArgs);
-
-    let txn = algosdk.makeApplicationNoOpTxn(
-      senderAddress,
-      params,
-      parseInt(electionId),
-      appArgs
-    );
-    console.log(txn);
-
-    let tx = await signAndSend(txn);
-    console.log(tx);
-
-    return tx;
-  }
-
-  async optInAccount(address, electionId) {
-    const algosdk = require("algosdk");
-    console.log(`Attempting to opt-in account ${address} to ${electionId}`);
-    const algodToken = {
-      "X-API-Key": "OtAhhF0GEa3GnYbsgghbx4L9qO9Ebq6J9m1sjOS0",
-    };
-    const algodServer = "https://testnet-algorand.api.purestake.io/ps2";
-    const algodPort = "";
-    let algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
-    let params = await algodClient.getTransactionParams().do();
-    let txn = algosdk.makeApplicationOptInTxn(
-      address,
-      params,
-      parseInt(electionId)
-    );
-    console.log(txn);
-
-    let txn_b64 = window.AlgoSigner.encoding.msgpackToBase64(txn.toByte());
-
-    let signedTxs = await window.AlgoSigner.signTxn([{ txn: txn_b64 }]);
-    console.log(signedTxs);
-
-    // TODO: handle error when user has already opted-in
-    let tx = await window.AlgoSigner.send({
-      ledger: "TestNet",
-      tx: signedTxs[0].blob,
-    });
-
-    console.log(tx);
   }
 
   handleOptIn(e) {
     e.preventDefault();
-    this.optInAccount(this.props.user, this.props.electionId);
     this.setState({ opted: true });
+    mainAlgoHandler.optInAccount(this.props.user, this.props.electionId);
   }
 
   handleClear(e) {
