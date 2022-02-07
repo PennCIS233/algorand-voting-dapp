@@ -3,7 +3,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import mainAlgoHandler from "./AlgoHandler";
-import { Button, Card, Dropdown, Form, ListGroup } from "react-bootstrap";
+import { Badge, Button, Card, Dropdown, Form, ListGroup } from "react-bootstrap";
 import { useReducer } from "react";
 
 function TestAlgoComponent() {
@@ -18,6 +18,8 @@ function TestAlgoComponent() {
     'no': [],
     'maybe': []
   });
+  const [voteOptions, setVoteOptions] = useState([]);
+  const [allVotes, setAllVotes] = useState({});
 
   useEffect(() => {
     
@@ -41,10 +43,14 @@ function TestAlgoComponent() {
     const formDataObj = Object.fromEntries(formData.entries());
 
     let newElectionState = await mainAlgoHandler.getElectionState(formDataObj['appID']);
-    let newOptedInAccounts = await mainAlgoHandler.getOptedInAccounts(formDataObj['appID']);
+    let [newOptedInAccounts, newAllVotes] = await mainAlgoHandler.getOptedInAccountsAndVotes(formDataObj['appID']);
+
+    let newVoteOptions = newElectionState['VoteOptions'].split(',');
 
     setAppID(Number(formDataObj['appID']));
     setElectionState(newElectionState);
+    setVoteOptions(newVoteOptions);
+    setAllVotes(newAllVotes);
     setCreatorAddress(newElectionState['Creator']);
     setOptedInAccounts(newOptedInAccounts)
 
@@ -53,9 +59,13 @@ function TestAlgoComponent() {
 
   const getElectionState = async (e) => {
     let newElectionState = await mainAlgoHandler.getElectionState(appID);
-    let newOptedInAccounts = await mainAlgoHandler.getOptedInAccounts(appID);
+    let [newOptedInAccounts, newAllVotes] = await mainAlgoHandler.getOptedInAccountsAndVotes(appID);
+
+    let newVoteOptions = newElectionState['VoteOptions'].split(',');
 
     setElectionState(newElectionState);
+    setVoteOptions(newVoteOptions);
+    setAllVotes(newAllVotes);
     setOptedInAccounts(newOptedInAccounts)
   }
 
@@ -76,6 +86,15 @@ function TestAlgoComponent() {
 
   const creatorApprove = async (user, choice) => {
     await mainAlgoHandler.creatorApprove(mainAccount, user, choice, appID);
+  }
+
+  // a user is allowed to vote iff they have 'yes' as can_vote and they have not already voted
+  const canMainAccountVote = () => {
+    return optedInAccounts['yes'].includes(mainAccount) && !(mainAccount in allVotes);
+  }
+
+  const vote = async (optionIndex) => {
+    await mainAlgoHandler.vote(mainAccount, optionIndex, appID);
   }
 
   return (
@@ -148,6 +167,30 @@ function TestAlgoComponent() {
           
           }
         {/* {hasUserOptedIn() && <p><b>You have opted-in</b></p>} */}
+      </Row>
+      <Row>
+        <h3 className="mb-3">Vote</h3>
+        <h5>All votes</h5>
+        <div className="mb-3">
+          <pre>{JSON.stringify(allVotes, null, 2)}</pre>
+        </div>
+        {voteOptions.map((option, index) => (
+          <Card key={`vote-option-${option}-${index}`} className="mb-3">
+            <h6>{option}</h6>
+            <p>{electionState[`VotesFor${index}`]} votes</p>
+            <div>
+              {(() => {
+                if (allVotes[mainAccount] == index) {
+                  return (<Badge bg="success">Your Vote</Badge>);
+                } else if (canMainAccountVote()) {
+                  return (<Button variant='primary' onClick={async () => {await vote(index)}}>Vote</Button>);
+                } else {
+                  return (<Button variant='secondary' disabled>Vote</Button>);
+                }
+              })()}
+            </div>
+          </Card>
+        ))}
       </Row>
       <Row>
         <h3>Pending Voters</h3>
