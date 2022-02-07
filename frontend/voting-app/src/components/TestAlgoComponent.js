@@ -3,7 +3,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import mainAlgoHandler from "./AlgoHandler";
-import { Button, Dropdown, Form, ListGroup } from "react-bootstrap";
+import { Button, Card, Dropdown, Form, ListGroup } from "react-bootstrap";
 import { useReducer } from "react";
 
 function TestAlgoComponent() {
@@ -72,6 +72,10 @@ function TestAlgoComponent() {
 
   const optInAccount = async () => {
     await mainAlgoHandler.optInAccount(mainAccount, appID);
+  }
+
+  const creatorApprove = async (user, choice) => {
+    await mainAlgoHandler.creatorApprove(mainAccount, user, choice, appID);
   }
 
   return (
@@ -144,6 +148,26 @@ function TestAlgoComponent() {
           
           }
         {/* {hasUserOptedIn() && <p><b>You have opted-in</b></p>} */}
+      </Row>
+      <Row>
+        <h3>Pending Voters</h3>
+        {optedInAccounts['maybe'].map((acc, index) => (
+          <Card key={`card-${acc}-${index}`} className="mb-3">
+            <h6>{acc}</h6>
+            {isCreator ? 
+              <div className="mb-3">
+                <div>You are allowed to Allow or Deny this account's ability to vote</div>
+                <Button variant='success' onClick={async () => {await creatorApprove(acc, 'yes')}}>Allow</Button>
+                <Button variant='danger' onClick={async () => {await creatorApprove(acc, 'no')}}>Deny</Button>
+              </div> :
+              <div className="mb-3">
+                <div>You are NOT allowed to Allow or Deny this account's ability to vote</div>
+                <Button variant='success' disabled>Allow</Button>
+                <Button variant='danger' disabled>Deny</Button>
+              </div>
+            }
+          </Card>
+        ))}
       </Row>
     </Container>
   );
