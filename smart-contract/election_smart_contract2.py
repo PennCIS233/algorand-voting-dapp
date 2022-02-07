@@ -93,16 +93,15 @@ def approval_program():
     address_to_approve = Txn.application_args[1] # address creator is trying to approve/reject
     #address_to_approve = encode_address(address_to_approve)
     #Txn.accounts[1] = address_to_approve
-    print("x")
     is_user_approved = Txn.application_args[2] # "yes" or "no"
     #address_to_approve = decode_address(Txn.application_args[1])
     on_update_user_status = Seq(
-        get_sender_can_vote,
         Assert(
             And(
                 is_creator, # only the creator can approve/disapprove users
                 Global.round() <= App.globalGet(Bytes("ElectionEnd")), # can only approve users before election ends
-                get_sender_can_vote.value() == Bytes("maybe") # creator can only change status once
+                App.localGetEx(address_to_approve, App.id(), Bytes("can_vote")).hasValue(),
+                App.localGetEx(address_to_approve, App.id(), Bytes("can_vote")).value() == Bytes("maybe") # creator can only change status once
             )
         ),
 
