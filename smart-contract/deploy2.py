@@ -377,7 +377,7 @@ def main():
 
     # configure election end period
     status = algod_client.status()
-    electionEnd = status["last-round"] + 30
+    electionEnd = status["last-round"] + 8000
 
     print(f"Election from rounds: {status['last-round']} to {electionEnd}")
 
@@ -428,7 +428,7 @@ def main():
 
     creator_response = b"yes"
     call_app_approve_voter(algod_client, creator_private_key, app_id, [b"update_user_status", decoded_user_address, creator_response])
-    call_app(algod_client, user_private_key, app_id, [b"vote", b"1"])
+    call_app(algod_client, user_private_key, app_id, [b"vote", (1).to_bytes(8, 'big')])
     
     #
     # # call application without arguments
