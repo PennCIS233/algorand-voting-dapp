@@ -178,7 +178,8 @@ class AlgoHandler {
       senderAddress,
       params,
       appID,
-      appArgs
+      appArgs,
+      [senderAddress, approvingAccount]
     )
     console.log(txn);
 
