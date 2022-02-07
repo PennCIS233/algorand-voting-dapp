@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Container } from "react-bootstrap";
+import mainAlgoHandler from "../components/AlgoHandler";
 import NavBar from "../components/NavBar";
 
 import InfoCard from "../components/InfoCard";
@@ -12,7 +13,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 function ElectionPage() {
   let location = useLocation();
-  let navigate = useNavigate(); // TODO: create a back to start button
+  // let navigate = useNavigate(); // TODO: create a back to start button
 
   const [electionState, setElectionState] = useState({});
   const [accounts, setAccounts] = useState([]);
@@ -23,16 +24,16 @@ function ElectionPage() {
   const [isVotePage, setIsVotePage] = useState(true);
 
   useEffect(() => {
-    setElectionId(location.state.electionId);
-    let newElectionState = await mainAlgoHandler.getElectionState(
-      location.state.electionId
-    );
-
-    console.log(newElectionState);
-
-    setElectionState(newElectionState);
-    setCreatorAddress(newElectionState["Creator"]);
-    setIsCreator(newElectionState["Creator"] == mainAccount);
+    console.log(location.state.electionId);
+    setAccounts(location.state.accts);
+    // setElectionId(location.state.electionId);
+    // let newElectionState = mainAlgoHandler.getElectionState(
+    //   location.state.electionId
+    // );
+    // console.log(newElectionState);
+    // setElectionState(newElectionState);
+    // setCreatorAddress(newElectionState["Creator"]);
+    // setIsCreator(newElectionState["Creator"] == mainAccount);
   });
 
   const getElectionState = async (e) => {
@@ -79,10 +80,10 @@ function ElectionPage() {
       {!isVotePage && (
         <Container>
           <Row className="px-3 mt-3">
-            <RequestCard users={electionState} />
+            <RequestCard users={accounts} />
           </Row>
           <Row className="px-3 mt-3">
-            <AcceptCard users={electionState} />
+            <AcceptCard users={accounts} />
           </Row>
         </Container>
       )}

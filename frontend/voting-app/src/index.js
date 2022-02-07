@@ -11,7 +11,7 @@ ReactDOM.render(
     <Router>
       <Routes>
         <Route path="/" element={<ConnectPage />} />
-        <Route path="/voter" element={<ElectionPage />} />
+        <Route path="/election" element={<ElectionPage />} />
       </Routes>
     </Router>
   </div>,
