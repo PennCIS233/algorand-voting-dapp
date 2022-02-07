@@ -7,20 +7,34 @@ function RequestCard(props) {
   const [acceptedAccounts, setAcceptedAccounts] = useState([]);
   const [rejectedAccounts, setRejectedAccounts] = useState([]);
   useEffect(() => {
-    let [optedAccounts, allVotes] = mainAlgoHandler.getOptedInAccountsAndVotes(
-      props.electionId
-    );
-    setMaybeAccounts(optedAccounts["maybe"]);
-    setAcceptedAccounts(optedAccounts["yes"]);
-    setRejectedAccounts(optedAccounts["no"]);
-  }, [props.electionId]);
+    mainAlgoHandler
+      .getOptedInAccountsAndVotes(parseInt(props.electionId))
+      .then((res) => {
+        let optedAccounts = res[0];
+        if (optedAccounts) {
+          setMaybeAccounts(optedAccounts["maybe"]);
+          setAcceptedAccounts(optedAccounts["yes"]);
+          setRejectedAccounts(optedAccounts["no"]);
+        }
+      });
+  }, [props.electionId, props.mainAccount, props.isCreator]);
 
   const handleAccept = (user) => {
-    mainAlgoHandler.creatorApprove(user, props.user, "yes", props.electionId);
+    mainAlgoHandler.creatorApprove(
+      user,
+      props.user,
+      "yes",
+      parseInt(props.electionId)
+    );
   };
 
   const handleReject = (user) => {
-    mainAlgoHandler.creatorApprove(user, props.user, "no", props.electionId);
+    mainAlgoHandler.creatorApprove(
+      user,
+      props.user,
+      "no",
+      parseInt(props.electionId)
+    );
   };
   // TODO: show rejected, accepted, opt in with ability to switch between cards
   // do it like this: https://react-bootstrap.github.io/components/cards/#navigation

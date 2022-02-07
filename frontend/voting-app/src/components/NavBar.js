@@ -14,7 +14,7 @@ function NavBar(props) {
           <DropdownButton
             variant="info"
             id="choose-user"
-            title={props.mainAccount ? props.mainAccount.substring(0, 6) : ""}
+            title={props.mainAccount ? props.mainAccount.substring(0, 10) : ""}
           >
             {props.accounts.map((user) => (
               <Dropdown.Item

@@ -15,7 +15,7 @@ function VoteChart(props) {
       <PieChart
         data={currVotes}
         label={({ dataEntry }) =>
-          dataEntry.title + ": " + `${Math.round(dataEntry.percentage)} %`
+          dataEntry.title + `: ${Math.round(dataEntry.percentage)} %`
         }
         labelStyle={(index) => ({
           fill: currVotes[index].color,

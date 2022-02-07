@@ -18,13 +18,13 @@ function VoterCard(props) {
   const handleVoteSubmit = (e) => {
     e.preventDefault();
     setIsVoted(true);
-    mainAlgoHandler.vote(props.user, voteChoice, props.electionId);
+    mainAlgoHandler.vote(props.user, voteChoice, parseInt(props.electionId));
   };
 
   const handleOptIn = (e) => {
     e.preventDefault();
     setIsOpted(true);
-    mainAlgoHandler.optInAccount(props.user, props.electionId);
+    mainAlgoHandler.optInAccount(props.user, parseInt(props.electionId));
   };
 
   const handleClear = (e) => {
