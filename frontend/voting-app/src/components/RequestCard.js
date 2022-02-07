@@ -20,9 +20,10 @@ function RequestCard(props) {
   };
 
   const handleReject = (user) => {
-    mainAlgoHandler.creatorApprove(user, props.user, "yes", props.electionId);
+    mainAlgoHandler.creatorApprove(user, props.user, "no", props.electionId);
   };
-
+  // TODO: show rejected, accepted, opt in with ability to switch between cards
+  // do it like this: https://react-bootstrap.github.io/components/cards/#navigation
   return (
     <Card bg="light">
       <Card.Header>Opted In Users</Card.Header>

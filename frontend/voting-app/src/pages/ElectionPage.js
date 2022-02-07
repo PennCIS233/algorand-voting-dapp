@@ -21,16 +21,28 @@ function ElectionPage() {
   const [isCreator, setIsCreator] = useState(false);
   const [currVotes, setCurrVotes] = useState([1, 1, 1, 1]);
 
+  const dependencies = [
+    electionState,
+    creatorAddress,
+    isCreator,
+    currVotes,
+    electionId,
+    mainAccount,
+  ];
+
   useEffect(() => {
     setAccounts(location.state.accts);
     setElectionId(location.state.electionId);
     setMainAccount(accounts[0]);
+    getElectionState();
+  }, dependencies);
+
+  const getElectionState = async () => {
     mainAlgoHandler.getElectionState(location.state.electionId).then((res) => {
       if (JSON.stringify(res) !== JSON.stringify(electionState)) {
-        console.log(JSON.stringify(res), JSON.stringify(electionState));
         setElectionState(res);
         setCreatorAddress(res["Creator"]);
-        setIsCreator(res["Creator"] === mainAccount);
+        setIsCreator(res["Creator"] == mainAccount);
         setCurrVotes([
           res["VotesFor0"],
           res["VotesFor1"],
@@ -38,29 +50,6 @@ function ElectionPage() {
           res["VotesFor3"],
         ]);
       }
-    });
-  }, [
-    electionState,
-    creatorAddress,
-    isCreator,
-    currVotes,
-    electionId,
-    mainAccount,
-  ]);
-
-  const getElectionState = async (e) => {
-    mainAlgoHandler.getElectionState(location.state.electionId).then((res) => {
-      console.log(location.state.electionId);
-      console.log(res);
-      setElectionState(res);
-      setCreatorAddress(res["Creator"]);
-      setIsCreator(res["Creator"] == mainAccount);
-      setCurrVotes([
-        res["VotesFor0"],
-        res["VotesFor1"],
-        res["VotesFor2"],
-        res["VotesFor3"],
-      ]);
     });
   };
 
