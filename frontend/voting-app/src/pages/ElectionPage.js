@@ -7,13 +7,12 @@ import InfoCard from "../components/InfoCard";
 import VoterCard from "../components/VoterCard";
 import VoteChart from "../components/VoteChart";
 import RequestCard from "../components/RequestCard";
-import AcceptCard from "../components/AcceptCard";
 
 import { useNavigate, useLocation } from "react-router-dom";
 
 function ElectionPage() {
   let location = useLocation();
-  // let navigate = useNavigate(); // TODO: create a back to start button
+  let navigate = useNavigate(); // TODO: create a back to start button
 
   const [electionState, setElectionState] = useState({});
   const [accounts, setAccounts] = useState([]);
@@ -21,27 +20,42 @@ function ElectionPage() {
   const [creatorAddress, setCreatorAddress] = useState("");
   const [electionId, setElectionId] = useState("");
   const [isCreator, setIsCreator] = useState(false);
-  const [isVotePage, setIsVotePage] = useState(true);
+  const [currVotes, setCurrVotes] = useState([1, 1, 1, 1]);
 
   useEffect(() => {
-    console.log(location.state.electionId);
     setAccounts(location.state.accts);
-    // setElectionId(location.state.electionId);
-    // let newElectionState = mainAlgoHandler.getElectionState(
-    //   location.state.electionId
-    // );
-    // console.log(newElectionState);
-    // setElectionState(newElectionState);
-    // setCreatorAddress(newElectionState["Creator"]);
-    // setIsCreator(newElectionState["Creator"] == mainAccount);
-  });
+    setElectionId(location.state.electionId);
+    setMainAccount(accounts[0]);
+    mainAlgoHandler.getElectionState(location.state.electionId).then((res) => {
+      if (JSON.stringify(res) !== JSON.stringify(electionState)) {
+        console.log(JSON.stringify(res), JSON.stringify(electionState));
+        setElectionState(res);
+        setCreatorAddress(res["Creator"]);
+        setIsCreator(res["Creator"] == mainAccount);
+        setCurrVotes([
+          res["VotesFor0"],
+          res["VotesFor1"],
+          res["VotesFor2"],
+          res["VotesFor3"],
+        ]);
+      }
+    });
+  }, [electionState, creatorAddress, isCreator, currVotes, electionId]);
 
   const getElectionState = async (e) => {
-    let newElectionState = await mainAlgoHandler.getElectionState(
-      electionId,
-      creatorAddress
-    );
-    setElectionState(newElectionState);
+    mainAlgoHandler.getElectionState(location.state.electionId).then((res) => {
+      console.log(location.state.electionId);
+      console.log(res);
+      setElectionState(res);
+      setCreatorAddress(res["Creator"]);
+      setIsCreator(res["Creator"] == mainAccount);
+      setCurrVotes([
+        res["VotesFor0"],
+        res["VotesFor1"],
+        res["VotesFor2"],
+        res["VotesFor3"],
+      ]);
+    });
   };
 
   const changeMainAccount = async (acc) => {
@@ -50,7 +64,6 @@ function ElectionPage() {
       setIsCreator(await mainAlgoHandler.isCreator(electionId, acc));
   };
 
-  // TODO: fix props to VoteChart, RequestCard, and AcceptCards and add it back in (need to see what election values are given)
   return (
     <>
       <NavBar
@@ -58,60 +71,32 @@ function ElectionPage() {
         handleUserUpdate={changeMainAccount}
         accounts={accounts}
         mainAccount={mainAccount}
-        handlePageChange={setIsVotePage}
       />
-      {isVotePage && (
-        <Container>
-          <Row className="px-3 mt-3">
-            <Col>
-              <Row className="px-1">
-                <InfoCard electionId={electionId} />
-              </Row>
-              <Row className="px-1 mt-3">
-                <VoterCard user={mainAccount} />
-              </Row>
-            </Col>
-            <Col className="px-1">
-              <VoteChart></VoteChart>
-            </Col>
-          </Row>
-        </Container>
-      )}
-      {!isVotePage && (
-        <Container>
-          <Row className="px-3 mt-3">
-            <RequestCard users={accounts} />
-          </Row>
-          <Row className="px-3 mt-3">
-            <AcceptCard users={accounts} />
-          </Row>
-        </Container>
-      )}
+      <Container>
+        <Row className="px-3 mt-3">
+          <Col>
+            <Row className="px-1">
+              <InfoCard electionId={electionId} state={electionState} />
+            </Row>
+            <Row className="px-1 mt-3">
+              <VoterCard user={mainAccount} electionId={electionId} />
+            </Row>
+          </Col>
+          <Col className="px-1">
+            <VoteChart currVotes={currVotes}></VoteChart>
+          </Col>
+        </Row>
+        <Row className="px-3 mt-3">
+          <RequestCard
+            electionId={electionId}
+            users={accounts}
+            user={mainAccount}
+            isCreator={isCreator}
+          />
+        </Row>
+      </Container>
     </>
   );
 }
 
 export default ElectionPage;
-
-/*
-
-// TODO: keeping this here to get format of currVotes (which is pretty specific to the pie chart maker)
-
-constructor(props) {
-    super(props);
-    this.state = {
-      electionId: "1234",
-      voterPage: true,
-      currUser: "account1",
-      currVotes: [
-        { title: "1", value: 2, color: "#3181ba" },
-        { title: "2", value: 5, color: "#45134c" },
-        { title: "3", value: 1, color: "#632656" },
-        { title: "4", value: 5, color: "#4dc8e9" },
-        { title: "5", value: 3, color: "#aa21b9" },
-      ],
-    };
-  }
-
-
-*/

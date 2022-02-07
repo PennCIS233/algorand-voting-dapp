@@ -1,32 +1,32 @@
-const algosdk = require('algosdk')
+const algosdk = require("algosdk");
 
 // This will handle all algosdk and algosigner code
 class AlgoHandler {
   constructor() {
     setTimeout(200, () => {
-      if(typeof window.AlgoSigner == 'undefined') {
-        console.log('Please install the AlgoSigner extension');
-        alert('Please install the AlgoSigner extension');
+      if (typeof window.AlgoSigner == "undefined") {
+        console.log("Please install the AlgoSigner extension");
+        alert("Please install the AlgoSigner extension");
         return;
       }
     });
-    console.log('New AlgoHandler');
+    console.log("New AlgoHandler");
 
     this.accounts = [];
-    
-    const algodToken = { 
-      'X-API-Key': 'OtAhhF0GEa3GnYbsgghbx4L9qO9Ebq6J9m1sjOS0'
+
+    const algodToken = {
+      "X-API-Key": "OtAhhF0GEa3GnYbsgghbx4L9qO9Ebq6J9m1sjOS0",
     };
-    const algodServer = 'https://testnet-algorand.api.purestake.io/ps2';
-    const algodPort = '';
+    const algodServer = "https://testnet-algorand.api.purestake.io/ps2";
+    const algodPort = "";
     this.algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
   }
 
   // connects to AlgoSigner accounts on TestNet
   async connectToAccounts() {
-    if(typeof window.AlgoSigner == 'undefined') {
-      console.log('Please install the AlgoSigner extension');
-      alert('Please install the AlgoSigner extension');
+    if (typeof window.AlgoSigner == "undefined") {
+      console.log("Please install the AlgoSigner extension");
+      alert("Please install the AlgoSigner extension");
       return;
     }
 
@@ -35,21 +35,25 @@ class AlgoHandler {
       await window.AlgoSigner.connect();
     } catch (e) {
       console.log(e);
-      console.log('Please allow this app to connect to your AlgoSigner accounts');
-      alert('Please allow this app to connect to your AlgoSigner accounts');
+      console.log(
+        "Please allow this app to connect to your AlgoSigner accounts"
+      );
+      alert("Please allow this app to connect to your AlgoSigner accounts");
       return;
     }
 
     // gets information on all the user's TestNet accounts in their AlgoSigner
     // tempAccounts = [{address: 'fsdaklfjdsa'}, {address: 'fsdafsdfer'}, etc]
     let tempAccounts = await window.AlgoSigner.accounts({
-      ledger: 'TestNet'
+      ledger: "TestNet",
     });
     // make data easier to use
     // this.accounts = ['fsdaklfjdsa', 'fsdafsdfer', etc]
-    this.accounts = tempAccounts.map((x) => { return x['address']});
+    this.accounts = tempAccounts.map((x) => {
+      return x["address"];
+    });
 
-    console.log('Connected to accounts');
+    console.log("Connected to accounts");
     console.log(this.accounts);
 
     return this.accounts;
@@ -62,12 +66,14 @@ class AlgoHandler {
   async isCreator(appID, accountAddress) {
     // retrieve account's applications
     // see if any of the account's applications have the appID
-    let accountInfoResponse = await this.algodClient.accountInformation(accountAddress).do();
+    let accountInfoResponse = await this.algodClient
+      .accountInformation(accountAddress)
+      .do();
     console.log(accountInfoResponse);
-    for (let i = 0; i < accountInfoResponse['created-apps'].length; i++) { 
-      if (accountInfoResponse['created-apps'][i].id == appID) {
-          console.log(`${accountAddress} is creator of ${appID}`);
-          return true;
+    for (let i = 0; i < accountInfoResponse["created-apps"].length; i++) {
+      if (accountInfoResponse["created-apps"][i].id == appID) {
+        console.log(`${accountAddress} is creator of ${appID}`);
+        return true;
       }
     }
     console.log(`${accountAddress} is NOT creator of ${appID}`);
@@ -85,16 +91,19 @@ class AlgoHandler {
 
     let app = await this.algodClient.getApplicationByID(appID).do();
 
-    console.log("Application's global state:");
-    for (let x of app['params']['global-state']) {
-      console.log(x);
+    //console.log("Application's global state:");
+    for (let x of app["params"]["global-state"]) {
+      //console.log(x);
 
-      let key = this.decode(x['key']);
-      let bytesVal = (key == 'Creator') ? algosdk.encodeAddress(Buffer.from(x['value']['bytes'], "base64")) : this.decode(x['value']['bytes']);
-      let uintVal = x['value']['uint'];
-      let valType = x['value']['type'];
+      let key = this.decode(x["key"]);
+      let bytesVal =
+        key == "Creator"
+          ? algosdk.encodeAddress(Buffer.from(x["value"]["bytes"], "base64"))
+          : this.decode(x["value"]["bytes"]);
+      let uintVal = x["value"]["uint"];
+      let valType = x["value"]["type"];
 
-      newState[key] = (valType == 1) ? bytesVal : uintVal;
+      newState[key] = valType == 1 ? bytesVal : uintVal;
     }
     return newState;
   }
