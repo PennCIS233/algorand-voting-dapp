@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Container } from "react-bootstrap";
+import { Row, Col, Container, CardGroup } from "react-bootstrap";
 import mainAlgoHandler from "../components/AlgoHandler";
 import NavBar from "../components/NavBar";
 
-import InfoCard from "../components/InfoCard";
 import VoterCard from "../components/VoterCard";
 import VoteChart from "../components/VoteChart";
 import RequestCard from "../components/RequestCard";
@@ -26,14 +25,7 @@ function ElectionPage() {
     setElectionId(location.state.electionId);
     if (!mainAccount) setMainAccount(accounts[0]);
     getElectionState();
-  }, [
-    electionState,
-    creatorAddress,
-    isCreator,
-    currVotes,
-    electionId,
-    mainAccount,
-  ]);
+  });
 
   const getElectionState = async () => {
     mainAlgoHandler.getElectionState(location.state.electionId).then((res) => {
@@ -41,12 +33,12 @@ function ElectionPage() {
         setElectionState(res);
         setCreatorAddress(res["Creator"]);
         setIsCreator(res["Creator"] === mainAccount);
-        setCurrVotes([
-          res["VotesFor0"],
-          res["VotesFor1"],
-          res["VotesFor2"],
-          res["VotesFor3"],
-        ]);
+        // setCurrVotes([
+        //   res["VotesFor0"],
+        //   res["VotesFor1"],
+        //   res["VotesFor2"],
+        //   res["VotesFor3"],
+        // ]);
       }
     });
   };
@@ -67,26 +59,25 @@ function ElectionPage() {
         mainAccount={mainAccount}
       />
       <Container>
-        <Row className="px-3 mt-3">
-          <Col>
-            <Row className="px-1">
-              <InfoCard electionId={electionId} state={electionState} />
-            </Row>
-            <Row className="px-1 mt-3">
-              <VoterCard user={mainAccount} electionId={electionId} />
-            </Row>
-          </Col>
-          <Col className="px-1">
-            <VoteChart currVotes={currVotes}></VoteChart>
-          </Col>
+        <Row>
+          <CardGroup>
+            <VoterCard user={mainAccount} electionId={electionId} />
+            <VoteChart
+              currVotes={currVotes}
+              electionId={electionId}
+              state={electionState}
+            ></VoteChart>
+          </CardGroup>
         </Row>
-        <Row className="px-3 mt-3">
-          <RequestCard
-            electionId={electionId}
-            users={accounts}
-            user={mainAccount}
-            isCreator={isCreator}
-          />
+        <Row>
+          <Col>
+            <RequestCard
+              electionId={electionId}
+              users={accounts}
+              user={mainAccount}
+              isCreator={isCreator}
+            />
+          </Col>
         </Row>
       </Container>
     </>

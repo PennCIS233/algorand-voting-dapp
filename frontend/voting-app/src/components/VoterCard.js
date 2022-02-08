@@ -34,7 +34,7 @@ function VoterCard(props) {
   };
 
   return (
-    <Card bg="light">
+    <Card bg="light" className="text-center">
       {!isOpted && (
         <div>
           <Card.Header>Opt In to the Election</Card.Header>

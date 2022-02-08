@@ -39,7 +39,7 @@ function RequestCard(props) {
   // TODO: show rejected, accepted, opt in with ability to switch between cards
   // do it like this: https://react-bootstrap.github.io/components/cards/#navigation
   return (
-    <Card bg="light">
+    <Card bg="light" className="text-center">
       <Card.Header>Opted In Users</Card.Header>
       <Card.Body>
         <ListGroup>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Card, Container, Button, Form } from "react-bootstrap";
+import { Row, Col, Card, Container, Button, Form } from "react-bootstrap";
 import mainAlgoHandler from "../components/AlgoHandler";
 import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
@@ -32,37 +32,41 @@ function ConnectPage() {
       <Container>
         <Row className="px-3 mt-3">
           <Row>
-            <Card className="mt-5" bg="light">
-              <Card.Header>Connect to AlgoSigner</Card.Header>
-              <Card.Body>
-                <Button variant="info" onClick={connectAlgoSigner}>
-                  Connect
-                </Button>
-              </Card.Body>
-            </Card>
+            <Col>
+              <Card className="mt-5" bg="light">
+                <Card.Header>Connect to AlgoSigner</Card.Header>
+                <Card.Body>
+                  <Button variant="info" onClick={connectAlgoSigner}>
+                    Connect
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
           </Row>
         </Row>
       </Container>
       <Container>
         <Row className="px-3 mt-3">
-          <Card className="mt-5" bg="light">
-            <Card.Header>Election ID</Card.Header>
-            <Card.Body>
-              <Form onSubmit={async (e) => await handleElectionSubmit(e)}>
-                <Form.Group className="mb-3" controlId="electionId">
-                  <Form.Control
-                    disabled={!isConnected}
-                    type="election"
-                    name="electionId"
-                    placeholder="Enter election id"
-                  />
-                </Form.Group>
-                <Button variant="info" type="submit">
-                  Submit
-                </Button>
-              </Form>
-            </Card.Body>
-          </Card>
+          <Col>
+            <Card className="mt-5" bg="light">
+              <Card.Header>Election ID</Card.Header>
+              <Card.Body>
+                <Form onSubmit={async (e) => await handleElectionSubmit(e)}>
+                  <Form.Group className="mb-3" controlId="electionId">
+                    <Form.Control
+                      disabled={!isConnected}
+                      type="election"
+                      name="electionId"
+                      placeholder="Enter election id"
+                    />
+                  </Form.Group>
+                  <Button variant="info" type="submit">
+                    Submit
+                  </Button>
+                </Form>
+              </Card.Body>
+            </Card>
+          </Col>
         </Row>
       </Container>
     </>
