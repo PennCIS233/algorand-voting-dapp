@@ -69,8 +69,8 @@ def approval_program():
                 ),
                 # update vote tally by removing one vote for whom the user voted for
                 App.globalPut(
-                    Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value())),
-                    App.globalGet(Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value()))) - Int(1)
+                    Concat(Bytes("VotesFor"), itoa(get_vote_of_sender.value())),
+                    App.globalGet(Concat(Bytes("VotesFor"), itoa(get_vote_of_sender.value()))) - Int(1)
                 ),
             ),
 
@@ -137,8 +137,8 @@ def approval_program():
 
             # update vote tally for user's choice
             App.globalPut(
-                Concat(Bytes("VotesFor"), Itob(choice)),
-                App.globalGet(Concat(Bytes("VotesFor"), Itob(choice))) + Int(1)
+                Concat(Bytes("VotesFor"), itoa(choice)),
+                App.globalGet(Concat(Bytes("VotesFor"), itoa(choice))) + Int(1)
             ),
 
             # update user's voted variable to reflect their choice
@@ -178,8 +178,8 @@ def clear_state_program():
                     get_vote_of_sender.hasValue(),
                 ),
                 App.globalPut(
-                    Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value())),
-                    App.globalGet(Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value()))) - Int(1)
+                    Concat(Bytes("VotesFor"), itoa(get_vote_of_sender.value())),
+                    App.globalGet(Concat(Bytes("VotesFor"), itoa(get_vote_of_sender.value()))) - Int(1)
                 ),
             ),
 
