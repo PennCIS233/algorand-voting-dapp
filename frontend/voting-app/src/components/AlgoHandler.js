@@ -216,6 +216,34 @@ class AlgoHandler {
 
     return tx;
   }
+
+  async closeOut(senderAddress, appID) {
+    console.log(`${senderAddress} attempting to close out of app ${appID}`);
+
+    let params = await this.algodClient.getTransactionParams().do();
+
+    let txn = algosdk.makeApplicationCloseOutTxn(senderAddress, params, appID);
+    console.log(txn);
+
+    let tx = await this.signAndSend(txn);
+    console.log(tx);
+
+    return tx;
+  }
+
+  async clearState(senderAddress, appID) {
+    console.log(`${senderAddress} attempting to clear state of app ${appID}`);
+
+    let params = await this.algodClient.getTransactionParams().do();
+
+    let txn = algosdk.makeApplicationClearStateTxn(senderAddress, params, appID);
+    console.log(txn);
+
+    let tx = await this.signAndSend(txn);
+    console.log(tx);
+
+    return tx;
+  }
 }
 
 var mainAlgoHandler = new AlgoHandler();
