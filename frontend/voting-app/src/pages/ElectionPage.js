@@ -58,13 +58,16 @@ function ElectionPage() {
     // get election state
     mainAlgoHandler.getElectionState(location.state.electionId).then((res) => {
       if (JSON.stringify(res) !== JSON.stringify(electionState)) {
+        let newTotalVotes = []
+        for (let i = 0; i < res["NumVoteOptions"]; i++) {
+          newTotalVotes.push(res[`VotesFor${i}`]);
+        }
+
+        let newElectionChoices = res["VoteOptions"].split(",");
+
         setElectionState(res);
-        setTotalVotes([
-          res["VotesFor0"],
-          res["VotesFor1"],
-          res["VotesFor2"],
-          res["VotesFor3"],
-        ]);
+        setTotalVotes(newTotalVotes);
+        setElectionChoices(newElectionChoices);
       }
     });
 
@@ -123,6 +126,7 @@ function ElectionPage() {
               isAccepted={optedAccounts["yes"].includes(mainAccount)}
               isOpted={optedAccounts["maybe"].includes(mainAccount)}
               isVoted={userVotes[mainAccount]}
+              electionChoices={electionChoices}
             />
           </Col>
         </Row>

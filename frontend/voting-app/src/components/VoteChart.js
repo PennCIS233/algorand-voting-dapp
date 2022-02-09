@@ -37,6 +37,9 @@ function VoteChart(props) {
             Last Round to Vote: {props.state["ElectionEnd"]}
           </ListGroup.Item>
           <ListGroup.Item>
+            Vote Options: {props.state["VoteOptions"]}
+          </ListGroup.Item>
+          <ListGroup.Item>
             Number of Voters:{" "}
             {(props.currVotes &&
               Object.values(props.currVotes).reduce((a, b) => a + b, 0)) ||
