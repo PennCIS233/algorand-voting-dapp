@@ -1,28 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Card, Button, ListGroup } from "react-bootstrap";
+import React from "react";
+import { Card, Button, ListGroup, Tabs, Tab } from "react-bootstrap";
 import mainAlgoHandler from "../components/AlgoHandler";
 
 function RequestCard(props) {
-  const [maybeAccounts, setMaybeAccounts] = useState([]);
-  const [acceptedAccounts, setAcceptedAccounts] = useState([]);
-  const [rejectedAccounts, setRejectedAccounts] = useState([]);
-  useEffect(() => {
-    mainAlgoHandler
-      .getOptedInAccountsAndVotes(parseInt(props.electionId))
-      .then((res) => {
-        let optedAccounts = res[0];
-        if (optedAccounts) {
-          setMaybeAccounts(optedAccounts["maybe"]);
-          setAcceptedAccounts(optedAccounts["yes"]);
-          setRejectedAccounts(optedAccounts["no"]);
-        }
-      });
-  }, [props.electionId, props.mainAccount, props.isCreator]);
-
   const handleAccept = (user) => {
     mainAlgoHandler.creatorApprove(
-      user,
       props.user,
+      user,
       "yes",
       parseInt(props.electionId)
     );
@@ -30,45 +14,89 @@ function RequestCard(props) {
 
   const handleReject = (user) => {
     mainAlgoHandler.creatorApprove(
-      user,
       props.user,
+      user,
       "no",
       parseInt(props.electionId)
     );
   };
+
   // TODO: show rejected, accepted, opt in with ability to switch between cards
-  // do it like this: https://react-bootstrap.github.io/components/cards/#navigation
   return (
-    <Card bg="light" className="text-center">
-      <Card.Header>Opted In Users</Card.Header>
+    <Card>
       <Card.Body>
-        <ListGroup>
-          {maybeAccounts &&
-            maybeAccounts.map((user) => (
-              <ListGroup.Item
-                key={user}
-                className="d-flex justify-content-between"
-              >
-                {user}
-                {props.isCreator && (
-                  <div>
-                    <Button
-                      onClick={() => handleAccept(user)}
-                      variant="success"
-                    >
-                      Accept
-                    </Button>
-                    <Button onClick={() => handleReject(user)} variant="danger">
-                      Reject
-                    </Button>
-                  </div>
-                )}
-              </ListGroup.Item>
-            ))}
-        </ListGroup>
+        <Card.Title>Opted In Users</Card.Title>
+        <Tabs
+          defaultActiveKey="Accepted"
+          id="uncontrolled-tab-example"
+          className="mb-3"
+        >
+          <Tab eventKey="Accepted" title="Accepted">
+            <ListGroup>
+              {props.optedAccounts["yes"] &&
+                props.optedAccounts["yes"].map((user) => (
+                  <ListGroup.Item
+                    key={user}
+                    className="d-flex justify-content-between"
+                  >
+                    {user.substring(0, 10)}
+                    <div>{props.electionChoices[props.userVotes[user]]}</div>
+                  </ListGroup.Item>
+                ))}
+            </ListGroup>
+          </Tab>
+          <Tab eventKey="Rejected" title="Rejected">
+            <ListGroup>
+              {props.optedAccounts["no"] &&
+                props.optedAccounts["no"].map((user) => (
+                  <ListGroup.Item
+                    key={user}
+                    className="d-flex justify-content-between"
+                  >
+                    {user.substring(0, 10)}
+                  </ListGroup.Item>
+                ))}
+            </ListGroup>
+          </Tab>
+          <Tab eventKey="Opted-In" title="Opted-In">
+            <ListGroup>
+              {props.optedAccounts["maybe"] &&
+                props.optedAccounts["maybe"].map((user) => (
+                  <ListGroup.Item
+                    key={user}
+                    className="d-flex justify-content-between"
+                  >
+                    {user.substring(0, 10)}
+                    {props.isCreator && (
+                      <div>
+                        <Button
+                          onClick={() => handleAccept(user)}
+                          variant="success"
+                        >
+                          Accept
+                        </Button>
+                        <Button
+                          onClick={() => handleReject(user)}
+                          variant="danger"
+                        >
+                          Reject
+                        </Button>
+                      </div>
+                    )}
+                  </ListGroup.Item>
+                ))}
+            </ListGroup>
+          </Tab>
+        </Tabs>
       </Card.Body>
     </Card>
   );
 }
 
 export default RequestCard;
+
+/*
+
+
+
+*/

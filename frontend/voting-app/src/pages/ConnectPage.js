@@ -33,10 +33,14 @@ function ConnectPage() {
         <Row className="px-3 mt-3">
           <Row>
             <Col>
-              <Card className="mt-5" bg="light">
-                <Card.Header>Connect to AlgoSigner</Card.Header>
+              <Card className="mt-5">
                 <Card.Body>
-                  <Button variant="info" onClick={connectAlgoSigner}>
+                  <Card.Title>Connect to AlgoSigner</Card.Title>
+                  <Button
+                    variant="info"
+                    onClick={connectAlgoSigner}
+                    disabled={isConnected}
+                  >
                     Connect
                   </Button>
                 </Card.Body>
@@ -48,9 +52,9 @@ function ConnectPage() {
       <Container>
         <Row className="px-3 mt-3">
           <Col>
-            <Card className="mt-5" bg="light">
-              <Card.Header>Election ID</Card.Header>
+            <Card>
               <Card.Body>
+                <Card.Title>Election ID</Card.Title>
                 <Form onSubmit={async (e) => await handleElectionSubmit(e)}>
                   <Form.Group className="mb-3" controlId="electionId">
                     <Form.Control

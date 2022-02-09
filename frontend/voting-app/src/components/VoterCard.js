@@ -3,13 +3,9 @@ import { Card, Button, Form } from "react-bootstrap";
 import mainAlgoHandler from "../components/AlgoHandler";
 
 function VoterCard(props) {
-  const [isOpted, setIsOpted] = useState(false);
-  const [isAccepted, setIsAccepted] = useState(false);
-  const [isVoted, setIsVoted] = useState(false);
   const [voteChoice, setVoteChoice] = useState("");
 
   // TODO: check if the user was accepted
-  // TODO: automatically assign election creator as accepted?
 
   const handleVoteSelect = (e) => {
     setVoteChoice(e.target.value);
@@ -17,56 +13,51 @@ function VoterCard(props) {
 
   const handleVoteSubmit = (e) => {
     e.preventDefault();
-    setIsVoted(true);
-    mainAlgoHandler.vote(props.user, voteChoice, parseInt(props.electionId));
+    let voteValue =
+      voteChoice == "A" ? 0 : voteChoice == "B" ? 1 : voteChoice == "C" ? 2 : 3;
+    mainAlgoHandler.vote(props.user, voteValue, parseInt(props.electionId));
   };
 
   const handleOptIn = (e) => {
     e.preventDefault();
-    setIsOpted(true);
     mainAlgoHandler.optInAccount(props.user, parseInt(props.electionId));
   };
 
   const handleClear = (e) => {
     e.preventDefault();
-    setIsVoted(false);
     // TODO: clear vote on blockchain
   };
 
   return (
-    <Card bg="light" className="text-center">
-      {!isOpted && (
-        <div>
-          <Card.Header>Opt In to the Election</Card.Header>
-          <Card.Body>
-            <Card.Text>
-              To participate in the election, you must opt-in. If the creator of
-              the election accepts, you can vote!
-            </Card.Text>
-            <Form onSubmit={handleOptIn}>
-              <Button variant="info" type="submit">
-                Opt-In
-              </Button>
-            </Form>
-          </Card.Body>
-        </div>
+    <Card>
+      {!props.isOpted && !props.isAccepted && (
+        <Card.Body>
+          <Card.Title>Opt In to the Election</Card.Title>
+          <Card.Text>
+            To participate in the election, you must opt-in. If the creator of
+            the election accepts, you can vote!
+          </Card.Text>
+          <Form onSubmit={handleOptIn}>
+            <Button variant="info" type="submit">
+              Opt-In
+            </Button>
+          </Form>
+        </Card.Body>
       )}
 
-      {isOpted && !isAccepted && (
-        <div>
-          <Card.Header>Waiting for Acceptance</Card.Header>
-          <Card.Body>
-            <Card.Text>
-              Waiting for the creator of the election to accept...
-            </Card.Text>
-          </Card.Body>
-        </div>
+      {props.isOpted && !props.isAccepted && (
+        <Card.Body>
+          <Card.Title>Waiting for Acceptance</Card.Title>
+          <Card.Text>
+            Waiting for the creator of the election to accept...
+          </Card.Text>
+        </Card.Body>
       )}
 
-      {isAccepted && (
+      {props.isAccepted && !props.isVoted && (
         <div>
-          <Card.Header>Cast Your Vote</Card.Header>
           <Card.Body>
+            <Card.Title>Cast Your Vote</Card.Title>
             <Form onSubmit={handleVoteSubmit}>
               <Form.Group controlId="vote-options">
                 {["A", "B", "C", "D"].map((choice) => (
@@ -88,21 +79,19 @@ function VoterCard(props) {
         </div>
       )}
 
-      {isVoted && (
-        <div>
-          <Card.Header>You Voted!</Card.Header>
-          <Card.Body>
-            <Card.Text>
-              You have cast your vote for option {voteChoice}. If you'd like to
-              clear your vote, please click the button below.
-            </Card.Text>
-            <Form onSubmit={handleClear}>
-              <Button variant="info" type="submit">
-                Clear Vote
-              </Button>
-            </Form>
-          </Card.Body>
-        </div>
+      {props.isVoted && (
+        <Card.Body>
+          <Card.Title>You Voted!</Card.Title>
+          <Card.Text>
+            You have cast your vote. If you'd like to clear your vote, please
+            click the button below.
+          </Card.Text>
+          <Form onSubmit={handleClear}>
+            <Button variant="info" type="submit">
+              Clear Vote
+            </Button>
+          </Form>
+        </Card.Body>
       )}
     </Card>
   );

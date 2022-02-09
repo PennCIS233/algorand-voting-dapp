@@ -3,34 +3,48 @@ import { PieChart } from "react-minimal-pie-chart";
 
 // TODO: handle when sum of all currvotes is 0
 function VoteChart(props) {
-  const numVotes =
-    props.state["VotesFor0"] +
-    props.state["VotesFor1"] +
-    props.state["VotesFor2"] +
-    props.state["VotesFor3"];
+  const createVoteFormat = (votes, options) => {
+    let res = [];
+    const colors = ["#3181ba", "#45134c", "#632656", "#4dc8e9"];
+    for (let i = 0; i < votes.length; i++) {
+      if (votes[i]) {
+        res.push({
+          title: options[i],
+          value: votes[i],
+          color: colors[i % 4],
+        });
+      }
+    }
+    return res;
+  };
 
-  const currVotes = [
-    { title: "A", value: props.currVotes[0], color: "#3181ba" },
-    { title: "B", value: props.currVotes[1], color: "#45134c" },
-    { title: "C", value: props.currVotes[2], color: "#632656" },
-    { title: "D", value: props.currVotes[3], color: "#4dc8e9" },
-  ];
+  const currVotes = props.state["VoteOptions"]
+    ? createVoteFormat(props.currVotes, props.state["VoteOptions"].split(","))
+    : [];
+
   return (
-    <Card bg="light" className="text-center">
-      <Card.Header>Election Info</Card.Header>
-      <ListGroup>
-        <ListGroup.Item>
-          Creator ID:{" "}
-          {props.state["Creator"]
-            ? props.state["Creator"].substring(0, 10)
-            : ""}
-        </ListGroup.Item>
-        <ListGroup.Item>
-          Registration Ends: {Date(props.state["ElectionEnd"] * 1000)}
-        </ListGroup.Item>
-        <ListGroup.Item>Number of Voters: {numVotes}</ListGroup.Item>
-      </ListGroup>
-      <Container className="px-5">
+    <Card>
+      <Card.Body>
+        <Card.Title>Election Info</Card.Title>
+        <ListGroup>
+          <ListGroup.Item>
+            Creator ID:{" "}
+            {props.state["Creator"]
+              ? props.state["Creator"].substring(0, 10)
+              : ""}
+          </ListGroup.Item>
+          <ListGroup.Item>
+            Last Round to Vote: {props.state["ElectionEnd"]}
+          </ListGroup.Item>
+          <ListGroup.Item>
+            Number of Voters:{" "}
+            {(props.currVotes &&
+              Object.values(props.currVotes).reduce((a, b) => a + b, 0)) ||
+              "0"}
+          </ListGroup.Item>
+        </ListGroup>
+      </Card.Body>
+      <Container className="px-5" style={{ width: "75%", height: "75%" }}>
         <PieChart
           data={currVotes}
           label={({ dataEntry }) =>

@@ -1,10 +1,12 @@
+import { decodeAddress } from "algosdk";
+
 const algosdk = require("algosdk");
 
 // This will handle all algosdk and algosigner code
 class AlgoHandler {
   constructor() {
     setTimeout(200, () => {
-      if (typeof window.AlgoSigner === "undefined") {
+      if (typeof window.AlgoSigner == "undefined") {
         console.log("Please install the AlgoSigner extension");
         alert("Please install the AlgoSigner extension");
         return;
@@ -78,7 +80,7 @@ class AlgoHandler {
       .do();
     console.log(accountInfoResponse);
     for (let i = 0; i < accountInfoResponse["created-apps"].length; i++) {
-      if (accountInfoResponse["created-apps"][i].id === appID) {
+      if (accountInfoResponse["created-apps"][i].id == appID) {
         console.log(`${accountAddress} is creator of ${appID}`);
         return true;
       }
@@ -98,19 +100,19 @@ class AlgoHandler {
 
     let app = await this.algodClient.getApplicationByID(appID).do();
 
-    //console.log("Application's global state:");
+    console.log("Application's global state:");
     for (let x of app["params"]["global-state"]) {
-      //console.log(x);
+      console.log(x);
 
       let key = this.decode(x["key"]);
       let bytesVal =
-        key === "Creator"
+        key == "Creator"
           ? algosdk.encodeAddress(Buffer.from(x["value"]["bytes"], "base64"))
           : this.decode(x["value"]["bytes"]);
       let uintVal = x["value"]["uint"];
       let valType = x["value"]["type"];
 
-      newState[key] = valType === 1 ? bytesVal : uintVal;
+      newState[key] = valType == 1 ? bytesVal : uintVal;
     }
     return newState;
   }
@@ -136,13 +138,13 @@ class AlgoHandler {
       let apps = acc["apps-local-state"];
       if (apps) {
         for (let app of apps) {
-          if (app["id"] === appID) {
+          if (app["id"] == appID) {
             for (let keyValue of app["key-value"]) {
               let key = this.decode(keyValue["key"]);
-              if (key === "can_vote") {
+              if (key == "can_vote") {
                 let value = this.decode(keyValue["value"]["bytes"]);
                 optedInAccounts[value].push(acc["address"]);
-              } else if (key === "voted") {
+              } else if (key == "voted") {
                 allVotes[acc["address"]] = keyValue["value"]["uint"];
               }
             }
@@ -184,7 +186,7 @@ class AlgoHandler {
   async creatorApprove(senderAddress, approvingAccount, yesOrNo, appID) {
     console.log(
       `${senderAddress} attempting to ${
-        yesOrNo === "yes" ? "approve" : "deny"
+        yesOrNo == "yes" ? "approve" : "deny"
       } account ${approvingAccount}`
     );
 
