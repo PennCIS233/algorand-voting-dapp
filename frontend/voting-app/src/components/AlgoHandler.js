@@ -23,12 +23,8 @@ class AlgoHandler {
     const algodPort = "";
     this.algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
 
-    const indexerServer = "https://testnet-algorand.api.purestake.io/idx2";
-    this.indexerClient = new algosdk.Indexer(
-      algodToken,
-      indexerServer,
-      algodPort
-    );
+    const indexerServer = 'https://testnet-algorand.api.purestake.io/idx2';
+    this.indexerClient = new algosdk.Indexer(algodToken, indexerServer, algodPort);
   }
 
   // connects to AlgoSigner accounts on TestNet
@@ -119,18 +115,15 @@ class AlgoHandler {
 
   async getOptedInAccountsAndVotes(appID) {
     let optedInAccounts = {
-      yes: [],
-      no: [],
-      maybe: [],
+      'yes': [],
+      'no': [],
+      'maybe': []
     };
-    let allVotes = {};
+    let allVotes = {}
 
-    let accountInfo = await this.indexerClient
-      .searchAccounts()
-      .applicationID(appID)
-      .do();
+    let accountInfo = await this.indexerClient.searchAccounts().applicationID(appID).do();
 
-    let accounts = accountInfo["accounts"];
+    let accounts = accountInfo['accounts'];
     console.log(accounts);
 
     // go through all the accounts looking at 'can_vote' variable and add account to correct array
@@ -159,12 +152,12 @@ class AlgoHandler {
   async signAndSend(txn) {
     let txn_b64 = window.AlgoSigner.encoding.msgpackToBase64(txn.toByte());
 
-    let signedTxs = await window.AlgoSigner.signTxn([{ txn: txn_b64 }]);
+    let signedTxs = await window.AlgoSigner.signTxn([{txn: txn_b64}]);
     console.log(signedTxs);
 
     let tx = await window.AlgoSigner.send({
-      ledger: "TestNet",
-      tx: signedTxs[0].blob,
+      ledger: 'TestNet',
+      tx: signedTxs[0].blob
     });
 
     return tx;
@@ -184,17 +177,13 @@ class AlgoHandler {
   }
 
   async creatorApprove(senderAddress, approvingAccount, yesOrNo, appID) {
-    console.log(
-      `${senderAddress} attempting to ${
-        yesOrNo == "yes" ? "approve" : "deny"
-      } account ${approvingAccount}`
-    );
+    console.log(`${senderAddress} attempting to ${yesOrNo == 'yes' ? 'approve' : 'deny'} account ${approvingAccount}`);
 
     let params = await this.algodClient.getTransactionParams().do();
     let appArgs = [];
 
     let decodedAddress = algosdk.decodeAddress(approvingAccount);
-    appArgs.push(new Uint8Array(Buffer.from("update_user_status")));
+    appArgs.push(new Uint8Array(Buffer.from('update_user_status')));
     appArgs.push(decodedAddress.publicKey);
     appArgs.push(new Uint8Array(Buffer.from(yesOrNo)));
     console.log(appArgs);
@@ -205,7 +194,7 @@ class AlgoHandler {
       appID,
       appArgs,
       [senderAddress, approvingAccount]
-    );
+    )
     console.log(txn);
 
     let tx = await this.signAndSend(txn);
@@ -215,14 +204,12 @@ class AlgoHandler {
   }
 
   async vote(senderAddress, optionIndex, appID) {
-    console.log(
-      `${senderAddress} attempting to vote for option ${optionIndex}`
-    );
+    console.log(`${senderAddress} attempting to vote for option ${optionIndex}`);
 
     let params = await this.algodClient.getTransactionParams().do();
 
     let appArgs = [];
-    appArgs.push(new Uint8Array(Buffer.from("vote")));
+    appArgs.push(new Uint8Array(Buffer.from('vote')));
     appArgs.push(algosdk.encodeUint64(optionIndex));
     console.log(appArgs);
 
@@ -231,7 +218,36 @@ class AlgoHandler {
       params,
       appID,
       appArgs
-    );
+    )
+    console.log(txn);
+
+
+    let tx = await this.signAndSend(txn);
+    console.log(tx);
+
+    return tx;
+  }
+
+  async closeOut(senderAddress, appID) {
+    console.log(`${senderAddress} attempting to close out of app ${appID}`);
+
+    let params = await this.algodClient.getTransactionParams().do();
+
+    let txn = algosdk.makeApplicationCloseOutTxn(senderAddress, params, appID);
+    console.log(txn);
+
+    let tx = await this.signAndSend(txn);
+    console.log(tx);
+
+    return tx;
+  }
+
+  async clearState(senderAddress, appID) {
+    console.log(`${senderAddress} attempting to clear state of app ${appID}`);
+
+    let params = await this.algodClient.getTransactionParams().do();
+
+    let txn = algosdk.makeApplicationClearStateTxn(senderAddress, params, appID);
     console.log(txn);
 
     let tx = await this.signAndSend(txn);

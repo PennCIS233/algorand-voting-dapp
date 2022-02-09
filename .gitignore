@@ -137,3 +137,4 @@ dmypy.json
 
 # Private data
 ENV.py
+smart-contract/secrets.py

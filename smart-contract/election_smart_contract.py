@@ -67,8 +67,8 @@ def approval_program():
                 ),
                 # update vote tally by removing one vote for whom the user voted for
                 App.globalPut(
-                    Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value())),
-                    App.globalGet(Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value()))) - Int(1)
+                    Concat(Bytes("VotesFor"), itoa(get_vote_of_sender.value())),
+                    App.globalGet(Concat(Bytes("VotesFor"), itoa(get_vote_of_sender.value()))) - Int(1)
                 ),
             ),
 
@@ -91,12 +91,11 @@ def approval_program():
     address_to_approve = Txn.application_args[1] # address creator is trying to approve/reject
     is_user_approved = Txn.application_args[2] # "yes" or "no"
     on_update_user_status = Seq(
-        get_sender_can_vote,
         Assert(
             And(
                 is_creator, # only the creator can approve/disapprove users
                 Global.round() <= App.globalGet(Bytes("ElectionEnd")), # can only approve users before election ends
-                get_sender_can_vote.value() == Bytes("maybe") # creator can only change status once
+                App.localGet(address_to_approve, Bytes("can_vote")) == Bytes("maybe") # creator can only change status once
             )
         ),
 
@@ -132,8 +131,8 @@ def approval_program():
 
             # update vote tally for user's choice
             App.globalPut(
-                Concat(Bytes("VotesFor"), Itob(choice)),
-                App.globalGet(Concat(Bytes("VotesFor"), Itob(choice))) + Int(1)
+                Concat(Bytes("VotesFor"), itoa(choice)),
+                App.globalGet(Concat(Bytes("VotesFor"), itoa(choice))) + Int(1)
             ),
 
             # update user's voted variable to reflect their choice
@@ -173,8 +172,8 @@ def clear_state_program():
                     get_vote_of_sender.hasValue(),
                 ),
                 App.globalPut(
-                    Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value())),
-                    App.globalGet(Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value()))) - Int(1)
+                    Concat(Bytes("VotesFor"), itoa(get_vote_of_sender.value())),
+                    App.globalGet(Concat(Bytes("VotesFor"), itoa(get_vote_of_sender.value()))) - Int(1)
                 ),
             ),
 
@@ -187,9 +186,9 @@ def clear_state_program():
 
 if __name__ == "__main__":
     with open("vote_approval.teal", "w") as f:
-        compiled = compileTeal(approval_program(), mode=Mode.Application, version=2)
+        compiled = compileTeal(approval_program(), mode=Mode.Application, version=5)
         f.write(compiled)
 
     with open("vote_clear_state.teal", "w") as f:
-        compiled = compileTeal(clear_state_program(), mode=Mode.Application, version=2)
+        compiled = compileTeal(clear_state_program(), mode=Mode.Application, version=5)
         f.write(compiled)

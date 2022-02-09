@@ -12,6 +12,13 @@ function TestAlgoComponent() {
   const [appID, setAppID] = useState("");
   const [isCreator, setIsCreator] = useState(false);
   const [electionState, setElectionState] = useState({});
+  const [optedInAccounts, setOptedInAccounts] = useState({
+    'yes': [],
+    'no': [],
+    'maybe': []
+  });
+  const [voteOptions, setVoteOptions] = useState([]);
+  const [allVotes, setAllVotes] = useState({});
 
   useEffect(() => {});
 
@@ -30,28 +37,70 @@ function TestAlgoComponent() {
     e.preventDefault();
 
     const formData = new FormData(e.target);
-    console.log(formData);
     const formDataObj = Object.fromEntries(formData.entries());
-    console.log(formDataObj);
 
-    let newElectionState = await mainAlgoHandler.getElectionState(
-      formDataObj["appID"]
-    );
+    let newElectionState = await mainAlgoHandler.getElectionState(formDataObj['appID']);
+    let [newOptedInAccounts, newAllVotes] = await mainAlgoHandler.getOptedInAccountsAndVotes(formDataObj['appID']);
 
-    setAppID(formDataObj["appID"]);
+    let newVoteOptions = newElectionState['VoteOptions'].split(',');
+
+    setAppID(Number(formDataObj['appID']));
     setElectionState(newElectionState);
-    setCreatorAddress(newElectionState["Creator"]);
+    setVoteOptions(newVoteOptions);
+    setAllVotes(newAllVotes);
+    setCreatorAddress(newElectionState['Creator']);
+    setOptedInAccounts(newOptedInAccounts)
 
     setIsCreator(newElectionState["Creator"] == mainAccount);
   };
 
   const getElectionState = async (e) => {
-    let newElectionState = await mainAlgoHandler.getElectionState(
-      appID,
-      creatorAddress
-    );
+    let newElectionState = await mainAlgoHandler.getElectionState(appID);
+    let [newOptedInAccounts, newAllVotes] = await mainAlgoHandler.getOptedInAccountsAndVotes(appID);
+
+    let newVoteOptions = newElectionState['VoteOptions'].split(',');
+
     setElectionState(newElectionState);
-  };
+    setVoteOptions(newVoteOptions);
+    setAllVotes(newAllVotes);
+    setOptedInAccounts(newOptedInAccounts)
+  }
+
+  const hasUserOptedIn = () => {
+    return (JSON.stringify(optedInAccounts).includes(mainAccount));
+  }
+
+  const getUserOptInStatus = () => {
+    for (let key in optedInAccounts) {
+      if (optedInAccounts[key].includes(mainAccount)) return key;
+    }
+    return null;
+  }
+
+  const optInAccount = async () => {
+    await mainAlgoHandler.optInAccount(mainAccount, appID);
+  }
+
+  const creatorApprove = async (user, choice) => {
+    await mainAlgoHandler.creatorApprove(mainAccount, user, choice, appID);
+  }
+
+  // a user is allowed to vote iff they have 'yes' as can_vote and they have not already voted
+  const canMainAccountVote = () => {
+    return optedInAccounts['yes'].includes(mainAccount) && !(mainAccount in allVotes);
+  }
+
+  const vote = async (optionIndex) => {
+    await mainAlgoHandler.vote(mainAccount, optionIndex, appID);
+  }
+
+  const mainAccountCloseOut = async () => {
+    await mainAlgoHandler.closeOut(mainAccount, appID);
+  }
+
+  const mainAccountClearState = async () => {
+    await mainAlgoHandler.clearState(mainAccount, appID);
+  }
 
   return (
     <Container className="mb-3">
@@ -106,12 +155,83 @@ function TestAlgoComponent() {
       </Row>
       <Row>
         <h3>Election State</h3>
-        <Button onClick={async () => await getElectionState()}>
-          Get Election State
-        </Button>
-        <p>
-          <pre>{JSON.stringify(electionState, null, 2)}</pre>
-        </p>
+        <Button onClick={async () => await getElectionState()}>Get Election State</Button>
+        <h5>Global Variables</h5>
+        <div><pre>{JSON.stringify(electionState, null, 2)}</pre></div>
+        <h5>Opted-In Accounts can_vote Status</h5>
+        <div><pre>{JSON.stringify(optedInAccounts, null, 2)}</pre></div>
+      </Row>
+      <Row>
+        <h3>Opt-In</h3>
+        {(!hasUserOptedIn() && 
+          <div>
+            <p><b>You have NOT opted-in</b></p>
+            <Button onClick={async () => {await optInAccount()}}>Opt-In</Button>
+            <p>After clicking this button wait 10 seconds then press the  'Get Election State' button</p>
+          </div>
+          ) 
+          || 
+          <div>
+            <p>You have opted in.</p>
+            {getUserOptInStatus() == 'yes' && <p>You are allowed to vote</p>}
+            {getUserOptInStatus() == 'no' && <p>You are NOT allowed to vote</p>}
+            {getUserOptInStatus() == 'maybe' && <p>Your voting status is still being determined</p>}
+          </div>
+          
+          }
+        {/* {hasUserOptedIn() && <p><b>You have opted-in</b></p>} */}
+      </Row>
+      <Row>
+        <h3 className="mb-3">Vote</h3>
+        <h5>All votes</h5>
+        <div className="mb-3">
+          <pre>{JSON.stringify(allVotes, null, 2)}</pre>
+        </div>
+        {voteOptions.map((option, index) => (
+          <Card key={`vote-option-${option}-${index}`} className="mb-3">
+            <h6>{option}</h6>
+            <p>{electionState[`VotesFor${index}`]} votes</p>
+            <div>
+              {(() => {
+                if (allVotes[mainAccount] == index) {
+                  return (<Badge bg="success">Your Vote</Badge>);
+                } else if (canMainAccountVote()) {
+                  return (<Button variant='primary' onClick={async () => {await vote(index)}}>Vote</Button>);
+                } else {
+                  return (<Button variant='secondary' disabled>Vote</Button>);
+                }
+              })()}
+            </div>
+          </Card>
+        ))}
+      </Row>
+      <Row>
+        <h3>Pending Voters</h3>
+        {optedInAccounts['maybe'].map((acc, index) => (
+          <Card key={`card-${acc}-${index}`} className="mb-3">
+            <h6>{acc}</h6>
+            {isCreator ? 
+              <div className="mb-3">
+                <div>You are allowed to Allow or Deny this account's ability to vote</div>
+                <Button variant='success' onClick={async () => {await creatorApprove(acc, 'yes')}}>Allow</Button>
+                <Button variant='danger' onClick={async () => {await creatorApprove(acc, 'no')}}>Deny</Button>
+              </div> :
+              <div className="mb-3">
+                <div>You are NOT allowed to Allow or Deny this account's ability to vote</div>
+                <Button variant='success' disabled>Allow</Button>
+                <Button variant='danger' disabled>Deny</Button>
+              </div>
+            }
+          </Card>
+        ))}
+      </Row>
+      <Row>
+        { hasUserOptedIn() &&
+          <div>
+            <Button onClick={async () => {await mainAccountCloseOut()}}>Close out</Button>
+            <Button onClick={async () => {await mainAccountClearState()}}>Clear state</Button>
+          </div>
+        }
       </Row>
     </Container>
   );

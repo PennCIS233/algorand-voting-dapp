@@ -69,8 +69,8 @@ def approval_program():
                 ),
                 # update vote tally by removing one vote for whom the user voted for
                 App.globalPut(
-                    Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value())),
-                    App.globalGet(Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value()))) - Int(1)
+                    Concat(Bytes("VotesFor"), itoa(get_vote_of_sender.value())),
+                    App.globalGet(Concat(Bytes("VotesFor"), itoa(get_vote_of_sender.value()))) - Int(1)
                 ),
             ),
 
@@ -93,16 +93,14 @@ def approval_program():
     address_to_approve = Txn.application_args[1] # address creator is trying to approve/reject
     #address_to_approve = encode_address(address_to_approve)
     #Txn.accounts[1] = address_to_approve
-    print("x")
     is_user_approved = Txn.application_args[2] # "yes" or "no"
     #address_to_approve = decode_address(Txn.application_args[1])
     on_update_user_status = Seq(
-        get_sender_can_vote,
         Assert(
             And(
                 is_creator, # only the creator can approve/disapprove users
                 Global.round() <= App.globalGet(Bytes("ElectionEnd")), # can only approve users before election ends
-                get_sender_can_vote.value() == Bytes("maybe") # creator can only change status once
+                App.localGet(address_to_approve, Bytes("can_vote")) == Bytes("maybe") # creator can only change status once
             )
         ),
 
@@ -139,8 +137,8 @@ def approval_program():
 
             # update vote tally for user's choice
             App.globalPut(
-                Concat(Bytes("VotesFor"), Itob(choice)),
-                App.globalGet(Concat(Bytes("VotesFor"), Itob(choice))) + Int(1)
+                Concat(Bytes("VotesFor"), itoa(choice)),
+                App.globalGet(Concat(Bytes("VotesFor"), itoa(choice))) + Int(1)
             ),
 
             # update user's voted variable to reflect their choice
@@ -180,8 +178,8 @@ def clear_state_program():
                     get_vote_of_sender.hasValue(),
                 ),
                 App.globalPut(
-                    Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value())),
-                    App.globalGet(Concat(Bytes("VotesFor"), Itob(get_vote_of_sender.value()))) - Int(1)
+                    Concat(Bytes("VotesFor"), itoa(get_vote_of_sender.value())),
+                    App.globalGet(Concat(Bytes("VotesFor"), itoa(get_vote_of_sender.value()))) - Int(1)
                 ),
             ),
 
