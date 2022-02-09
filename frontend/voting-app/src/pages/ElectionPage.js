@@ -126,6 +126,7 @@ function ElectionPage() {
               isAccepted={optedAccounts["yes"].includes(mainAccount)}
               isOpted={optedAccounts["maybe"].includes(mainAccount)}
               isVoted={userVotes[mainAccount]}
+              electionChoices={electionChoices}
             />
           </Col>
         </Row>

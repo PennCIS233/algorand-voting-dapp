@@ -31,7 +31,7 @@ function RequestCard(props) {
           id="uncontrolled-tab-example"
           className="mb-3"
         >
-          <Tab eventKey="Accepted" title="Accepted">
+          <Tab eventKey="Accepted" title={`Accepted (${props.optedAccounts['yes'].length})`}>
             <ListGroup>
               {props.optedAccounts["yes"] &&
                 props.optedAccounts["yes"].map((user) => (
@@ -45,7 +45,7 @@ function RequestCard(props) {
                 ))}
             </ListGroup>
           </Tab>
-          <Tab eventKey="Rejected" title="Rejected">
+          <Tab eventKey="Rejected" title={`Rejected (${props.optedAccounts['no'].length})`}>
             <ListGroup>
               {props.optedAccounts["no"] &&
                 props.optedAccounts["no"].map((user) => (
@@ -58,7 +58,7 @@ function RequestCard(props) {
                 ))}
             </ListGroup>
           </Tab>
-          <Tab eventKey="Opted-In" title="Pending">
+          <Tab eventKey="Opted-In" title={`Pending (${props.optedAccounts['maybe'].length})`}>
             <ListGroup>
               {props.optedAccounts["maybe"] &&
                 props.optedAccounts["maybe"].map((user) => (

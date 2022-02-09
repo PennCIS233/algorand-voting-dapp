@@ -83,14 +83,8 @@ function VoterCard(props) {
         <Card.Body>
           <Card.Title>You Voted!</Card.Title>
           <Card.Text>
-            You have cast your vote. If you'd like to clear your vote, please
-            click the button below.
+            You have cast your vote for option {props.electionChoices[props.isVoted]}
           </Card.Text>
-          <Form onSubmit={handleClear}>
-            <Button variant="info" type="submit">
-              Clear Vote
-            </Button>
-          </Form>
         </Card.Body>
       )}
     </Card>
