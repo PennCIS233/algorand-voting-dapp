@@ -97,6 +97,14 @@ function TestAlgoComponent() {
     await mainAlgoHandler.vote(mainAccount, optionIndex, appID);
   }
 
+  const mainAccountCloseOut = async (optionIndex) => {
+    await mainAlgoHandler.closeOut(mainAccount, optionIndex, appID);
+  }
+
+  const mainAccountClearState = async (optionIndex) => {
+    await mainAlgoHandler.clearState(mainAccount, optionIndex, appID);
+  }
+
   return (
     <Container className="mb-3">
         <Row className="mt-3">
@@ -211,6 +219,14 @@ function TestAlgoComponent() {
             }
           </Card>
         ))}
+      </Row>
+      <Row>
+        { hasUserOptedIn() &&
+          <div>
+            <Button onClick={async () => {await mainAccountCloseOut()}}>Close out</Button>
+            <Button onClick={async () => {await mainAccountClearState()}}>Clear state</Button>
+          </div>
+        }
       </Row>
     </Container>
   );
