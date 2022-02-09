@@ -58,7 +58,7 @@ function RequestCard(props) {
                 ))}
             </ListGroup>
           </Tab>
-          <Tab eventKey="Opted-In" title="Opted-In">
+          <Tab eventKey="Opted-In" title="Pending">
             <ListGroup>
               {props.optedAccounts["maybe"] &&
                 props.optedAccounts["maybe"].map((user) => (
