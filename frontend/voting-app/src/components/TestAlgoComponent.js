@@ -97,12 +97,12 @@ function TestAlgoComponent() {
     await mainAlgoHandler.vote(mainAccount, optionIndex, appID);
   }
 
-  const mainAccountCloseOut = async (optionIndex) => {
-    await mainAlgoHandler.closeOut(mainAccount, optionIndex, appID);
+  const mainAccountCloseOut = async () => {
+    await mainAlgoHandler.closeOut(mainAccount, appID);
   }
 
-  const mainAccountClearState = async (optionIndex) => {
-    await mainAlgoHandler.clearState(mainAccount, optionIndex, appID);
+  const mainAccountClearState = async () => {
+    await mainAlgoHandler.clearState(mainAccount, appID);
   }
 
   return (
