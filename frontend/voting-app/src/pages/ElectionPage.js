@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Container, CardGroup } from "react-bootstrap";
 import mainAlgoHandler from "../components/AlgoHandler";
 import NavBar from "../components/NavBar";
@@ -13,9 +13,9 @@ function ElectionPage() {
   let location = useLocation();
 
   const [electionState, setElectionState] = useState({});
-  const [accounts, setAccounts] = useState([]);
-  const [mainAccount, setMainAccount] = useState("");
-  const [electionId, setElectionId] = useState("");
+  const [accounts, setAccounts] = useState(location.state.accts);
+  const [mainAccount, setMainAccount] = useState(accounts[0]);
+  const [electionId, setElectionId] = useState(location.state.electionId);
   const [totalVotes, setTotalVotes] = useState([1, 1, 1, 1]);
   const [optedAccounts, setOptedAccounts] = useState({
     maybe: [],
@@ -25,50 +25,18 @@ function ElectionPage() {
   const [electionChoices, setElectionChoices] = useState(["A", "B", "C", "D"]);
   const [userVotes, setUserVotes] = useState({});
 
-  const onMount = useCallback(() => {
-    setAccounts(location.state.accts);
-    setElectionId(location.state.electionId);
-  }, []);
-
-  const checkArray = (a, b) => {
-    if (a.length !== b.length) return false;
-
-    a.sort();
-    b.sort();
-
-    for (var i = 0; i < a.length; ++i) {
-      if (a[i] !== b[i]) return false;
-    }
-    return true;
-  };
-
-  const checkEquals = (a, b) => {
-    if (a == null || b == null) return false;
-    return (
-      checkArray(a["maybe"], b["maybe"]) &&
-      checkArray(a["yes"], b["yes"]) &&
-      checkArray(a["no"], b["no"])
-    );
-  };
-
-  useEffect(() => {
-    onMount();
-    if (!mainAccount) setMainAccount(accounts[0]);
-
-    // get election state
+  const refreshState = () => {
+    console.log("refreshing state...");
     mainAlgoHandler.getElectionState(location.state.electionId).then((res) => {
-      if (JSON.stringify(res) !== JSON.stringify(electionState)) {
-        let newTotalVotes = []
-        for (let i = 0; i < res["NumVoteOptions"]; i++) {
-          newTotalVotes.push(res[`VotesFor${i}`]);
-        }
-
-        let newElectionChoices = res["VoteOptions"].split(",");
-
-        setElectionState(res);
-        setTotalVotes(newTotalVotes);
-        setElectionChoices(newElectionChoices);
+      let newTotalVotes = [];
+      for (let i = 0; i < res["NumVoteOptions"]; i++) {
+        newTotalVotes.push(res[`VotesFor${i}`]);
       }
+
+      let newElectionChoices = res["VoteOptions"].split(",");
+      setElectionState(res);
+      setTotalVotes(newTotalVotes);
+      setElectionChoices(newElectionChoices);
     });
 
     console.log(electionState);
@@ -77,24 +45,25 @@ function ElectionPage() {
     mainAlgoHandler
       .getOptedInAccountsAndVotes(parseInt(electionId))
       .then((res) => {
-        let newOptedAccounts = res[0];
-        if (newOptedAccounts) {
-          if (!checkEquals(newOptedAccounts, optedAccounts)) {
-            let newUserVotes = res[1];
-            if (!checkArray(newOptedAccounts["yes"], optedAccounts["yes"])) {
-              setUserVotes(newUserVotes);
-            }
-            setOptedAccounts(newOptedAccounts);
-          }
-        }
+        setOptedAccounts(res[0]);
+        setUserVotes(res[1]);
       });
-  });
+  };
+
+  useEffect(() => {
+    refreshState();
+  }, []);
+
+  const handleMainAccountChange = (user) => {
+    setMainAccount(user);
+    refreshState();
+  };
 
   return (
     <>
       <NavBar
         connected
-        handleUserUpdate={setMainAccount}
+        handleUserUpdate={handleMainAccountChange}
         accounts={accounts}
         mainAccount={mainAccount}
       />
@@ -117,7 +86,7 @@ function ElectionPage() {
             />
           </CardGroup>
         </Row>
-        <Row className="mt-3">
+        <Row>
           <Col>
             <VoterCard
               user={mainAccount}

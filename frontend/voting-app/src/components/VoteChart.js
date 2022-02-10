@@ -28,10 +28,7 @@ function VoteChart(props) {
         <Card.Title>Election Info</Card.Title>
         <ListGroup>
           <ListGroup.Item>
-            Creator ID:{" "}
-            {props.state["Creator"]
-              ? props.state["Creator"].substring(0, 10)
-              : ""}
+            Creator ID: {props.state["Creator"] ? props.state["Creator"] : ""}
           </ListGroup.Item>
           <ListGroup.Item>
             Last Round to Vote: {props.state["ElectionEnd"]}

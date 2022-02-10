@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Button, ListGroup, Tabs, Tab } from "react-bootstrap";
+import { Card, Button, Accordion, Tabs, Tab } from "react-bootstrap";
 import mainAlgoHandler from "../components/AlgoHandler";
 
 function RequestCard(props) {
@@ -31,61 +31,75 @@ function RequestCard(props) {
           id="uncontrolled-tab-example"
           className="mb-3"
         >
-          <Tab eventKey="Accepted" title={`Accepted (${props.optedAccounts['yes'].length})`}>
-            <ListGroup>
+          <Tab
+            eventKey="Accepted"
+            title={`Accepted (${props.optedAccounts["yes"].length})`}
+          >
+            <Accordion>
               {props.optedAccounts["yes"] &&
                 props.optedAccounts["yes"].map((user) => (
-                  <ListGroup.Item
-                    key={user}
-                    className="d-flex justify-content-between"
-                  >
-                    {user.substring(0, 10)}
-                    <div>{props.electionChoices[props.userVotes[user]]}</div>
-                  </ListGroup.Item>
+                  <Accordion.Item eventKey={user}>
+                    <Accordion.Header>
+                      {user.substring(0, 20) + "..."}
+                    </Accordion.Header>
+                    <Accordion.Body>
+                      Creator: {user}
+                      {"\n"}
+                      Vote: {props.electionChoices[props.userVotes[user]]}
+                    </Accordion.Body>
+                  </Accordion.Item>
                 ))}
-            </ListGroup>
+            </Accordion>
           </Tab>
-          <Tab eventKey="Rejected" title={`Rejected (${props.optedAccounts['no'].length})`}>
-            <ListGroup>
+          <Tab
+            eventKey="Rejected"
+            title={`Rejected (${props.optedAccounts["no"].length})`}
+          >
+            <Accordion>
               {props.optedAccounts["no"] &&
                 props.optedAccounts["no"].map((user) => (
-                  <ListGroup.Item
-                    key={user}
-                    className="d-flex justify-content-between"
-                  >
-                    {user.substring(0, 10)}
-                  </ListGroup.Item>
+                  <Accordion.Item eventKey={user}>
+                    <Accordion.Header>
+                      {user.substring(0, 20) + "..."}
+                    </Accordion.Header>
+                    <Accordion.Body>Creator: {user}</Accordion.Body>
+                  </Accordion.Item>
                 ))}
-            </ListGroup>
+            </Accordion>
           </Tab>
-          <Tab eventKey="Opted-In" title={`Pending (${props.optedAccounts['maybe'].length})`}>
-            <ListGroup>
+          <Tab
+            eventKey="Opted-In"
+            title={`Pending (${props.optedAccounts["maybe"].length})`}
+          >
+            <Accordion>
               {props.optedAccounts["maybe"] &&
                 props.optedAccounts["maybe"].map((user) => (
-                  <ListGroup.Item
-                    key={user}
-                    className="d-flex justify-content-between"
-                  >
-                    {user.substring(0, 10)}
-                    {props.isCreator && (
-                      <div>
-                        <Button
-                          onClick={() => handleAccept(user)}
-                          variant="success"
-                        >
-                          Accept
-                        </Button>
-                        <Button
-                          onClick={() => handleReject(user)}
-                          variant="danger"
-                        >
-                          Reject
-                        </Button>
-                      </div>
-                    )}
-                  </ListGroup.Item>
+                  <Accordion.Item eventKey={user}>
+                    <Accordion.Header>
+                      {user.substring(0, 20) + "..."}
+                    </Accordion.Header>
+                    <Accordion.Body>
+                      Creator: {user}
+                      {props.isCreator && (
+                        <div>
+                          <Button
+                            onClick={() => handleAccept(user)}
+                            variant="success"
+                          >
+                            Accept
+                          </Button>
+                          <Button
+                            onClick={() => handleReject(user)}
+                            variant="danger"
+                          >
+                            Reject
+                          </Button>
+                        </div>
+                      )}
+                    </Accordion.Body>
+                  </Accordion.Item>
                 ))}
-            </ListGroup>
+            </Accordion>
           </Tab>
         </Tabs>
       </Card.Body>

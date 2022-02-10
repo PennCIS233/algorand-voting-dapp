@@ -54,7 +54,7 @@ function VoterCard(props) {
         </Card.Body>
       )}
 
-      {props.isAccepted && !props.isVoted && (
+      {props.isAccepted && props.isVoted === undefined && (
         <div>
           <Card.Body>
             <Card.Title>Cast Your Vote</Card.Title>
@@ -79,11 +79,12 @@ function VoterCard(props) {
         </div>
       )}
 
-      {props.isVoted && (
+      {props.isVoted !== undefined && (
         <Card.Body>
           <Card.Title>You Voted!</Card.Title>
           <Card.Text>
-            You have cast your vote for option {props.electionChoices[props.isVoted]}
+            You have cast your vote for option{" "}
+            {props.electionChoices[props.isVoted]}
           </Card.Text>
         </Card.Body>
       )}
