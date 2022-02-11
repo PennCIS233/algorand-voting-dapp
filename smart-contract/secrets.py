@@ -6,3 +6,5 @@ account_mnemonics = [
 
 # purestake API token
 algod_token = "sample algod_token"
+
+algod_address = "https://testnet-algorand.api.purestake.io/ps2"
