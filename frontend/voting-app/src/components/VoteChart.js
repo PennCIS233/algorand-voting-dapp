@@ -44,7 +44,7 @@ function VoteChart(props) {
           </ListGroup.Item>
         </ListGroup>
       </Card.Body>
-      <Container className="px-5" style={{ width: "75%", height: "75%" }}>
+      <Container className="px-2" style={{ width: "75%", height: "75%" }}>
         <PieChart
           data={currVotes}
           label={({ dataEntry }) =>
@@ -55,7 +55,7 @@ function VoteChart(props) {
             fontSize: "5px",
             fontFamily: "sans-serif",
           })}
-          radius={40}
+          radius={25}
           labelPosition={112}
           animate
         />
