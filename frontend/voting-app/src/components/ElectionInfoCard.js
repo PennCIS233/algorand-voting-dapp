@@ -3,6 +3,14 @@ import { PieChart } from "react-minimal-pie-chart";
 
 // TODO: handle when sum of all currvotes is 0
 function ElectionInfoCard(props) {
+  // createVoteFormat
+  // Description:
+  //  Transforms list of user votes into a JSON object
+  // Parameters:
+  //  votes (array) - list of number of votes for each option
+  //  options (array) - list of vote options
+  // Returns:
+  //  returns (object) in the format that the PieChart component accepts
   const createVoteFormat = (votes, options) => {
     let res = [];
     const colors = ["#3181ba", "#45134c", "#632656", "#4dc8e9"];

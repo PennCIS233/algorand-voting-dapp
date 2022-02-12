@@ -25,6 +25,9 @@ function ElectionPage() {
   const [electionChoices, setElectionChoices] = useState(["A", "B", "C", "D"]);
   const [userVotes, setUserVotes] = useState({});
 
+  // refreshState
+  // Description:
+  //  Calls API to get election state and list of all users that have opted-in
   const refreshState = () => {
     console.log("refreshing state...");
     mainAlgoHandler.getElectionState(location.state.electionId).then((res) => {
@@ -41,7 +44,6 @@ function ElectionPage() {
 
     console.log(electionState);
 
-    // get list of people participating and user votes
     mainAlgoHandler
       .getOptedInAccountsAndVotes(parseInt(electionId))
       .then((res) => {
@@ -50,10 +52,18 @@ function ElectionPage() {
       });
   };
 
+  // useEffect
+  // Description:
+  //  Retrieves election state when component is first rendered
   useEffect(() => {
     refreshState();
   }, []);
 
+  // handleMainAccountChange
+  // Description:
+  //  Updates the main account and updates the state
+  // Parameters:
+  //   user (string) - user to change main account to
   const handleMainAccountChange = (user) => {
     setMainAccount(user);
     refreshState();

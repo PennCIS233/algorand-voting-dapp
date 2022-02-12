@@ -3,6 +3,11 @@ import { Card, Button, Accordion, Tabs, Tab } from "react-bootstrap";
 import mainAlgoHandler from "./AlgoHandler";
 
 function ParticipantsCard(props) {
+  // handleAccept
+  // Description:
+  //  Makes call to approve a user when 'Accept' button is pressed
+  // Parameters:
+  //  user (string) - user to accept into the election
   const handleAccept = (user) => {
     mainAlgoHandler.creatorApprove(
       props.user,
@@ -12,6 +17,11 @@ function ParticipantsCard(props) {
     );
   };
 
+  // handleReject
+  // Description:
+  //  Makes call to approve a user when 'Reject' button is pressed
+  // Parameters:
+  //  user (string) - user to reject from the election
   const handleReject = (user) => {
     mainAlgoHandler.creatorApprove(
       props.user,
@@ -21,7 +31,6 @@ function ParticipantsCard(props) {
     );
   };
 
-  // TODO: show rejected, accepted, opt in with ability to switch between cards
   return (
     <Card>
       <Card.Body>

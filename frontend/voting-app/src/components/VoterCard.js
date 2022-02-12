@@ -5,24 +5,34 @@ import mainAlgoHandler from "../components/AlgoHandler";
 function VoterCard(props) {
   const [voteChoice, setVoteChoice] = useState("");
 
-  // TODO: check if the user was accepted
-
+  // handleVoteSelect
+  // Description:
+  //  Updates the states when the user changes their vote option
   const handleVoteSelect = (e) => {
     setVoteChoice(e.target.value);
   };
 
+  // handleVoteSubmit
+  // Description:
+  //  Sends the vote to the blockchain.
   const handleVoteSubmit = (e) => {
     e.preventDefault();
     let voteValue =
-      voteChoice == "A" ? 0 : voteChoice == "B" ? 1 : voteChoice == "C" ? 2 : 3;
+      voteChoice == "A" ? 0 : voteChoice == "B" ? 1 : voteChoice == "C" ? 2 : 3; // TODO: make this generic
     mainAlgoHandler.vote(props.user, voteValue, parseInt(props.electionId));
   };
 
+  // handleOptIn
+  // Description:
+  //  Opts the user into the election on the blockchain.
   const handleOptIn = (e) => {
     e.preventDefault();
     mainAlgoHandler.optInAccount(props.user, parseInt(props.electionId));
   };
 
+  // handleClear
+  // Description:
+  //  Clears the user vote on the blockchain.
   const handleClear = (e) => {
     e.preventDefault();
     // TODO: clear vote on blockchain

@@ -10,12 +10,19 @@ function ConnectPage() {
 
   let navigate = useNavigate();
 
-  const connectAlgoSigner = async (e) => {
+  // connectAlgoSigner
+  // Description:
+  // retrieves the user accounts from AlgoSigner
+  const connectAlgoSigner = async () => {
     let newAccounts = await mainAlgoHandler.connectToAccounts();
     setAccounts(newAccounts);
     setIsConnected(true);
   };
 
+  // handleElectionSubmit
+  // Description:
+  // takes the value inputted into the electionId form and
+  // naviagates to the election page
   const handleElectionSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
