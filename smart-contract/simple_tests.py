@@ -1,6 +1,6 @@
 # based off https://github.com/algorand/docs/blob/cdf11d48a4b1168752e6ccaf77c8b9e8e599713a/examples/smart_contracts/v2/python/stateful_smart_contracts.py
 
-# this file is meant for students to
+# This file is meant for students to test their smart contract deployment and interactions
 
 import base64
 import unittest
