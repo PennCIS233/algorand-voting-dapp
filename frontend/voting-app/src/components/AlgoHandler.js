@@ -75,7 +75,6 @@ class AlgoHandler {
     let accountInfoResponse = await this.algodClient
       .accountInformation(address)
       .do();
-    console.log(accountInfoResponse);
     for (let i = 0; i < accountInfoResponse["created-apps"].length; i++) {
       if (accountInfoResponse["created-apps"][i].id == appID) {
         console.log(`${address} is creator of ${appID}`);
@@ -214,7 +213,6 @@ class AlgoHandler {
     appArgs.push(new Uint8Array(Buffer.from('update_user_status')));
     appArgs.push(decodedAddress.publicKey);
     appArgs.push(new Uint8Array(Buffer.from(yesOrNo)));
-    console.log(appArgs);
 
     let txn = algosdk.makeApplicationNoOpTxn(
       creatorAddress,
@@ -246,7 +244,6 @@ class AlgoHandler {
     let appArgs = [];
     appArgs.push(new Uint8Array(Buffer.from('vote')));
     appArgs.push(algosdk.encodeUint64(optionIndex));
-    console.log(appArgs);
 
     let txn = algosdk.makeApplicationNoOpTxn(
       address,
