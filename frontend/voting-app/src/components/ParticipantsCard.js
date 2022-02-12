@@ -1,8 +1,8 @@
 import React from "react";
 import { Card, Button, Accordion, Tabs, Tab } from "react-bootstrap";
-import mainAlgoHandler from "../components/AlgoHandler";
+import mainAlgoHandler from "./AlgoHandler";
 
-function RequestCard(props) {
+function ParticipantsCard(props) {
   const handleAccept = (user) => {
     mainAlgoHandler.creatorApprove(
       props.user,
@@ -107,10 +107,4 @@ function RequestCard(props) {
   );
 }
 
-export default RequestCard;
-
-/*
-
-
-
-*/
+export default ParticipantsCard;

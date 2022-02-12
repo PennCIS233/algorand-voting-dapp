@@ -2,7 +2,7 @@ import { Card, ListGroup, Container } from "react-bootstrap";
 import { PieChart } from "react-minimal-pie-chart";
 
 // TODO: handle when sum of all currvotes is 0
-function VoteChart(props) {
+function ElectionInfoCard(props) {
   const createVoteFormat = (votes, options) => {
     let res = [];
     const colors = ["#3181ba", "#45134c", "#632656", "#4dc8e9"];
@@ -64,4 +64,4 @@ function VoteChart(props) {
   );
 }
 
-export default VoteChart;
+export default ElectionInfoCard;

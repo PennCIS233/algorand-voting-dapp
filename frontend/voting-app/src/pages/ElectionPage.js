@@ -4,8 +4,8 @@ import mainAlgoHandler from "../components/AlgoHandler";
 import NavBar from "../components/NavBar";
 
 import VoterCard from "../components/VoterCard";
-import VoteChart from "../components/VoteChart";
-import RequestCard from "../components/RequestCard";
+import ParticipantsCard from "../components/ParticipantsCard";
+import ElectionInfoCard from "../components/ElectionInfoCard";
 
 import { useLocation } from "react-router-dom";
 
@@ -70,7 +70,7 @@ function ElectionPage() {
       <Container>
         <Row className="mt-3 align-items-center">
           <CardGroup>
-            <RequestCard
+            <ParticipantsCard
               electionId={electionId}
               users={accounts}
               user={mainAccount}
@@ -79,7 +79,7 @@ function ElectionPage() {
               optedAccounts={optedAccounts}
               electionChoices={electionChoices}
             />
-            <VoteChart
+            <ElectionInfoCard
               currVotes={totalVotes}
               electionId={electionId}
               state={electionState}
