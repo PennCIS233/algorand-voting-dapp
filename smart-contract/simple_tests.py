@@ -1,6 +1,6 @@
 # based off https://github.com/algorand/docs/blob/cdf11d48a4b1168752e6ccaf77c8b9e8e599713a/examples/smart_contracts/v2/python/stateful_smart_contracts.py
 
-# this file is meant for students to
+# This file is meant for students to test their smart contract deployment and interactions
 
 import base64
 import unittest
@@ -16,6 +16,8 @@ from election_smart_contract import approval_program, clear_state_program
 # fill in your secret mnemonics and algod_token in secrets.py
 from secrets import account_mnemonics, algod_token
 
+from deploy import compile_program, wait_for_confirmation, create_app
+
 account_private_keys = [mnemonic.to_private_key(mn) for mn in account_mnemonics]
 account_addresses = [account.address_from_private_key(sk) for sk in account_private_keys]
 
@@ -28,87 +30,6 @@ client = algod.AlgodClient(
     algod_address="https://testnet-algorand.api.purestake.io/ps2",
     headers={"X-API-Key": algod_token}
 )
-
-
-# helper function to compile program source
-def compile_program(client, source_code):
-    compile_response = client.compile(source_code)
-    return base64.b64decode(compile_response["result"])
-
-
-# helper function that converts a mnemonic passphrase into a private signing key
-def get_private_key_from_mnemonic(mn):
-    private_key = mnemonic.to_private_key(mn)
-    return private_key
-
-
-# helper function that waits for a given txid to be confirmed by the network
-def wait_for_confirmation(client, txid):
-    last_round = client.status().get("last-round")
-    txinfo = client.pending_transaction_info(txid)
-    while not (txinfo.get("confirmed-round") and txinfo.get("confirmed-round") > 0):
-        print("Waiting for confirmation...")
-        last_round += 1
-        client.status_after_block(last_round)
-        txinfo = client.pending_transaction_info(txid)
-    print(
-        "Transaction {} confirmed in round {}.".format(
-            txid, txinfo.get("confirmed-round")
-        )
-    )
-    return txinfo
-
-# create new application
-def create_app(
-        client,
-        private_key,
-        approval_program,
-        clear_program,
-        global_schema,
-        local_schema,
-        app_args,
-):
-    # define sender as creator
-    sender = account.address_from_private_key(private_key)
-
-    # declare on_complete as NoOp
-    on_complete = transaction.OnComplete.NoOpOC.real
-
-    # get node suggested parameters
-    params = client.suggested_params()
-    # comment out the next two (2) lines to use suggested fees
-    params.flat_fee = True
-    params.fee = 1000
-
-    # create unsigned transaction
-    txn = transaction.ApplicationCreateTxn(
-        sender,
-        params,
-        on_complete,
-        approval_program,
-        clear_program,
-        global_schema,
-        local_schema,
-        app_args,
-    )
-
-    # sign transaction
-    signed_txn = txn.sign(private_key)
-    tx_id = signed_txn.transaction.get_txid()
-
-    # send transaction
-    client.send_transactions([signed_txn])
-
-    # await confirmation
-    wait_for_confirmation(client, tx_id)
-
-    # display results
-    transaction_response = client.pending_transaction_info(tx_id)
-    app_id = transaction_response["application-index"]
-    print("Created new app-id:", app_id)
-
-    return app_id
-
 
 # opt-in to application
 def opt_in_app(client, private_key, index):
@@ -193,6 +114,7 @@ def call_app(client, private_key, index, app_args):
     wait_for_confirmation(client, tx_id)
 
 
+# formats the state that is retrieved form
 def format_state(state):
     formatted = {}
     for item in state:

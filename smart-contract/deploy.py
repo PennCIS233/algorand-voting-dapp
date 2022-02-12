@@ -11,7 +11,7 @@ from algosdk.v2client import algod
 from pyteal import compileTeal, Mode
 from election_smart_contract import approval_program, clear_state_program
 from secrets import account_mnemonics, algod_token, algod_address
-from election-params import relative_election_end, num_vote_options, vote_options, local_ints, local_bytes, global_ints, global_bytes
+from election_params import relative_election_end, num_vote_options, vote_options, local_ints, local_bytes, global_ints, global_bytes
 #import ENV # import your own file that has your private keys, mnemonics, etc
 
 account_private_keys = [mnemonic.to_private_key(mn) for mn in account_mnemonics]
