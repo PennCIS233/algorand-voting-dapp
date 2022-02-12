@@ -3,20 +3,22 @@
 import base64
 import datetime
 
+import algosdk
+from algosdk.encoding import decode_address, encode_address
 from algosdk.future import transaction
 from algosdk import account, mnemonic
 from algosdk.v2client import algod
 from pyteal import compileTeal, Mode
 from election_smart_contract import approval_program, clear_state_program
+from secrets import account_mnemonics, algod_token, algod_address
+from election_params import relative_election_end, num_vote_options, vote_options, local_ints, local_bytes, global_ints, global_bytes
+#import ENV # import your own file that has your private keys, mnemonics, etc
 
-import ENV # import your own file that has your private keys, mnemonics, etc
-
-# user declared account mnemonics
-creator_mnemonic = ENV.accountMnemonics[0]
-
+account_private_keys = [mnemonic.to_private_key(mn) for mn in account_mnemonics]
+account_addresses = [account.address_from_private_key(sk) for sk in account_private_keys]
 # user declared algod connection parameters. Node must have EnableDeveloperAPI set to true in its config
-algod_address = "https://testnet-algorand.api.purestake.io/ps2"
-algod_token = ENV.algod_token
+algod_address = algod_address
+algod_token = algod_token
 
 # helper function to compile program source
 def compile_program(client, source_code):
@@ -137,6 +139,34 @@ def opt_in_app(client, private_key, index):
     transaction_response = client.pending_transaction_info(tx_id)
     print("OptIn to app-id:", transaction_response["txn"]["txn"]["apid"])
 
+def call_app_approve_voter(client, private_key, index, app_args):
+
+    #user_address = app_args[1]
+    response = app_args[2]
+    # declare sender
+    sender = account.address_from_private_key(private_key)
+    print("Call from account:", sender)
+
+    # get node suggested parameters
+    params = client.suggested_params()
+    # comment out the next two (2) lines to use suggested fees
+    params.flat_fee = True
+    params.fee = 1000
+
+    # create unsigned transaction
+    txn = transaction.ApplicationNoOpTxn(sender, params, index, app_args, accounts = [sender, user_address])
+
+    # sign transaction
+    signed_txn = txn.sign(private_key)
+    tx_id = signed_txn.transaction.get_txid()
+
+    # send transaction
+    client.send_transactions([signed_txn])
+
+    # await confirmation
+    wait_for_confirmation(client, tx_id)
+    transaction_response = client.pending_transaction_info(tx_id)
+    print("Approved user ", user_address, "for apid ", transaction_response, ": ", response)
 
 # call application
 def call_app(client, private_key, index, app_args):
@@ -296,27 +326,19 @@ def intToBytes(i):
     return i.to_bytes(8, "big")
 
 
-def main():
-    # initialize an algodClient
-    # algod_client = algod.AlgodClient(algod_token, algod_address)
-    algod_client = algod.AlgodClient(
-        algod_token="",
-        algod_address="https://testnet-algorand.api.purestake.io/ps2",
-        headers={"X-API-Key": ENV.algod_token}
-    )
-
-    # define private keys
-    creator_private_key = get_private_key_from_mnemonic(creator_mnemonic)
-
-    # declare application state storage (immutable)
-    local_ints = 1  # user's voted variable
-    local_bytes = 1  # user's can_vote variable
+def deploy_create_app(client, creator_private_key, election_end, num_vote_options, vote_options):
+    ## STEP 1: declare application state storage (immutable)
+    # You need to declare both local and global ints and bytes for the local and global state schema. 
+    local_ints = local_ints  # user's voted variable
+    local_bytes = local_bytes  # user's can_vote variable
     global_ints = (
-        24  # 3 for setup + x for choices. Use a larger number for more choices.
+        global_ints  # 3 for setup + x for choices. Use a larger number for more choices.
     )
-    global_bytes = 2  # Creator and VoteOptions variables
+    global_bytes = global_bytes  # Creator and VoteOptions variables
     global_schema = transaction.StateSchema(global_ints, global_bytes)
     local_schema = transaction.StateSchema(local_ints, local_bytes)
+
+    ## STEP 2: Compile approval and clear state programs to TEAL assembly, then to binary 
 
     # get PyTeal approval program
     approval_program_ast = approval_program()
@@ -325,7 +347,7 @@ def main():
         approval_program_ast, mode=Mode.Application, version=5
     )
     # compile program to binary
-    approval_program_compiled = compile_program(algod_client, approval_program_teal)
+    approval_program_compiled = compile_program(client, approval_program_teal)
 
     # get PyTeal clear state program
     clear_state_program_ast = clear_state_program()
@@ -335,29 +357,19 @@ def main():
     )
     # compile program to binary
     clear_state_program_compiled = compile_program(
-        algod_client, clear_state_program_teal
+        client, clear_state_program_teal
     )
-
-    # configure election end period
-    status = algod_client.status()
-    electionEnd = status["last-round"] + 30
-
-    print(f"Election from rounds: {status['last-round']} to {electionEnd}")
-
-    # configure vote options
-    numVoteOptions = 4
-    voteOptions = "A,B,C,D"
 
     # create list of bytes for app args
     app_args = [
-        intToBytes(electionEnd),
-        intToBytes(numVoteOptions),
-        voteOptions
+        intToBytes(election_end),
+        intToBytes(num_vote_options),
+        vote_options
     ]
 
     # create new application
     app_id = create_app(
-        algod_client,
+        client,
         creator_private_key,
         approval_program_compiled,
         clear_state_program_compiled,
@@ -366,68 +378,35 @@ def main():
         app_args,
     )
 
-    # read global state of application
-    print(
-        "Global state:",
-        read_global_state(
-            algod_client, account.address_from_private_key(creator_private_key), app_id
-        ),
+    return app_id
+
+
+def main():
+    # initialize an algodClient
+    # algod_client = algod.AlgodClient(algod_token, algod_address)
+    algod_client = algod.AlgodClient(
+        algod_token=algod_token,
+        algod_address=algod_address,
+        headers={"X-API-Key": algod_token}
     )
 
+    relative_election_end = relative_election_end
+    status = client.status()
+    election_end = status["last-round"] + relative_election_end
+    num_vote_options = num_vote_options
+    vote_options = vote_options
 
-    # # wait for registration period to start
-    # wait_for_round(algod_client, status["last-round"] + 1)
-    #
-    # # opt-in to application
-    # opt_in_app(algod_client, user_private_key, app_id)
-    #
-    # wait_for_round(algod_client, voteBegin)
-    #
-    # # call application without arguments
-    # call_app(algod_client, user_private_key, app_id, [b"vote", b"choiceA"])
-    #
-    # # read local state of application from user account
-    # print(
-    #     "Local state:",
-    #     read_local_state(
-    #         algod_client, account.address_from_private_key(user_private_key), app_id
-    #     ),
-    # )
-    #
-    # # wait for registration period to start
-    # wait_for_round(algod_client, voteEnd)
-    #
-    # # read global state of application
-    # global_state = read_global_state(
-    #     algod_client, account.address_from_private_key(creator_private_key), app_id
-    # )
-    # print("Global state:", global_state)
-    #
-    # max_votes = 0
-    # max_votes_choice = None
-    # for key, value in global_state.items():
-    #     if (
-    #         key
-    #         not in (
-    #             "RegBegin",
-    #             "RegEnd",
-    #             "VoteBegin",
-    #             "VoteEnd",
-    #             "Creator",
-    #         )
-    #         and isinstance(value, int)
-    #     ):
-    #         if value > max_votes:
-    #             max_votes = value
-    #             max_votes_choice = key
-    #
-    # print("The winner is:", max_votes_choice)
-    #
-    # # delete application
-    # delete_app(algod_client, creator_private_key, app_id)
-    #
-    # # clear application from user account
-    # clear_app(algod_client, user_private_key, app_id)
+# deploy smart contract creation with large election end time
+    try:
+        TestElection1.app_id = deploy_create_app(client, account_private_keys[0], election_end, num_vote_options, vote_options)
+        print('App creation succeeded')
+        print("Global state:", read_global_state(client, account.address_from_private_key(creator_private_key), app_id),)
+
+    except:
+        print('App creation failed')
+        raise 'App creation failed'
+
+    
 
 
 if __name__ == "__main__":

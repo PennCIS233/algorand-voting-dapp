@@ -1,9 +1,11 @@
 # based off https://github.com/algorand/docs/blob/cdf11d48a4b1168752e6ccaf77c8b9e8e599713a/examples/smart_contracts/v2/python/stateful_smart_contracts.py
 
-import base64
-import datetime
+# This file is meant for students to test their smart contract deployment and interactions
 
-import algosdk
+import base64
+import unittest
+import time
+
 from algosdk.encoding import decode_address, encode_address
 from algosdk.future import transaction
 from algosdk import account, mnemonic
@@ -11,110 +13,23 @@ from algosdk.v2client import algod
 from pyteal import compileTeal, Mode
 from election_smart_contract import approval_program, clear_state_program
 
-#import ENV # import your own file that has your private keys, mnemonics, etc
+# fill in your secret mnemonics and algod_token in secrets.py
+from secrets import account_mnemonics, algod_token
 
-# user declared account mnemonics
-#creator_mnemonic = ENV.accountMnemonics[0]
-user_mnemonic = "enjoy face require vibrant fun detect solid divert police gasp clown entire vital mandate soccer ready oven proud breeze key mountain civil number absent whale"
-creator_mnemonic = "jelly move shuffle prevent vocal garden escape leave obvious shop ostrich lecture filter cake lamp strategy swim keen marble abstract inspire wife fossil about lamp"
-user_address = "ZY2RCEOGP5YTCTY2SW4UZ272VBZB2B3DYIG22JLBXSTFS3RTT67IZCZZV4"
-decoded_user_address = decode_address('ZY2RCEOGP5YTCTY2SW4UZ272VBZB2B3DYIG22JLBXSTFS3RTT67IZCZZV4')
-#print("decoded")
+from deploy import compile_program, wait_for_confirmation, create_app
 
-# user declared algod connection parameters. Node must have EnableDeveloperAPI set to true in its config
+account_private_keys = [mnemonic.to_private_key(mn) for mn in account_mnemonics]
+account_addresses = [account.address_from_private_key(sk) for sk in account_private_keys]
+
+# user declared algod connection parameters
 algod_address = "https://testnet-algorand.api.purestake.io/ps2"
-#algod_token = ENV.algod_token
-algod_token = "HisMhbIBIb4aHENCtocAK3Gu5jDAyoospRztpe1d"
 
-# helper function to compile program source
-def compile_program(client, source_code):
-    compile_response = client.compile(source_code)
-    return base64.b64decode(compile_response["result"])
-
-
-# helper function that converts a mnemonic passphrase into a private signing key
-def get_private_key_from_mnemonic(mn):
-    private_key = mnemonic.to_private_key(mn)
-    return private_key
-
-
-# helper function that waits for a given txid to be confirmed by the network
-def wait_for_confirmation(client, txid):
-    last_round = client.status().get("last-round")
-    txinfo = client.pending_transaction_info(txid)
-    while not (txinfo.get("confirmed-round") and txinfo.get("confirmed-round") > 0):
-        print("Waiting for confirmation...")
-        last_round += 1
-        client.status_after_block(last_round)
-        txinfo = client.pending_transaction_info(txid)
-    print(
-        "Transaction {} confirmed in round {}.".format(
-            txid, txinfo.get("confirmed-round")
-        )
-    )
-    return txinfo
-
-
-def wait_for_round(client, round):
-    last_round = client.status().get("last-round")
-    print(f"Waiting for round {round}")
-    while last_round < round:
-        last_round += 1
-        client.status_after_block(last_round)
-        print(f"Round {last_round}")
-
-
-# create new application
-def create_app(
-    client,
-    private_key,
-    approval_program,
-    clear_program,
-    global_schema,
-    local_schema,
-    app_args,
-):
-    # define sender as creator
-    sender = account.address_from_private_key(private_key)
-
-    # declare on_complete as NoOp
-    on_complete = transaction.OnComplete.NoOpOC.real
-
-    # get node suggested parameters
-    params = client.suggested_params()
-    # comment out the next two (2) lines to use suggested fees
-    params.flat_fee = True
-    params.fee = 1000
-
-    # create unsigned transaction
-    txn = transaction.ApplicationCreateTxn(
-        sender,
-        params,
-        on_complete,
-        approval_program,
-        clear_program,
-        global_schema,
-        local_schema,
-        app_args,
-    )
-
-    # sign transaction
-    signed_txn = txn.sign(private_key)
-    tx_id = signed_txn.transaction.get_txid()
-
-    # send transaction
-    client.send_transactions([signed_txn])
-
-    # await confirmation
-    wait_for_confirmation(client, tx_id)
-
-    # display results
-    transaction_response = client.pending_transaction_info(tx_id)
-    app_id = transaction_response["application-index"]
-    print("Created new app-id:", app_id)
-
-    return app_id
-
+# algod client
+client = algod.AlgodClient(
+    algod_token="",
+    algod_address="https://testnet-algorand.api.purestake.io/ps2",
+    headers={"X-API-Key": algod_token}
+)
 
 # opt-in to application
 def opt_in_app(client, private_key, index):
@@ -145,25 +60,23 @@ def opt_in_app(client, private_key, index):
     transaction_response = client.pending_transaction_info(tx_id)
     print("OptIn to app-id:", transaction_response["txn"]["txn"]["apid"])
 
-def call_app_approve_voter(client, private_key, index, app_args):
 
-    #user_address = app_args[1]
-    response = app_args[2]
+def call_app_approve_voter(client, index, creator_private_key, user_address, yes_or_no_bytes):
+    # user_address = app_args[1]
+    app_args = [b"update_user_status", decode_address(user_address), yes_or_no_bytes]
     # declare sender
-    sender = account.address_from_private_key(private_key)
+    sender = account.address_from_private_key(creator_private_key)
+
     print("Call from account:", sender)
 
     # get node suggested parameters
     params = client.suggested_params()
-    # comment out the next two (2) lines to use suggested fees
-    params.flat_fee = True
-    params.fee = 1000
 
     # create unsigned transaction
-    txn = transaction.ApplicationNoOpTxn(sender, params, index, app_args, accounts = [sender, user_address])
+    txn = transaction.ApplicationNoOpTxn(sender, params, index, app_args, accounts=[sender, user_address])
 
     # sign transaction
-    signed_txn = txn.sign(private_key)
+    signed_txn = txn.sign(creator_private_key)
     tx_id = signed_txn.transaction.get_txid()
 
     # send transaction
@@ -172,7 +85,8 @@ def call_app_approve_voter(client, private_key, index, app_args):
     # await confirmation
     wait_for_confirmation(client, tx_id)
     transaction_response = client.pending_transaction_info(tx_id)
-    print("Approved user ", user_address, "for apid ", transaction_response, ": ", response)
+    print("Approved user ", user_address, "for apid ", transaction_response, ": ", yes_or_no_bytes)
+
 
 # call application
 def call_app(client, private_key, index, app_args):
@@ -200,6 +114,7 @@ def call_app(client, private_key, index, app_args):
     wait_for_confirmation(client, tx_id)
 
 
+# formats the state that is retrieved form
 def format_state(state):
     formatted = {}
     for item in state:
@@ -208,8 +123,10 @@ def format_state(state):
         formatted_key = base64.b64decode(key).decode("utf-8")
         if value["type"] == 1:
             # byte string
-            if formatted_key == "VoteOptions":
+            if formatted_key in ["VoteOptions", "can_vote"]:
                 formatted_value = base64.b64decode(value["bytes"]).decode("utf-8")
+            elif formatted_key == "Creator":
+                formatted_value = encode_address(base64.b64decode(value["bytes"]))
             else:
                 formatted_value = value["bytes"]
             formatted[formatted_key] = formatted_value
@@ -297,6 +214,34 @@ def close_out_app(client, private_key, index):
     transaction_response = client.pending_transaction_info(tx_id)
     print("Closed out from app-id: ", transaction_response["txn"]["txn"]["apid"])
 
+# close out from application
+def clear_state_app(client, private_key, index):
+    # declare sender
+    sender = account.address_from_private_key(private_key)
+
+    # get node suggested parameters
+    params = client.suggested_params()
+    # comment out the next two (2) lines to use suggested fees
+    params.flat_fee = True
+    params.fee = 1000
+
+    # create unsigned transaction
+    txn = transaction.ApplicationClearStateTxn(sender, params, index)
+
+    # sign transaction
+    signed_txn = txn.sign(private_key)
+    tx_id = signed_txn.transaction.get_txid()
+
+    # send transaction
+    client.send_transactions([signed_txn])
+
+    # await confirmation
+    wait_for_confirmation(client, tx_id)
+
+    # display results
+    transaction_response = client.pending_transaction_info(tx_id)
+    print("Clear state from app-id: ", transaction_response["txn"]["txn"]["apid"])
+
 
 # clear application
 def clear_app(client, private_key, index):
@@ -332,19 +277,7 @@ def intToBytes(i):
     return i.to_bytes(8, "big")
 
 
-def main():
-    # initialize an algodClient
-    # algod_client = algod.AlgodClient(algod_token, algod_address)
-    algod_client = algod.AlgodClient(
-        algod_token="",
-        algod_address="https://testnet-algorand.api.purestake.io/ps2",
-        headers={"X-API-Key": algod_token}
-    )
-
-    # define private keys
-    creator_private_key = get_private_key_from_mnemonic(creator_mnemonic)
-    user_private_key = get_private_key_from_mnemonic(user_mnemonic)
-
+def test_create_app(client, creator_private_key, election_end, num_vote_options, vote_options):
     # declare application state storage (immutable)
     local_ints = 1  # user's voted variable
     local_bytes = 1  # user's can_vote variable
@@ -362,7 +295,7 @@ def main():
         approval_program_ast, mode=Mode.Application, version=5
     )
     # compile program to binary
-    approval_program_compiled = compile_program(algod_client, approval_program_teal)
+    approval_program_compiled = compile_program(client, approval_program_teal)
 
     # get PyTeal clear state program
     clear_state_program_ast = clear_state_program()
@@ -372,29 +305,19 @@ def main():
     )
     # compile program to binary
     clear_state_program_compiled = compile_program(
-        algod_client, clear_state_program_teal
+        client, clear_state_program_teal
     )
-
-    # configure election end period
-    status = algod_client.status()
-    electionEnd = status["last-round"] + 8000
-
-    print(f"Election from rounds: {status['last-round']} to {electionEnd}")
-
-    # configure vote options
-    numVoteOptions = 4
-    voteOptions = b"A,B,C,D"
 
     # create list of bytes for app args
     app_args = [
-        intToBytes(electionEnd),
-        intToBytes(numVoteOptions),
-        voteOptions
+        intToBytes(election_end),
+        intToBytes(num_vote_options),
+        vote_options
     ]
 
     # create new application
     app_id = create_app(
-        algod_client,
+        client,
         creator_private_key,
         approval_program_compiled,
         clear_state_program_compiled,
@@ -403,80 +326,105 @@ def main():
         app_args,
     )
 
-    # read global state of application
-    print(
-        "Global state:",
-        read_global_state(
-            algod_client, account.address_from_private_key(creator_private_key), app_id
-        ),
-    )
+    return app_id
 
 
-    # # wait for registration period to start
-    wait_for_round(algod_client, status["last-round"] + 1)
-    #
-    # user opt-in to application
-    opt_in_app(algod_client, user_private_key, app_id)
+class TestSimpleElection(unittest.TestCase):
+    # tests the creation and initial variable setup
+    def test_01_create_election(self):
+        print(f"Testing election deployment/creation")
 
-    # creator opt-in to application
-    opt_in_app(algod_client, creator_private_key, app_id)
+        relative_election_end = 5000
+        # app args
+        status = client.status()
+        election_end = status["last-round"] + relative_election_end
+        num_vote_options = 2
+        vote_options = "ETH,ALGO"
 
-    #
-    #wait_for_round(algod_client, voteBegin)
+        # test smart contract creation with large election end time
+        TestSimpleElection.app_id = test_create_app(client, account_private_keys[0], election_end, num_vote_options, vote_options)
+        time.sleep(1.5)
 
-    # call app for creator to approve voter
+        # check global variables setup
+        global_state = read_global_state(client, account_addresses[0], TestSimpleElection.app_id)
+        self.assertEqual(global_state["Creator"], account_addresses[0], "Creator variable is NOT correct")
+        self.assertEqual(global_state["VoteOptions"], vote_options, "VoteOptions variable is NOT correct")
+        self.assertEqual(global_state["ElectionEnd"], election_end, "ElectionEnd variable is NOT correct")
+        for i in range(0, 2):
+            self.assertEqual(global_state[f"VotesFor{i}"], 0, f"VotesFor{i} not initialized to 0")
 
-    creator_response = b"yes"
-    call_app_approve_voter(algod_client, creator_private_key, app_id, [b"update_user_status", decoded_user_address, creator_response])
-    call_app(algod_client, user_private_key, app_id, [b"vote", (1).to_bytes(8, 'big')])
-    
-    #
-    # # call application without arguments
-    
-    #
-    # # read local state of application from user account
-    # print(
-    #     "Local state:",
-    #     read_local_state(
-    #         algod_client, account.address_from_private_key(user_private_key), app_id
-    #     ),
-    # )
-    #
-    # # wait for registration period to start
-    # wait_for_round(algod_client, voteEnd)
-    #
-    # # read global state of application
-    # global_state = read_global_state(
-    #     algod_client, account.address_from_private_key(creator_private_key), app_id
-    # )
-    # print("Global state:", global_state)
-    #
-    # max_votes = 0
-    # max_votes_choice = None
-    # for key, value in global_state.items():
-    #     if (
-    #         key
-    #         not in (
-    #             "RegBegin",
-    #             "RegEnd",
-    #             "VoteBegin",
-    #             "VoteEnd",
-    #             "Creator",
-    #         )
-    #         and isinstance(value, int)
-    #     ):
-    #         if value > max_votes:
-    #             max_votes = value
-    #             max_votes_choice = key
-    #
-    # print("The winner is:", max_votes_choice)
-    #
-    # # delete application
-    # delete_app(algod_client, creator_private_key, app_id)
-    #
-    # # clear application from user account
-    # clear_app(algod_client, user_private_key, app_id)
+    # tests two users opting in to contract
+    def test_02_opt_in(self):
+        for i in range(0, 2):
+            print(f"Testing account {account_addresses[i]} opt-in")
+
+            opt_in_app(client, account_private_keys[i], TestSimpleElection.app_id)
+            local_state = read_local_state(client, account_addresses[i], TestSimpleElection.app_id)
+            self.assertEqual("maybe", local_state["can_vote"], f"User {i}'s can_vote not set to 'maybe'")
+            time.sleep(0.5)
+
+            print("-------------------------------------------------------------------------------")
+
+    # tests the "yes" approval of two users
+    def test_03_approve_users(self):
+        for i in range(0, 2):
+            print(f"Testing creator approving {account_addresses[i]}")
+
+            # have the creator approve the user with "yes"
+            call_app_approve_voter(
+                client=client,
+                index=TestSimpleElection.app_id,
+                creator_private_key=account_private_keys[0],
+                user_address=account_addresses[i],
+                yes_or_no_bytes=b"yes"
+            )
+            time.sleep(1)
+
+            # check local state of the user that was approved to ensure it was updated correctly
+            local_state = read_local_state(client, account_addresses[i], TestSimpleElection.app_id)
+            self.assertEqual("yes", local_state["can_vote"], f"Approved user's can_vote should be 'yes'!")
+
+            print("-------------------------------------------------------------------------------")
+
+    # tests approved users trying to vote
+    def test_04_voting(self):
+        for i in range(0, 2):
+            print(f"Testing account {account_addresses[i]} voting for option {i}")
+
+            # have user i vote for option i
+            app_args = [b"vote", i.to_bytes(8, 'big')]
+            call_app(client, account_private_keys[i], TestSimpleElection.app_id, app_args)
+            time.sleep(1)
+
+            # read the local state of the user to ensure it was updated correctly
+            local_state = read_local_state(client, account_addresses[i], TestSimpleElection.app_id)
+            self.assertEqual(i, local_state["voted"], f"Wrong vote in user's voted variable")
+            time.sleep(1)
+
+            # read the global state of app to ensure it was updated correctly
+            global_state = read_global_state(client, account_addresses[0], TestSimpleElection.app_id)
+            for j in range(0, 2):
+                self.assertEqual(1 if i >= j else 0, global_state[f"VotesFor{j}"])
+
+            print("-------------------------------------------------------------------------------")
+
+    # test closeout functionality on approved user 1, note: this happens before the election end
+    def test_05_closeout(self):
+        print(f"Testing close out of account {account_addresses[1]}")
+        # close out of the app (note this is happening before the election end)
+        close_out_app(client, account_private_keys[1], TestSimpleElection.app_id)
+        time.sleep(1)
+
+        # check the global state of the app to make sure values were updated correctly
+        global_state = read_global_state(client, account_addresses[0], TestSimpleElection.app_id)
+        self.assertEqual(1, global_state[f"VotesFor{0}"])
+        self.assertEqual(0, global_state[f"VotesFor{1}"]) # used to be 1, now is 0
+
+    # delete the app as cleanup to not take up the creator's account's maximum app limit
+    def test_99_delete_app(self):
+        print(f"Deleting app {TestSimpleElection.app_id}")
+        delete_app(client, account_private_keys[0], TestSimpleElection.app_id)
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    unittest.main()
