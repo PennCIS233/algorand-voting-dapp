@@ -113,10 +113,12 @@ For standardization, we require everyone use the same global variable names in t
 
 ### Approval Program
 
-MAIN CONDITIONAL: 
+#### Main Conditional
+
 This logic allows the contract to choose which operation to run based on how the contract is called. For example, if Txn.application_id() is 0, then the on_creation sequence will run. If `Txn.on_completion()` is `OnComplete.OptIn`, the `on_register` sequence will run. We've completed the first few cases for you.
 
-CREATION: 
+#### Creation
+
 Step 1: Store the values of election parameters passed from the application arguments of the election that was created. 
 - the creator as whoever deployed the smart contract
 - the round number for the end of the election 
@@ -128,26 +130,40 @@ Although there are many ways to store the vote options, for the purposes of this
 Step 2: For all vote options, set initial vote tallies corresponding to all vote options to 0 where the keys are the vote options.
 
 
-<u>CLOSE OUT</u>: 
+#### Close-out
+
 Step 1: Removes the user's vote from the correct vote tally if the user closes out of program before the end of the election. 
+
 Step 2: Check that the voter is still in the election period and has actually voted. If so, update vote tally by subtracting one vote for whom the user voted for.
 
 
-REGISTRATION:
+#### Registration
+
 Check users are registering before the end of the election period and set user's voting status to "maybe."
 
 
-UPDATE USER LOGIC: 
+#### Update user logic
+
 Step 1: Fetch the creator's decision to approve or reject a user acccount and update user's voting status accordingly. 
 Step 2: Only the creator can approve or disapprove users and users can only be approved before the election ends. 
 Step 3: Think about how the given user's address and creator's decision are stored 
 
 
-<u>USER VOTING LOGIC</u>: This logic is responsible for casting an account's vote. 
+#### User Voting Logic: 
+
+This logic is responsible for casting an account's vote. 
+
 STEP 1: Check that the election isn't over and that user is allowed to vote using get_sender_can_vote. 
+
 STEP 2: Check using get_vote_of_sender to check if the user has already voted. If so, return a 0. Otherwise, get the choice that the user wants to vote for from the application arguments.
+
 STEP 3: Update the vote tally for the user's choice under the corresponding global variables.
+
 STEP 4: Record the user has successfully voted by writing the choice they voted for to the user's "voted" key to reflect their choice. Make sure that the vote choice is within index bounds of the vote options. 
+
+### Clear State Program
+
+This handles the logic of when an account clears its participation in a smart contract. Just like the `close_out` sequence, ensure the user clears state of program before the end of voting period and remove their vote from the correct vote tally.
 
 ## Step 2 - Implement the smart contract deploy script
 In the deploy script, you will implement functions that are used to interact with the smart contract and deploy the voting contract in the `main()` function.
