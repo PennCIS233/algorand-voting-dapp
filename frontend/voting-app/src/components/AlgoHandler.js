@@ -249,7 +249,7 @@ class AlgoHandler {
     return tx;
   }
 
-  // creatorApprove TODO: rename to creatorUpdateUserStatus
+  // updateUserStatus
   // Description:
   //  sends a transaction from the creator (creatorAddress) to the given app (appID) to approve/reject the given user (userAddress)
   // Parameters:
@@ -257,7 +257,7 @@ class AlgoHandler {
   //  userAddress (string) - address of the user who is being approved/rejected
   //  yesOrNo (string) - "yes" or "no" depending on if the creator wants the user to be allowed to vote or not
   //  appID (number) - app id (aka index) of the smart contract app
-  async creatorApprove(creatorAddress, userAddress, yesOrNo, appID) {
+  async updateUserStatus(creatorAddress, userAddress, yesOrNo, appID) {
     console.log(`${creatorAddress} attempting to ${yesOrNo == 'yes' ? 'approve' : 'deny'} account ${userAddress}`);
 
     // get the suggested params for the transaction

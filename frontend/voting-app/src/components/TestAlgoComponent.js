@@ -82,7 +82,7 @@ function TestAlgoComponent() {
   }
 
   const creatorApprove = async (user, choice) => {
-    await mainAlgoHandler.creatorApprove(mainAccount, user, choice, appID);
+    await mainAlgoHandler.updateUserStatus(mainAccount, user, choice, appID);
   }
 
   // a user is allowed to vote iff they have 'yes' as can_vote and they have not already voted

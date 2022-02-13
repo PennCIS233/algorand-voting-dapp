@@ -9,7 +9,7 @@ function ParticipantsCard(props) {
   // Parameters:
   //  user (string) - user to accept into the election
   const handleAccept = (user) => {
-    mainAlgoHandler.creatorApprove(
+    mainAlgoHandler.updateUserStatus(
       props.user,
       user,
       "yes",
@@ -23,7 +23,7 @@ function ParticipantsCard(props) {
   // Parameters:
   //  user (string) - user to reject from the election
   const handleReject = (user) => {
-    mainAlgoHandler.creatorApprove(
+    mainAlgoHandler.updateUserStatus(
       props.user,
       user,
       "no",
