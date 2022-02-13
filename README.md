@@ -70,7 +70,9 @@ Next, download the files for this project. Open your terminal, and `cd` into the
 
 To see i fyou have everything working, type `npm start`. You should see a basic webpage appear in your browser at localhost:3000. If you made it this far, then your setup has been successful!
 
+
 ## Step 1 - Create the smart contract
+### Design Overview: 
 In ``` election_smart_contract.py ```, you will be creating a smart contract that conducts an election with multiple discrete choices. You will define each choice as a byte string and user accounts will be able to register and vote for any of the choices. There is a configurable election period defined by global variable, `ElectionEnd` which is relative to the current time
 - An account must register in order to vote
 - Accounts cannot vote more than once. Accounts that close out of the application before the voting period has concluded, denoted by the global variable, ElectionEnd
@@ -84,6 +86,10 @@ Here's simplified overview of the election smart contract:
 4b. Approved user who voted can remove their vote (potentially then revote) if they closeout or clear program
 5.  Repeat 2 to 4 for each user who opts-in before the election end
 6.  Election ends and no further changes (opt-ins, votes, approvals/rejects) can be made to the election
+
+Smart contracts are implemented using two programs: 
+- `ApprovalProgram`: Responsible for processing all application calls to the contract and implementing most of the logic of an application. Handles opting in, approving users to vote, and casting votes. Used to close out accounts and can control if a close out is allowed or not. 
+- `ClearStateProgram`: uses the clear call to remove the smart contract from the balance record of user accounts. This method of opting out cannot be stopped by the smart contract. 
 
 ### Global Variables
 For standardization, we require everyone use the same global variable names in the approval program of the smart contract. 
@@ -114,10 +120,10 @@ For standardization, we require everyone use the same global variable names in t
 ### Approval Program
 
 #### Main Conditional
-
-This logic allows the contract to choose which operation to run based on how the contract is called. For example, if Txn.application_id() is 0, then the on_creation sequence will run. If `Txn.on_completion()` is `OnComplete.OptIn`, the `on_register` sequence will run. We've completed the first few cases for you.
+The heart of the smart contract is a simple logical switch statement used to route evaluation to different set of logic based on a Transaction's `OnComplete` value (defined in `create_app`). This logic allows the contract to choose which operation to run based on how the contract is called. For example, if Txn.application_id() is 0, then the on_creation sequence will run. If `Txn.on_completion()` is `OnComplete.OptIn`, the `on_register` sequence will run. We've completed the first few cases for you.
 
 #### Creation
+Implement `on_create`: This sequence runs when the smart contract is created. It takes arguments from creation and puts them into the proper global variables.
 
 Step 1: Store the values of election parameters passed from the application arguments of the election that was created. 
 - the creator as whoever deployed the smart contract
@@ -131,6 +137,7 @@ Step 2: For all vote options, set initial vote tallies corresponding to all vote
 
 
 #### Close-out
+Implement 
 
 Step 1: Removes the user's vote from the correct vote tally if the user closes out of program before the end of the election. 
 
@@ -145,7 +152,9 @@ Check users are registering before the end of the election period and set user's
 #### Update user logic
 
 Step 1: Fetch the creator's decision to approve or reject a user acccount and update user's voting status accordingly. 
+
 Step 2: Only the creator can approve or disapprove users and users can only be approved before the election ends. 
+
 Step 3: Think about how the given user's address and creator's decision are stored 
 
 
@@ -155,7 +164,7 @@ This logic is responsible for casting an account's vote.
 
 STEP 1: Check that the election isn't over and that user is allowed to vote using get_sender_can_vote. 
 
-STEP 2: Check using get_vote_of_sender to check if the user has already voted. If so, return a 0. Otherwise, get the choice that the user wants to vote for from the application arguments.
+STEP 2: Check using `get_vote_of_sender` to check if the user has already voted. If so, return a 0. Otherwise, get the choice that the user wants to vote for from the application arguments.
 
 STEP 3: Update the vote tally for the user's choice under the corresponding global variables.
 
@@ -165,20 +174,26 @@ STEP 4: Record the user has successfully voted by writing the choice they voted 
 
 This handles the logic of when an account clears its participation in a smart contract. Just like the `close_out` sequence, ensure the user clears state of program before the end of voting period and remove their vote from the correct vote tally.
 
+
 ## Step 2 - Implement the smart contract deploy script
+
 In the deploy script, you will implement functions that are used to interact with the smart contract and deploy the voting contract in the `main()` function.
 
-Smart contracts are implemented using two programs
-- ApprovalProgram: Responsible for processing all application calls to the contract and implementing most of the logic of an application. Handles opting in, approving users to vote, and casting votes. Used to close out accounts and can control if a close out is allowed or not. 
-- ClearStateProgram: uses the clear call to remove the smart contract from the balance record of user accounts. This method of opting out cannot be stopped by the smart contract. 
-- 
-Smart contracts are implemented using ApplicationCall transactions. These transaction types are as follows:
-- `NoOp` - Generic application calls to execute the ApprovalProgram.
+Smart contracts are implemented using `ApplicationCall` transactions. These transaction types are as follows:
+- `NoOp` - Generic application calls to execute the `ApprovalProgram`.
 - `OptIn` - Accounts use this transaction to begin participating in a smart contract. Participation enables local storage usage.
 - `DeleteApplication` - Transaction to delete the application.
 - `UpdateApplication` - Transaction to update TEAL Programs for a contract.
 - `CloseOut` - Accounts use this transaction to close out their participation in the contract. This call can fail based on the TEAL logic, preventing the account from removing the contract from its balance record.
-- `ClearState` - Similar to CloseOut, but the transaction will always clear a contract from the account’s balance record whether the program succeeds or fails.
+- `ClearState` - Similar to `CloseOut`, but the transaction will always clear a contract from the account’s balance record whether the program succeeds or fails.
+
+Step 1: Implement the `create_app`, `opt_in_app`, `call_app_approve_voter`, `call_app`, `delete_app`, `close_out_app`, and `clear_app` functions using the types of transaction application calls mentioned above. 
+
+Refer to this link for specific transaction calls for the application methods mentioned above: https://developer.algorand.org/docs/get-details/dapps/smart-contracts/frontend/apps/.
+
+Step 2: Implement `deploy_create_app`. First, compile the approval and clear state programs to TEAL assembly, then to binary. Create the application and the application arguments which should include a list of election parameters you defined previously as global variables: `election_end`, `num_vote_options`, `vote_options`.
+
+Step 3: Implement the `main()` function where you initialize the algod client and define absolute election end time fom the status of the last round. Deploy the application and print the global state. 
 
 ## Step 3 - Implement the front end
 
