@@ -47,7 +47,7 @@ function ParticipantsCard(props) {
             <Accordion>
               {props.optedAccounts["yes"] &&
                 props.optedAccounts["yes"].map((user) => (
-                  <Accordion.Item eventKey={user}>
+                  <Accordion.Item eventKey={user} key={`yes-${user}`}>
                     <Accordion.Header>
                       {user.substring(0, 20) + "..."}
                     </Accordion.Header>
@@ -67,7 +67,7 @@ function ParticipantsCard(props) {
             <Accordion>
               {props.optedAccounts["no"] &&
                 props.optedAccounts["no"].map((user) => (
-                  <Accordion.Item eventKey={user}>
+                  <Accordion.Item eventKey={user} key={`no-${user}`}>
                     <Accordion.Header>
                       {user.substring(0, 20) + "..."}
                     </Accordion.Header>
@@ -83,7 +83,7 @@ function ParticipantsCard(props) {
             <Accordion>
               {props.optedAccounts["maybe"] &&
                 props.optedAccounts["maybe"].map((user) => (
-                  <Accordion.Item eventKey={user}>
+                  <Accordion.Item eventKey={user} key={`maybe-${user}`}>
                     <Accordion.Header>
                       {user.substring(0, 20) + "..."}
                     </Accordion.Header>
