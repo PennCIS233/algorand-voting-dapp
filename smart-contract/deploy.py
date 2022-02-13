@@ -347,11 +347,9 @@ def intToBytes(i):
 
 
 def deploy_create_app(client, creator_private_key, election_end, num_vote_options, vote_options):
-    ## STEP 1: declare application state storage (immutable)
-    # You need to declare both local and global ints and bytes for the local and global state schema. 
     
 
-    ## STEP 2: Compile approval and clear state programs to TEAL assembly, then to binary 
+    ## Compile approval and clear state programs to TEAL assembly, then to binary 
 
     # get PyTeal approval program
     approval_program_ast = approval_program()
