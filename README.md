@@ -125,13 +125,21 @@ Although there are many ways to store the vote options, for the purposes of this
 Step 2: For all vote options, set initial vote tallies corresponding to all vote options to 0 where the keys are the vote options.
 
 
-CLOSE OUT: 
+<u>CLOSE OUT<\u>: 
 Step 1: Removes the user's vote from the correct vote tally if the user closes out of program before the end of the election. 
 Step 2: Check that the voter is still in the election period and has actually voted. If so, update vote tally by subtracting one vote for whom the user voted for.
 
-## Step 2 - Deploy the smart contract
+REGISTRATION:
+Check users are registering before the end of the election period and set user's voting status to "maybe."
 
-In the deploy script, you will implement functions that are used to interact with the smart contract. Smart contracts are implemented using ApplicationCall transactions. These transaction types are as follows:
+## Step 2 - Implement the smart contract deploy script
+In the deploy script, you will implement functions that are used to interact with the smart contract and deploy the voting contract in the `main()` function.
+
+Smart contracts are implemented using two programs
+- ApprovalProgram: Responsible for processing all application calls to the contract and implementing most of the logic of an application. Handles opting in, approving users to vote, and casting votes. Used to close out accounts and can control if a close out is allowed or not. 
+- ClearStateProgram: uses the clear call to remove the smart contract from the balance record of user accounts. This method of opting out cannot be stopped by the smart contract. 
+- 
+Smart contracts are implemented using ApplicationCall transactions. These transaction types are as follows:
 - `NoOp` - Generic application calls to execute the ApprovalProgram.
 - `OptIn` - Accounts use this transaction to begin participating in a smart contract. Participation enables local storage usage.
 - `DeleteApplication` - Transaction to delete the application.
