@@ -11,15 +11,34 @@ from algosdk.v2client import algod
 from pyteal import compileTeal, Mode
 from election_smart_contract import approval_program, clear_state_program
 from secrets import account_mnemonics, algod_token, algod_address
+import election_params
 from election_params import relative_election_end, num_vote_options, vote_options, local_ints, local_bytes, global_ints, global_bytes
-#import ENV # import your own file that has your private keys, mnemonics, etc
 
+''' Define keys, addresses, and token ''' 
+#import ENV # import your own file that has your private keys, mnemonics, etc
 account_private_keys = [mnemonic.to_private_key(mn) for mn in account_mnemonics]
 account_addresses = [account.address_from_private_key(sk) for sk in account_private_keys]
 # user declared algod connection parameters. Node must have EnableDeveloperAPI set to true in its config
 algod_address = algod_address
 algod_token = algod_token
 
+''' Declare application state storage for local and global schema ''' 
+local_ints = local_ints  # user's voted variable
+local_bytes = local_bytes  # user's can_vote variable
+global_ints = (
+    global_ints  # 3 for setup + x for choices. Use a larger number for more choices.
+)
+global_bytes = global_bytes  # Creator and VoteOptions variables
+global_schema = transaction.StateSchema(global_ints, global_bytes)
+local_schema = transaction.StateSchema(local_ints, local_bytes)
+
+
+''' Define election parameters ''' 
+relative_election_end = relative_election_end
+num_vote_options = num_vote_options
+vote_options = vote_options
+
+'''HELPER FUNCTIONS ''' 
 # helper function to compile program source
 def compile_program(client, source_code):
     compile_response = client.compile(source_code)
@@ -57,6 +76,7 @@ def wait_for_round(client, round):
         client.status_after_block(last_round)
         print(f"Round {last_round}")
 
+'''----------------------------------------Transaction Sub-Types for Application-----------------------------------------------'''
 
 # create new application
 def create_app(
@@ -329,14 +349,7 @@ def intToBytes(i):
 def deploy_create_app(client, creator_private_key, election_end, num_vote_options, vote_options):
     ## STEP 1: declare application state storage (immutable)
     # You need to declare both local and global ints and bytes for the local and global state schema. 
-    local_ints = local_ints  # user's voted variable
-    local_bytes = local_bytes  # user's can_vote variable
-    global_ints = (
-        global_ints  # 3 for setup + x for choices. Use a larger number for more choices.
-    )
-    global_bytes = global_bytes  # Creator and VoteOptions variables
-    global_schema = transaction.StateSchema(global_ints, global_bytes)
-    local_schema = transaction.StateSchema(local_ints, local_bytes)
+    
 
     ## STEP 2: Compile approval and clear state programs to TEAL assembly, then to binary 
 
@@ -389,24 +402,23 @@ def main():
         algod_address=algod_address,
         headers={"X-API-Key": algod_token}
     )
-
-    relative_election_end = relative_election_end
-    status = client.status()
+    status = algod_client.status()
     election_end = status["last-round"] + relative_election_end
-    num_vote_options = num_vote_options
-    vote_options = vote_options
-
-# deploy smart contract creation with large election end time
-    try:
-        TestElection1.app_id = deploy_create_app(client, account_private_keys[0], election_end, num_vote_options, vote_options)
-        print('App creation succeeded')
-        print("Global state:", read_global_state(client, account.address_from_private_key(creator_private_key), app_id),)
-
-    except:
-        print('App creation failed')
-        raise 'App creation failed'
 
     
+    creator_private_key = account_private_keys[0]
+    #deploy smart contract creation with large election end time
+    try:
+        app_id = deploy_create_app(algod_client, creator_private_key, election_end, num_vote_options, vote_options)
+        print('App creation succeeded')
+        
+
+    except Exception as e:
+        print('App creation failed')
+        print(e)
+        # raise 'App creation failed'
+
+    print("Global state:", read_global_state(algod_client, account.address_from_private_key(creator_private_key), app_id),)
 
 
 if __name__ == "__main__":
