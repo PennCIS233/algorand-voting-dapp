@@ -71,6 +71,19 @@ Next, download the files for this project. Open your terminal, and `cd` into the
 To see i fyou have everything working, type `npm start`. You should see a basic webpage appear in your browser at localhost:3000. If you made it this far, then your setup has been successful!
 
 ## Step 1 - Create the smart contract
+You will be creating a smart contract that conducts an election with multiple discrete choices. You will define each choice as a byte string and user accounts will be able to register and vote for any of the choices. There is a configurable election period defined by global variable, `ElectionEnd` which is relative to the current time
+- An account must register in order to vote
+- Accounts cannot vote more than once. Accounts that close out of the application before the voting period has concluded, denoted by the global variable, ElectionEnd
+- The creator of the election has to approve every account that opts in 
+
+Here's simplified overview of the election smart contract: 
+1.  Creator deploys smart contract
+2.  User(s) opt-in to the contract
+3.  Creator approves/reject user's ability to vote
+4.  Approved user can cast vote once
+4b. Approved user who voted can remove their vote (potentially then revote) if they closeout or clear program
+5.  Repeat 2 to 4 for each user who opts-in before the election end
+6.  Election ends and no further changes (opt-ins, votes, approvals/rejects) can be made to the election
 
 
 ## Step 2 - Implement the front end
