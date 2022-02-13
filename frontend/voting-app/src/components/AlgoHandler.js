@@ -25,12 +25,12 @@ class AlgoHandler {
     this.indexerClient = new algosdk.Indexer(algodToken, indexerServer, algodPort);
   }
 
-  // connectToAccounts
+  // getAlgoSignerAccounts
   // Description:
   //  Attempts to connect to the accounts present in the browser's AlgoSigner addon
   // Returns:
   //  accounts (string[]) - string array of all account addresses
-  async connectToAccounts() {
+  async getAlgoSignerAccounts() {
     if (typeof window.AlgoSigner == "undefined") {
       console.log("Please install the AlgoSigner extension");
       alert("Please install the AlgoSigner extension");
@@ -118,6 +118,49 @@ class AlgoHandler {
       newState[key] = valType == 1 ? bytesVal : uintVal;
     }
     return newState;
+  }
+
+
+  // getAllLocalStates
+  // Description:
+  //  Takes a given appID and finds all accounts that have opted-in to it, then returns all users' decoded local states
+  // Parameters:
+  //  appID (number) - id (aka index) of the Algorand smart contract app
+  // Return:
+  //  returns (object) - Javascript object (dictionary) of addresses mapped to their states
+  //   example: {'jsdalkfjsd...': {'can_vote': 'yes', 'voted': 2}}
+  async getAllLocalStates(appID) {
+    let allLocalStates = {};
+
+    let accountInfo = await this.indexerClient.searchAccounts().applicationID(appID).do();
+
+    let accounts = accountInfo['accounts'];
+    console.log(accounts);
+
+    // go through all the accounts looking at 'can_vote' variable and add account to correct array
+    for (let acc of accounts) {
+      let address = acc["address"];
+      allLocalStates[address] = {};
+
+      let apps = acc["apps-local-state"];
+      if (apps) {
+        for (let app of apps) {
+          if (app["id"] == appID) {
+            for (let keyValue of app["key-value"]) {
+              let key = this.decode(keyValue["key"]);
+              if (key == "can_vote") {
+                let value = this.decode(keyValue["value"]["bytes"]);
+                allLocalStates[address][key] = value;
+              } else if (key == "voted") {
+                allLocalStates[address][key] = keyValue["value"]["uint"];
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return allLocalStates;
   }
 
   // this will be changed later to getAllLocalStates

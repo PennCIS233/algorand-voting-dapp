@@ -45,10 +45,29 @@ function ElectionPage() {
     console.log(electionState);
 
     mainAlgoHandler
-      .getOptedInAccountsAndVotes(parseInt(electionId))
-      .then((res) => {
-        setOptedAccounts(res[0]);
-        setUserVotes(res[1]);
+      .getAllLocalStates(parseInt(electionId))
+      .then((allLocalStates) => {
+        let newOptedAccounts = {
+          'yes': [],
+          'no': [],
+          'maybe': []
+        };
+        for (const address in allLocalStates) {
+          let canVote = allLocalStates[address]['can_vote']
+          if (canVote) {
+            newOptedAccounts[canVote].push(address);
+          }
+        }
+        setOptedAccounts(newOptedAccounts);
+
+        let newUserVotes = {};
+        for (const address in allLocalStates) {
+          let userVote = allLocalStates[address]['voted']
+          if (userVote) {
+            newUserVotes[address] = userVote;
+          }
+        }
+        setUserVotes(newUserVotes);
       });
   };
 
