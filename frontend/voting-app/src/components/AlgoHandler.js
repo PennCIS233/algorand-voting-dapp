@@ -266,9 +266,11 @@ class AlgoHandler {
     // setup the application argument array, note that application arguments need to be encoded
     // strings need to be encoded into Uint8Array
     // addresses, *only* when passed as arguments, need to be decoded with algosdk inbuilt decodeAddress function
+    // and then use the public key value
     let appArgs = [];
+    let decodedAddress = algosdk.decodeAddress(userAddress);
     appArgs.push(new Uint8Array(Buffer.from('update_user_status')));
-    appArgs.push(algosdk.decodeAddress(userAddress));
+    appArgs.push(decodedAddress.publicKey);
     appArgs.push(new Uint8Array(Buffer.from(yesOrNo)));
 
     // create the transaction with proper app argument array

@@ -210,6 +210,7 @@ class AlgoHandler {
     // setup the application argument array, note that application arguments need to be encoded
     // strings need to be encoded into Uint8Array
     // addresses, *only* when passed as *arguments*, need to be decoded with algosdk inbuilt decodeAddress function
+    // and then use the public key value
     // TODO -----------------------------------------------------------------------------
 
     // create the transaction with proper app argument array
