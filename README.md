@@ -85,7 +85,9 @@ Here's simplified overview of the election smart contract:
 5.  Repeat 2 to 4 for each user who opts-in before the election end
 6.  Election ends and no further changes (opt-ins, votes, approvals/rejects) can be made to the election
 
-## Global Variables
+### Global Variables
+For standardization, we require everyone use the same global variable names in the approval program of the smart contract. 
+
 `Creator` (bytes)
 - 32-byte address of the deployer of the smart contract
 
@@ -118,7 +120,7 @@ Step 1: Store the values of election parameters passed from the application argu
 - the different options to vote for, 
 - the number of options there are to vote for 
 
-Although there are many ways to store the vote options, for the purposes of this project, we want you to storethem as a string of options separated by commas e.g., "A,B,C,D". Note that index-wise, A=0, B=1, C=2, D=3
+Although there are many ways to store the vote options, for the purposes of this project, we want you to store them as a string of options separated by commas e.g., "A,B,C,D". Note that index-wise, A=0, B=1, C=2, D=3
 
 Step 2: For all vote options, set initial vote tallies corresponding to all vote options to 0 where the keys are the vote options.
 
@@ -127,8 +129,17 @@ CLOSE OUT:
 Step 1: Removes the user's vote from the correct vote tally if the user closes out of program before the end of the election. 
 Step 2: Check that the voter is still in the election period and has actually voted. If so, update vote tally by subtracting one vote for whom the user voted for.
 
+## Step 2 - Deploy the smart contract
 
-## Step 2 - Implement the front end
+In the deploy script, you will implement functions that are used to interact with the smart contract. Smart contracts are implemented using ApplicationCall transactions. These transaction types are as follows:
+- `NoOp` - Generic application calls to execute the ApprovalProgram.
+- `OptIn` - Accounts use this transaction to begin participating in a smart contract. Participation enables local storage usage.
+- `DeleteApplication` - Transaction to delete the application.
+- `UpdateApplication` - Transaction to update TEAL Programs for a contract.
+- `CloseOut` - Accounts use this transaction to close out their participation in the contract. This call can fail based on the TEAL logic, preventing the account from removing the contract from its balance record.
+- `ClearState` - Similar to CloseOut, but the transaction will always clear a contract from the account’s balance record whether the program succeeds or fails.
+
+## Step 3 - Implement the front end
 
 To use our application, we could write scripts to interact with the blockchain, but it is much easier to interact with a nice user interface. So, we will be connecting our blockchain to a React frontend to interact with the blockchain!
 
