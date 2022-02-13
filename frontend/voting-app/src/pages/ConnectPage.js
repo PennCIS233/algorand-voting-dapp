@@ -14,7 +14,7 @@ function ConnectPage() {
   // Description:
   // retrieves the user accounts from AlgoSigner
   const connectAlgoSigner = async () => {
-    let newAccounts = await mainAlgoHandler.connectToAccounts();
+    let newAccounts = await mainAlgoHandler.getAlgoSignerAccounts();
     setAccounts(newAccounts);
     setIsConnected(true);
   };

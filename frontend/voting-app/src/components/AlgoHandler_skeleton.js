@@ -13,17 +13,13 @@ class AlgoHandler {
     });
     console.log("New AlgoHandler");
 
-    // The algoClient handles creating Algorand transactions
-    const algodToken = {
-      "X-API-Key": "OtAhhF0GEa3GnYbsgghbx4L9qO9Ebq6J9m1sjOS0",
-    };
-    const algodServer = "https://testnet-algorand.api.purestake.io/ps2";
-    const algodPort = "";
-    this.algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
+    // Setup the algod client using your PureStake token, and Purestake algod server url
+    // TODO -----------------------------------------------------------------------------
+    this.algodClient = null;
 
-    // The indexerClient handles searching the Algorand blockchain for information
-    const indexerServer = 'https://testnet-algorand.api.purestake.io/idx2';
-    this.indexerClient = new algosdk.Indexer(algodToken, indexerServer, algodPort);
+    // Setup the indexer client using your PureStake token, and PureStake indexer server url
+    // TODO -----------------------------------------------------------------------------
+    this.indexerClient = null;
   }
 
   // getAlgoSignerAccounts
@@ -32,32 +28,17 @@ class AlgoHandler {
   // Returns:
   //  accounts (string[]) - string array of all account addresses
   async getAlgoSignerAccounts() {
-    if (typeof window.AlgoSigner == "undefined") {
-      console.log("Please install the AlgoSigner extension");
-      alert("Please install the AlgoSigner extension");
-      return;
-    }
+    // This variable will be returned after populated
+    var accounts = [];
 
-    // Attempt to connect to AlgoSigner
+    // Attempt to connect to AlgoSigner, note you will have to use the 'await' keyword
     // If this fails or an error occurs, return an empty array
-    try {
-      await window.AlgoSigner.connect();
-    } catch (e) {
-      console.log(e);
-      console.log("Please allow this app to connect to your AlgoSigner accounts");
-      alert("Please allow this app to connect to your AlgoSigner accounts");
-      return [];
-    }
+    // TODO -----------------------------------------------------------------------------
+
 
     // Retrieve all the AlgoSigner accounts on the TestNet
-    // Note they will be in this format: [{address: 'fsdaklfjdsa'}, {address: 'fsdafsdfer'}, etc]
-    let tempAccounts = await window.AlgoSigner.accounts({
-      ledger: "TestNet"
-    });
-
-    let accounts = tempAccounts.map((x) => {
-      return x["address"];
-    });
+    // Note they may be in this format: [{address: 'address1'}, {address: 'address2'}, etc]
+    // TODO -----------------------------------------------------------------------------
 
 
     // Return the accounts in array format: ['address1', 'address2', 'address3', etc]
@@ -73,21 +54,13 @@ class AlgoHandler {
   // Returns:
   //  returns (bool) - whether the given address is the creator of the election at electionAddress
   async isCreator(appID, address) {
-    // There are two ways to accomplish this task
+    // There are two potential ways to accomplish this task
     // The first is to check the created apps of the user and see if the appID is included
     // The second is to check the global state of the smart contract and compare the decoded 'Creator' value
-    let accountInfoResponse = await this.algodClient.accountInformation(address).do();
-    for (let i = 0; i < accountInfoResponse["created-apps"].length; i++) {
-      if (accountInfoResponse["created-apps"][i].id == appID) {
-        console.log(`${address} is creator of ${appID}`);
-        return true;
-      }
-    }
-    console.log(`${address} is NOT creator of ${appID}`);
-    return false;
+    // TODO -----------------------------------------------------------------------------
   }
 
-  // decodes bytes to strings
+  // decodes bytes to strings for values from the smart contract app
   decode(encoded) {
     return Buffer.from(encoded, "base64").toString();
   }
@@ -112,7 +85,7 @@ class AlgoHandler {
     let newState = {};
 
     // Use the algodClient to get the the app details
-    let app = await this.algodClient.getApplicationByID(appID).do();
+    // TODO -----------------------------------------------------------------------------
 
     // The data might have a complex structure, feel free to console.log it to see the structure
 
@@ -153,53 +126,34 @@ class AlgoHandler {
   // Return:
   //  returns (object) - Javascript object (dictionary) of addresses mapped to their states
   //  example: 
-  //   {
-  //     'jsdalkfjsd...': {
-  //       'can_vote': 'yes', 
-  //       'voted': 2
-  //     }, 
-  //     'fdsfdsaf...': {
-  //       'can_vote': 'no'
-  //     }
-  //   }
+    // {
+    //   'jsdalkfjsd...': {
+    //     'can_vote': 'yes', 
+    //     'voted': 2
+    //   }, 
+    //   'fdsfdsaf...': {
+    //     'can_vote': 'no'
+    //   },
+    //   'asdffdsaf...': {
+    //     'can_vote': 'maybe'
+    //   },
+    // }
   async getAllLocalStates(appID) {
     // allLocalStates will be returned once it's filled with data
     let allLocalStates = {};
 
     // Use this.indexerClient to find all the accounts who have appID associated with their account
-    let accountInfo = await this.indexerClient.searchAccounts().applicationID(appID).do();
+    // TODO -----------------------------------------------------------------------------
 
-    // The resultant JavaScript object (dictionary) may have a complex form
+    // The resultant JavaScript object (dictionary) may have a complex structure
     // Try to console.log it out to see the structure
-    let accounts = accountInfo['accounts'];
-    console.log(accounts);
 
-    // Go through the data and fill allLocalStates which contains all the user's local states
+    // Go through the data and fill allLocalStates to contain all the users' local states
     // Note that the *keys* of smart contract local state variables will need to be decoded using 
-    //   Buffer.from(value, "base64").toString() or our helper this.decode(value) function
+    //   Buffer.from(value, "base64").toString() or, equivalently, our helper this.decode(value) function
     // The actual values will also need to be decoded if they are bytes
     // If they are uints they do not need decoding
-    for (let acc of accounts) {
-      let address = acc["address"];
-      allLocalStates[address] = {};
-
-      let apps = acc["apps-local-state"];
-      if (apps) {
-        for (let app of apps) {
-          if (app["id"] == appID) {
-            for (let keyValue of app["key-value"]) {
-              let key = this.decode(keyValue["key"]);
-              if (key == "can_vote") {
-                let value = this.decode(keyValue["value"]["bytes"]);
-                allLocalStates[address][key] = value;
-              } else if (key == "voted") {
-                allLocalStates[address][key] = keyValue["value"]["uint"];
-              }
-            }
-          }
-        }
-      }
-    }
+    // TODO -----------------------------------------------------------------------------
 
     // Return your JavaScript object
     return allLocalStates;
@@ -212,19 +166,15 @@ class AlgoHandler {
   //  txn (algosdk transaction) - transaction that needs to be signed
   async signAndSend(txn) {
     // transactions will need to be encoded to Base64. AlgoSigner has a builtin method for this
-    let txn_b64 = window.AlgoSigner.encoding.msgpackToBase64(txn.toByte());
+    // TODO -----------------------------------------------------------------------------
+
 
     // sign the transaction with AlgoSigner
-    let signedTxs = await window.AlgoSigner.signTxn([{txn: txn_b64}]);
-    console.log(signedTxs);
+    // TODO -----------------------------------------------------------------------------
+
 
     // send the message with AlgoSigner
-    let tx = await window.AlgoSigner.send({
-      ledger: 'TestNet',
-      tx: signedTxs[0].blob
-    });
-
-    return tx;
+    // TODO -----------------------------------------------------------------------------
   }
 
   // optInAccount
@@ -235,18 +185,14 @@ class AlgoHandler {
   //  appID (number) - app id (aka index) of the smart contract app
   async optInAccount(address, appID) {
     // get the suggested params for the transaction
-    console.log(`Attempting to opt-in account ${address} to ${appID}`);
-    let params = await this.algodClient.getTransactionParams().do();
+    // TODO -----------------------------------------------------------------------------
 
     // create the transaction to opt in
-    let txn = algosdk.makeApplicationOptInTxn(address, params, appID);
-    console.log(txn);
+    // TODO -----------------------------------------------------------------------------
 
     // sign and send the transaction with our helper this.signAndSend function
-    let tx = await this.signAndSend(txn);
-    console.log(tx);
+    // TODO -----------------------------------------------------------------------------
 
-    return tx;
   }
 
   // updateUserStatus
@@ -258,38 +204,23 @@ class AlgoHandler {
   //  yesOrNo (string) - "yes" or "no" depending on if the creator wants the user to be allowed to vote or not
   //  appID (number) - app id (aka index) of the smart contract app
   async updateUserStatus(creatorAddress, userAddress, yesOrNo, appID) {
-    console.log(`${creatorAddress} attempting to ${yesOrNo == 'yes' ? 'approve' : 'deny'} account ${userAddress}`);
-
     // get the suggested params for the transaction
-    let params = await this.algodClient.getTransactionParams().do();
+    // TODO -----------------------------------------------------------------------------
 
     // setup the application argument array, note that application arguments need to be encoded
     // strings need to be encoded into Uint8Array
-    // addresses, *only* when passed as arguments, need to be decoded with algosdk inbuilt decodeAddress function
+    // addresses, *only* when passed as *arguments*, need to be decoded with algosdk inbuilt decodeAddress function
     // and then use the public key value
-    let appArgs = [];
-    let decodedAddress = algosdk.decodeAddress(userAddress);
-    appArgs.push(new Uint8Array(Buffer.from('update_user_status')));
-    appArgs.push(decodedAddress.publicKey);
-    appArgs.push(new Uint8Array(Buffer.from(yesOrNo)));
+    // TODO -----------------------------------------------------------------------------
 
     // create the transaction with proper app argument array
-    // For this application transaction make sure to include the optional array of accounts including both the creators
-    // account and also the user's account (both in regular string format, algosdk automatically converts these)
-    let txn = algosdk.makeApplicationNoOpTxn(
-      creatorAddress,
-      params,
-      appID,
-      appArgs,
-      [creatorAddress, userAddress]
-    );
-    console.log(txn);
+    // For this application transaction make sure to include the optional array of accounts including both the 
+    // creator's account and also the user's account 
+    // (both in regular string format, algosdk automatically converts these)
+    // TODO -----------------------------------------------------------------------------
 
     // sign and send the transaction with our helper this.signAndSend function
-    let tx = await this.signAndSend(txn);
-    console.log(tx);
-
-    return tx;
+    // TODO -----------------------------------------------------------------------------
   }
 
   // vote
@@ -300,32 +231,7 @@ class AlgoHandler {
   //  optionIndex (number) - index (starting at 0) corresponding to the user's vote, ie in 'A,B,C' C would be index 2
   //  appID (number) - app id (aka index) of the smart contract app
   async vote(address, optionIndex, appID) {
-    console.log(`${address} attempting to vote for option ${optionIndex}`);
-
-    // get the suggested params for the transaction
-    let params = await this.algodClient.getTransactionParams().do();
-
-    // setup the application argument array, note that application arguments need to be encoded
-    // strings need to be encoded into Uint8Array
-    // ints need to be encoded using algosdk's inbuilt encodeUint64 function
-    let appArgs = [];
-    appArgs.push(new Uint8Array(Buffer.from('vote')));
-    appArgs.push(algosdk.encodeUint64(optionIndex));
-
-    // create the transaction with proper application argument array
-    let txn = algosdk.makeApplicationNoOpTxn(
-      address,
-      params,
-      appID,
-      appArgs
-    )
-    console.log(txn);
-
-    // sign and send the transaction with our helper this.signAndSend function
-    let tx = await this.signAndSend(txn);
-    console.log(tx);
-
-    return tx;
+    // TODO -----------------------------------------------------------------------------
   }
 
   // closeOut
@@ -335,17 +241,7 @@ class AlgoHandler {
   //  address (string) - address of the user trying to closeout of app
   //  appID (number) - app id (aka index) of the smart contract app
   async closeOut(address, appID) {
-    console.log(`${address} attempting to close out of app ${appID}`);
-
-    let params = await this.algodClient.getTransactionParams().do();
-
-    let txn = algosdk.makeApplicationCloseOutTxn(address, params, appID);
-    console.log(txn);
-
-    let tx = await this.signAndSend(txn);
-    console.log(tx);
-
-    return tx;
+    // TODO -----------------------------------------------------------------------------
   }
 
   // clearState
@@ -355,17 +251,7 @@ class AlgoHandler {
   //  address (string) - address of the user trying to clear state of the app
   //  appID (number) - app id (aka index) of the smart contract app
   async clearState(address, appID) {
-    console.log(`${address} attempting to clear state of app ${appID}`);
-
-    let params = await this.algodClient.getTransactionParams().do();
-
-    let txn = algosdk.makeApplicationClearStateTxn(address, params, appID);
-    console.log(txn);
-
-    let tx = await this.signAndSend(txn);
-    console.log(tx);
-
-    return tx;
+    // TODO -----------------------------------------------------------------------------
   }
 }
 

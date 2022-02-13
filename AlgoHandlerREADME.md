@@ -17,34 +17,81 @@ In Practical Homework 1 and parts of this homework you have used the Python vers
 
 #### AlgoSigner
 
-You downloaded the AlgoSigner extension in step 0. Now any website visited will have AlgoSigner code injected into the website that can be used by the code in the website. This code can be accessed through the variable `window.AlgoSigner`. Read this documentation to learn about signing transactions using AlgoSigner: https://github.com/PureStake/algosigner/blob/develop/docs/dApp-integration.md#working-with-transactions
+You downloaded the AlgoSigner extension in step 0. Now any website visited will have AlgoSigner code injected into the website that can be used by the code in the website. This code can be accessed through the variable `window.AlgoSigner`. Read these documentations to learn about signing transactions using AlgoSigner: 
+- https://github.com/PureStake/algosigner/blob/develop/docs/dApp-integration.md#working-with-transactions
+- https://purestake.github.io/algosigner-dapp-example/
 
 #### Purestake Indexer API
 
 Purestake has an API setup for querying historical data from the Algorand blockchain. You will use this API to retrieve data on who has opted-in to your election. Take a look at this example to see how the it uses the Indexer to read the local state of all accounts which opted-in to the application: https://developer.algorand.org/solutions/example-digital-exchange-smart-contract-application/
 
-#### `frontend/src/components/AlgoHandler.js`
+#### AlgoHandler.js `frontend/src/components/AlgoHandler.js`
 
 This file exports a singular instance of the class it contains which is meant to encapsulate data retrieval and transaction-sending from and to the Algorand blockchain.  
   
-We provide you a skeleton outline with all the necessary functions needed for you to fill out.
+We provide you a skeleton outline with all the necessary functions needed for you to fill out. You will be graded on producing the correct outputs for these functions. 
 
-### Step 3.1 - Retrieving Data
+### Step 3.1 - AlgoHandler constructor
 
-In `frontend/src/components/AlgoHandler.js` fill out the following 4 functions with the commented functionality. Remember, don't change the function names. Feel free to add helper functions if you want. 
+In `frontend/src/components/AlgoHandler.js` fill out the `TODO` sections. Remember, don't change the variable names.
 
- 1. `getAlgoSignerAccounts`
- 2. `isCreator`
+- Set the `this.algodClient` variable
+- Set the `this.indexerClient` variable
+
+### Step 3.2 - Retrieving Data
+
+In `frontend/src/components/AlgoHandler.js` fill out the following 4 functions with the commented functionality. Remember, don't change the function names. Feel free to add helper functions if you want. Remember to use JavaScript's `await` when using `this.algodClient`, `this.algodIndexer`, and `window.AlgoSigner`
+
+ 1. `getAlgoSignerAccounts()`
+    - **TODO:** Connect to AlgoSigner
+    - **TODO:** Retrieve all addresses in array format and return them
+ 2. `isCreator(appID, address)`
+    - **TODO:** Return a boolean based on if the given `address` is the creator of the app at `appID`
+    - **HINT:** Two possible approaches are given in the code comments
  3. `getElectionState`
+    - **TODO:** Use the `this.algodClient` to retrieve the app details
+    - The rest is filled out for you :)
  4. `getAllLocalStates`
+    - **TODO:** Use the `this.indexerClient` to find all accounts who are associated with the given app
+      - **TODO:** Take the data and format it into a neat JavaScript object (nearly equivalent to a Python dictionary) as specified
+        - Example:
+        ``` 
+          {
+            'jsdalkfjsd...': {
+              'can_vote': 'yes', 
+              'voted': 2
+            }, 
+            'fdsfdsaf...': {
+              'can_vote': 'no'
+            },
+            'asdffdsaf...': {
+              'can_vote': 'maybe'
+            }
+          }
+        ```
+      - **Note:** Only include values that are included in the original object. If a user does not have a value for `voted` then don't include the `voted` variable
 
-### Step 3.2 - Sending Transactions
+### Step 3.3 - Sending Transactions
 
-In `frontend/src/components/AlgoHandler.js` fill out the following 6 functions with the commented functionality. Remember, don't change the function names. Feel free to add helper functions if you want. 
+In `frontend/src/components/AlgoHandler.js` fill out the following 6 functions with the commented functionality. Remember, don't change the function names. Feel free to add helper functions if you want. Remember to use JavaScript's `await` when using `this.algodClient`, `this.algodIndexer`, and `window.AlgoSigner`
 
  1. `signAndSend`
- 3. `optInAccount`
- 4. `updateUserStatus`
- 5. `vote`
- 6. `closeOut`
- 7. `clearState`
+     - **TODO:** Convert the transaction to Base64 with AlgoSigner's method
+     - **TODO:** Sign the base64 transaction with AlgoSigner
+     - **TODO:** Send the message with AlgoSigner
+ 2. `optInAccount`
+     - **TODO:** Get the suggested params from `this.algodClient`
+     - **TODO:** Create the opt-in transaction
+     - **TODO:** Sign and send the transaction with our `this.signAndSend` function
+ 3. `updateUserStatus`
+    - **TODO:** Get the suggested params from `this.algodClient`
+    - **TODO:** Set up the transaction app arguments
+    - **TODO:** Create the transaction
+      - Include both the creator's address and user's address in the optional address array when creating the transaction (different from app args)
+    - **TODO:** Sign and send the transaction with our `this.signAndSend` function
+ 4. `vote`
+    - **TODO:** Create app parameters, create transaction, sign and send 
+ 5. `closeOut`
+    - **TODO:** Create transaction, sign and send, similar to above
+ 6. `clearState`
+    - **TODO:** Create transaction, sign and send, similar to above
