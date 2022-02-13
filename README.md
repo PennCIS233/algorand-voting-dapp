@@ -7,10 +7,21 @@ The webapp frontend will allow users to easily interact with the smart contract 
   
 ## Why do this homework   
 
-### Why Smart Contracts?  
+
+
+### Why Smart Contracts?
+
+Smart contracts have seen a large uptick in use cases and are being adopted worldwide as a method of secure computation. They utilize the power of the blockchain in a 
+
+#### Relevant articles
+
+- [_What is a Smart Contract_](https://www.coinbase.com/learn/crypto-basics/what-is-a-smart-contract)
+- [_Real-World Use Cases for Smart Contracts and dApps_](https://www.gemini.com/cryptopedia/smart-contract-examples-smart-contract-use-cases)
+- [_Upgrading Blockchains Smart contract use cases in industry_](https://www2.deloitte.com/us/en/insights/focus/signals-for-strategists/using-blockchain-for-smart-contracts.html)
   
 ### Why Web frontends?  
-  
+
+A large part of the reason for web frontends is accessibility. There are more than 4 billion people connected to the internet, with each one having an access to a browser. This makes a web frontend ideal to be accessible to as many people as possible.
   
 ## Background Concepts  
 
@@ -41,8 +52,7 @@ Once you have Google Chrome installed add the AlgoSigner extension at this [link
     
  - Import Account A and Account B into AlgoSigner **on the TestNet**    
    - Save the addresses in form.md    
- - Create 2 new accounts Account C and Account D using AlgoSigner **on the TestNet**    
-   - Save the addresses in form.md    
+ - Create 2 new accounts Account C and Account D using AlgoSigner **on the TestNet**
     
 A walkthrough on how to do both of these can be seen here:    
 [https://www.youtube.com/watch?v=tG-xzG8r770](https://www.youtube.com/watch?v=tG-xzG8r770)    
@@ -283,10 +293,10 @@ In `frontend/src/components/AlgoHandler.js` fill out the following 4 functions w
  2. `isCreator(appID, address)`
     - **TODO:** Return a boolean based on if the given `address` is the creator of the app at `appID`
     - **HINT:** Two possible approaches are given in the code comments
- 3. `getElectionState`
+ 3. `getElectionState(appID)`
     - **TODO:** Use `this.algodClient` to retrieve the app details
     - The rest is filled out for you :)
- 4. `getAllLocalStates`
+ 4. `getAllLocalStates(appID)`
     - **TODO:** Use `this.indexerClient` to find all accounts who are associated with the given app
     - **TODO:** Take the data and format it into a neat JavaScript object (nearly equivalent to a Python dictionary) as specified
       - Example:
@@ -316,23 +326,23 @@ In `frontend/src/components/AlgoHandler.js` fill out the following 6 functions w
 - https://github.com/PureStake/algosigner/blob/develop/docs/dApp-integration.md#algosignersigntxntxnobjects
 - https://algorand.github.io/js-algorand-sdk/
 
- 1. `signAndSend`
+ 1. `signAndSend(txn)`
      - **TODO:** Convert the transaction to Base64 with AlgoSigner's method
      - **TODO:** Sign the base64 transaction with AlgoSigner
      - **TODO:** Send the message with AlgoSigner
- 2. `optInAccount`
+ 2. `optInAccount(address, appID)`
      - **TODO:** Get the suggested params from `this.algodClient`
      - **TODO:** Create the opt-in transaction
      - **TODO:** Sign and send the transaction with our `this.signAndSend` function
- 3. `updateUserStatus`
+ 3. `updateUserStatus(creatorAddress, userAddress, yesOrNo, appID)`
     - **TODO:** Get the suggested params from `this.algodClient`
     - **TODO:** Set up the transaction app arguments
     - **TODO:** Create the transaction
       - Include both the creator's address and user's address in the optional address array when creating the transaction (different from app args)
     - **TODO:** Sign and send the transaction with our `this.signAndSend` function
- 4. `vote`
+ 4. `vote(address, optionIndex, appID)`
     - **TODO:** Create app parameters, create transaction, sign and send 
- 5. `closeOut`
+ 5. `closeOut(address, appID)`
     - **TODO:** Create transaction, sign and send, similar to above
- 6. `clearState`
+ 6. `clearState(address, appID)`
     - **TODO:** Create transaction, sign and send, similar to above
