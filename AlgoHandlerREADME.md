@@ -17,7 +17,9 @@ In Practical Homework 1 and parts of this homework you have used the Python vers
 
 #### AlgoSigner
 
-You downloaded the AlgoSigner extension in step 0. Now any website visited will have AlgoSigner code injected into the website that can be used by the code in the website. This code can be accessed through the variable `window.AlgoSigner`. Read this documentation to learn about signing transactions using AlgoSigner: https://github.com/PureStake/algosigner/blob/develop/docs/dApp-integration.md#working-with-transactions
+You downloaded the AlgoSigner extension in step 0. Now any website visited will have AlgoSigner code injected into the website that can be used by the code in the website. This code can be accessed through the variable `window.AlgoSigner`. Read these documentations to learn about signing transactions using AlgoSigner: 
+- https://github.com/PureStake/algosigner/blob/develop/docs/dApp-integration.md#working-with-transactions
+- https://purestake.github.io/algosigner-dapp-example/
 
 #### Purestake Indexer API
 
