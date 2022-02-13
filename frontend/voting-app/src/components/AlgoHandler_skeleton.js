@@ -126,18 +126,18 @@ class AlgoHandler {
   // Return:
   //  returns (object) - Javascript object (dictionary) of addresses mapped to their states
   //  example: 
-    // {
-    //   'jsdalkfjsd...': {
-    //     'can_vote': 'yes', 
-    //     'voted': 2
-    //   }, 
-    //   'fdsfdsaf...': {
-    //     'can_vote': 'no'
-    //   },
-    //   'asdffdsaf...': {
-    //     'can_vote': 'maybe'
-    //   },
-    // }
+  //   {
+  //     'jsdalkfjsd...': {
+  //       'can_vote': 'yes', 
+  //       'voted': 2
+  //     }, 
+  //     'fdsfdsaf...': {
+  //       'can_vote': 'no'
+  //     },
+  //     'asdffdsaf...': {
+  //       'can_vote': 'maybe'
+  //     },
+  //   }
   async getAllLocalStates(appID) {
     // allLocalStates will be returned once it's filled with data
     let allLocalStates = {};
