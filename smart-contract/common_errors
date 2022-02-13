@@ -1,0 +1,12 @@
+```
+Traceback (most recent call last):
+  File "/Users/angelalin/Desktop/algorand-voting-dapp-copy/smart-contract/deploy.py", line 414, in <module>
+    main()
+  File "/Users/angelalin/Desktop/algorand-voting-dapp-copy/smart-contract/deploy.py", line 395, in main
+    status = algod_client.status()
+  File "/usr/local/lib/python3.9/site-packages/algosdk/v2client/algod.py", line 182, in status
+    return self.algod_request("GET", req, **kwargs)
+  File "/usr/local/lib/python3.9/site-packages/algosdk/v2client/algod.py", line 89, in algod_request
+    raise error.AlgodHTTPError(e, code)
+algosdk.error.AlgodHTTPError: Forbidden
+```
