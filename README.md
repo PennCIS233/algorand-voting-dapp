@@ -14,7 +14,21 @@ The webapp frontend will allow users to easily interact with the smart contract 
   
 ## Background Concepts  
 
-  ## Overview  
+### Smart Contract Overview
+Algorand smart contracts are pieces of logic residing on the Algorand blockchain that once deployed, are remotely callable from any node. Once deployed, the on-chain instantiation of the contract is referred to as an Application and assigned an Application Id. These applications are triggered by a specific type of transaction called an Application Call transaction. These on-chain applications handle the primary decentralized logic of a decentralized application. 
+
+### Passing in arguments into smart contract arrays 
+A set of arrays can be passed with any application transaction that instructs the protocol how to load additional data used in the smart contract. These arrays include the applications, accounts, assets, and arguments array. In this assignment, you will only be dealing with the arguments and accounts array. The arguments array, limited to 16 arguments, allows you to pass standard arguments to the arguments (in this case, handles passing in the voting election parameters defined in the global variables, the creator’s response to approve a user, or a user’s vote). The accounts array allows additional accounts to be passed to the contract for balance information and local storage. 
+
+### Storage and state manipulation
+Storage can be either global or local. Local storage refers to storing values in an accounts balance record if that account participates in the contract. Global storage is data that is specifically stored on the blockchain for the contract globally. You can manipulate states with following PyTeal operations:
+* Reading and writing to application global state with App.globalPut, App.globalGet, App.globalDel.
+* Reading and writing to account local state with App.localPut, App.localGet, App.localDel.
+* Refer to this link for more specific syntax details: https://pyteal.readthedocs.io/en/stable/state.html
+
+## Overview  
+
+ 
   
   ### Tools
 
