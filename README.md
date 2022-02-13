@@ -85,6 +85,22 @@ Here's simplified overview of the election smart contract:
 5.  Repeat 2 to 4 for each user who opts-in before the election end
 6.  Election ends and no further changes (opt-ins, votes, approvals/rejects) can be made to the election
 
+``` election_smart_contract.py ```
+### Approval Program
+
+CREATION: 
+STEP 1: Store the values of election parameters passed from the application arguments of the election that was created. 
+- the creator as whoever deployed the smart contract
+- the round number for the end of the election 
+- the different options to vote for, 
+- the number of options there are to vote for 
+
+Although there are many ways to store the vote options, for the purposes of this project, we want you to storethem as a string of options separated by commas e.g., "A,B,C,D". Note that index-wise, A=0, B=1, C=2, D=3
+
+STEP 2: For all vote options, set initial vote tallies corresponding to all vote options to 0 where the keys are the vote options.
+
+###
+
 
 ## Step 2 - Implement the front end
 
