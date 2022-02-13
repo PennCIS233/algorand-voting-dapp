@@ -71,7 +71,7 @@ Next, download the files for this project. Open your terminal, and `cd` into the
 To see i fyou have everything working, type `npm start`. You should see a basic webpage appear in your browser at localhost:3000. If you made it this far, then your setup has been successful!
 
 ## Step 1 - Create the smart contract
-You will be creating a smart contract that conducts an election with multiple discrete choices. You will define each choice as a byte string and user accounts will be able to register and vote for any of the choices. There is a configurable election period defined by global variable, `ElectionEnd` which is relative to the current time
+In ``` election_smart_contract.py ```, you will be creating a smart contract that conducts an election with multiple discrete choices. You will define each choice as a byte string and user accounts will be able to register and vote for any of the choices. There is a configurable election period defined by global variable, `ElectionEnd` which is relative to the current time
 - An account must register in order to vote
 - Accounts cannot vote more than once. Accounts that close out of the application before the voting period has concluded, denoted by the global variable, ElectionEnd
 - The creator of the election has to approve every account that opts in 
@@ -85,11 +85,34 @@ Here's simplified overview of the election smart contract:
 5.  Repeat 2 to 4 for each user who opts-in before the election end
 6.  Election ends and no further changes (opt-ins, votes, approvals/rejects) can be made to the election
 
-``` election_smart_contract.py ```
+## Global Variables
+`Creator` (bytes)
+- 32-byte address of the deployer of the smart contract
+
+```ElectionEnd``` (int)
+- Round number for when the election will end
+- Round number is how the algorand blockchain keeps track of time
+- After this round number/time no more opting-in, voting, approvals, etc
+
+```VoteOptions``` (bytes)
+- String consisting of all vote options concatenated together separated with commas
+- Example: Abby, Barney, Cho, and Di are options then VoteOptions=”Abby,Barney,Cho,Di”
+
+```NumVoteOptions``` (int)
+- Number of options to vote for
+- We need this variable because Teal/Pyteal/Algorand doesn’t have arrays, so we store the vote options as a string (see above), so we need this variable to tell the smart contract how many voting options there are
+- Example: Abby, Barney, Cho, and Di are options, so VoteOptions=”Abby,Barney,Cho,Di” and NumVoteOptions=4
+
+```VotesFor0, VotesFor1, VotesFor2, etc``` (int)
+- Vote tally for option i where i is between 0 and NumVoteOptions
+- Because PyTeal allows key-value variables, we can produce these variables in a for-loop on smart contract creation and access them when a user tries to vote using the index value of their vote option choice
+- Example: VoteOptions=”Abby,Barney,Cho,Di”. VotesFor0 refers to vote tally for Abby. VotesFor1 refers to vote tally for Barney. VotesFor2 refers to vote tally for Cho. VotesFor3 refers to vote tally for Di
+
+
 ### Approval Program
 
 CREATION: 
-STEP 1: Store the values of election parameters passed from the application arguments of the election that was created. 
+Step 1: Store the values of election parameters passed from the application arguments of the election that was created. 
 - the creator as whoever deployed the smart contract
 - the round number for the end of the election 
 - the different options to vote for, 
@@ -97,9 +120,12 @@ STEP 1: Store the values of election parameters passed from the application argu
 
 Although there are many ways to store the vote options, for the purposes of this project, we want you to storethem as a string of options separated by commas e.g., "A,B,C,D". Note that index-wise, A=0, B=1, C=2, D=3
 
-STEP 2: For all vote options, set initial vote tallies corresponding to all vote options to 0 where the keys are the vote options.
+Step 2: For all vote options, set initial vote tallies corresponding to all vote options to 0 where the keys are the vote options.
 
-###
+
+CLOSE OUT: 
+Step 1: Removes the user's vote from the correct vote tally if the user closes out of program before the end of the election. 
+Step 2: Check that the voter is still in the election period and has actually voted. If so, update vote tally by subtracting one vote for whom the user voted for.
 
 
 ## Step 2 - Implement the front end
