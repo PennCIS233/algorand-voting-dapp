@@ -1,7 +1,6 @@
 import { Card, ListGroup, Container } from "react-bootstrap";
 import { PieChart } from "react-minimal-pie-chart";
 
-// TODO: handle when sum of all currvotes is 0
 function ElectionInfoCard(props) {
   // createVoteFormat
   // Description:
@@ -36,38 +35,42 @@ function ElectionInfoCard(props) {
         <Card.Title>Election Info</Card.Title>
         <ListGroup>
           <ListGroup.Item>
-            Creator ID: {props.state["Creator"] ? props.state["Creator"] : ""}
+            <b>Creator ID: </b>
+            {props.state["Creator"] ? props.state["Creator"] : ""}
           </ListGroup.Item>
           <ListGroup.Item>
-            Last Round to Vote: {props.state["ElectionEnd"]}
+            <b>Last Round to Vote: </b>
+            {props.state["ElectionEnd"]}
           </ListGroup.Item>
           <ListGroup.Item>
-            Vote Options: {props.state["VoteOptions"]}
+            <b>Vote Options:</b> {props.state["VoteOptions"]}
           </ListGroup.Item>
           <ListGroup.Item>
-            Number of Voters:{" "}
+            <b> Number of Voters:</b>{" "}
             {(props.currVotes &&
               Object.values(props.currVotes).reduce((a, b) => a + b, 0)) ||
               "0"}
           </ListGroup.Item>
         </ListGroup>
       </Card.Body>
-      <Container className="px-2" style={{ width: "75%", height: "75%" }}>
-        <PieChart
-          data={currVotes}
-          label={({ dataEntry }) =>
-            dataEntry.title + `: ${Math.round(dataEntry.percentage)} %`
-          }
-          labelStyle={(index) => ({
-            fill: currVotes[index].color,
-            fontSize: "5px",
-            fontFamily: "sans-serif",
-          })}
-          radius={25}
-          labelPosition={112}
-          animate
-        />
-      </Container>
+      {currVotes.length > 0 && (
+        <Container className="px-2" style={{ width: "75%", height: "75%" }}>
+          <PieChart
+            data={currVotes}
+            label={({ dataEntry }) =>
+              dataEntry.title + `: ${Math.round(dataEntry.percentage)} %`
+            }
+            labelStyle={(index) => ({
+              fill: currVotes[index].color,
+              fontSize: "5px",
+              fontFamily: "sans-serif",
+            })}
+            radius={27}
+            labelPosition={112}
+            animate
+          />
+        </Container>
+      )}
     </Card>
   );
 }

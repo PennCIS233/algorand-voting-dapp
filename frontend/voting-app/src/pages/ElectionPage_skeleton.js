@@ -33,48 +33,7 @@ function ElectionPage() {
   //  Calls API to get election state and list of all users that have opted-in
   const refreshState = () => {
     console.log("refreshing state...");
-    mainAlgoHandler.getElectionState(location.state.electionId).then((res) => {
-      if (!res) {
-        // TODO: handle incorrect election
-      }
-      let newTotalVotes = [];
-      for (let i = 0; i < res["NumVoteOptions"]; i++) {
-        newTotalVotes.push(res[`VotesFor${i}`]);
-      }
-
-      let newElectionChoices = res["VoteOptions"].split(",");
-      setElectionState(res);
-      setTotalVotes(newTotalVotes);
-      setElectionChoices(newElectionChoices);
-    });
-
-    console.log(electionState);
-
-    mainAlgoHandler
-      .getAllLocalStates(parseInt(electionId))
-      .then((allLocalStates) => {
-        let newOptedAccounts = {
-          yes: [],
-          no: [],
-          maybe: [],
-        };
-        for (const address in allLocalStates) {
-          let canVote = allLocalStates[address]["can_vote"];
-          if (canVote) {
-            newOptedAccounts[canVote].push(address);
-          }
-        }
-        setOptedAccounts(newOptedAccounts);
-
-        let newUserVotes = {};
-        for (const address in allLocalStates) {
-          let userVote = allLocalStates[address]["voted"];
-          if (userVote) {
-            newUserVotes[address] = userVote;
-          }
-        }
-        setUserVotes(newUserVotes);
-      });
+    // TODO: connect to AlgoHandler
   };
 
   // useEffect
