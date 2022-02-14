@@ -60,7 +60,7 @@ function ElectionPage() {
         };
         for (const address in allLocalStates) {
           let canVote = allLocalStates[address]["can_vote"];
-          if (canVote) {
+          if ("can_vote" in allLocalStates[address]) {
             newOptedAccounts[canVote].push(address);
           }
         }
@@ -68,9 +68,8 @@ function ElectionPage() {
 
         let newUserVotes = {};
         for (const address in allLocalStates) {
-          let userVote = allLocalStates[address]["voted"];
-          if (userVote) {
-            newUserVotes[address] = userVote;
+          if ("voted" in allLocalStates[address]) {
+            newUserVotes[address] = allLocalStates[address]["voted"];
           }
         }
         setUserVotes(newUserVotes);
