@@ -13,7 +13,7 @@ function ElectionPage() {
   let location = useLocation();
 
   // constant variables for page
-  const electionId = location.state.electionId;
+  const appID = location.state.appID;
   const accounts = location.state.accts;
 
   // variables that change state
@@ -33,7 +33,7 @@ function ElectionPage() {
   //  Calls API to get election state and list of all users that have opted-in
   const refreshState = () => {
     console.log("refreshing state...");
-    mainAlgoHandler.getElectionState(location.state.electionId).then((res) => {
+    mainAlgoHandler.getElectionState(location.state.appID).then((res) => {
       if (!res) {
         // TODO: handle incorrect election
       }
@@ -51,7 +51,7 @@ function ElectionPage() {
     console.log(electionState);
 
     mainAlgoHandler
-      .getAllLocalStates(parseInt(electionId))
+      .getAllLocalStates(parseInt(appID))
       .then((allLocalStates) => {
         let newOptedAccounts = {
           yes: [],
@@ -107,7 +107,7 @@ function ElectionPage() {
         <Row className="mt-3 align-items-center">
           <CardGroup>
             <ParticipantsCard
-              electionId={electionId}
+              appID={appID}
               users={accounts}
               user={mainAccount}
               userVotes={userVotes}
@@ -117,7 +117,7 @@ function ElectionPage() {
             />
             <ElectionInfoCard
               currVotes={totalVotes}
-              electionId={electionId}
+              appID={appID}
               state={electionState}
             />
           </CardGroup>
@@ -126,7 +126,7 @@ function ElectionPage() {
           <Col>
             <VoterCard
               user={mainAccount}
-              electionId={electionId}
+              appID={appID}
               electionState={electionState}
               isAccepted={optedAccounts["yes"].includes(mainAccount)}
               isOpted={optedAccounts["maybe"].includes(mainAccount)}

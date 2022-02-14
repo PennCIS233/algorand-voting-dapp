@@ -21,7 +21,7 @@ function ConnectPage() {
 
   // handleElectionSubmit
   // Description:
-  // takes the value inputted into the electionId form and
+  // takes the value inputted into the appID form and
   // naviagates to the election page
   const handleElectionSubmit = async (e) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ function ConnectPage() {
     const formDataObj = Object.fromEntries(formData.entries());
     console.log(formDataObj);
     navigate("/election", {
-      state: { accts: accounts, electionId: formDataObj["electionId"] },
+      state: { accts: accounts, appID: formDataObj["appID"] },
     });
   };
 
@@ -63,11 +63,11 @@ function ConnectPage() {
               <Card.Body>
                 <Card.Title>Election ID</Card.Title>
                 <Form onSubmit={async (e) => await handleElectionSubmit(e)}>
-                  <Form.Group className="mb-3" controlId="electionId">
+                  <Form.Group className="mb-3" controlId="appID">
                     <Form.Control
                       disabled={!isConnected}
                       type="election"
-                      name="electionId"
+                      name="appID"
                       placeholder="Enter election id"
                     />
                   </Form.Group>

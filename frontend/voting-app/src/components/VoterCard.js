@@ -20,7 +20,7 @@ function VoterCard(props) {
     const choices = props.electionChoices.split(",");
     let voteValue = choices.indexOf(voteChoice);
     if (voteValue > -1)
-      mainAlgoHandler.vote(props.user, voteValue, parseInt(props.electionId));
+      mainAlgoHandler.vote(props.user, voteValue, parseInt(props.appID));
   };
 
   // handleOptIn
@@ -28,7 +28,7 @@ function VoterCard(props) {
   //  Opts the user into the election on the blockchain.
   const handleOptIn = (e) => {
     e.preventDefault();
-    mainAlgoHandler.optInAccount(props.user, parseInt(props.electionId));
+    mainAlgoHandler.optInAccount(props.user, parseInt(props.appID));
   };
 
   // handleClear

@@ -13,7 +13,7 @@ function ElectionPage() {
   let location = useLocation();
 
   // constant variables for page
-  const electionId = location.state.electionId;
+  const appID = location.state.appID;
   const accounts = location.state.accts;
 
   // variables that change state
@@ -66,7 +66,7 @@ function ElectionPage() {
         <Row className="mt-3 align-items-center">
           <CardGroup>
             <ParticipantsCard
-              electionId={electionId}
+              appID={appID}
               users={accounts}
               user={mainAccount}
               userVotes={userVotes}
@@ -76,7 +76,7 @@ function ElectionPage() {
             />
             <ElectionInfoCard
               currVotes={totalVotes}
-              electionId={electionId}
+              appID={appID}
               state={electionState}
             />
           </CardGroup>
@@ -85,7 +85,7 @@ function ElectionPage() {
           <Col>
             <VoterCard
               user={mainAccount}
-              electionId={electionId}
+              appID={appID}
               electionState={electionState}
               isAccepted={optedAccounts["yes"].includes(mainAccount)}
               isOpted={optedAccounts["maybe"].includes(mainAccount)}

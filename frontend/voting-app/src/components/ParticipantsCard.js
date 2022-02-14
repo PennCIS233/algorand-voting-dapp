@@ -13,7 +13,7 @@ function ParticipantsCard(props) {
       props.user,
       user,
       "yes",
-      parseInt(props.electionId)
+      parseInt(props.appID)
     );
   };
 
@@ -27,7 +27,7 @@ function ParticipantsCard(props) {
       props.user,
       user,
       "no",
-      parseInt(props.electionId)
+      parseInt(props.appID)
     );
   };
 
