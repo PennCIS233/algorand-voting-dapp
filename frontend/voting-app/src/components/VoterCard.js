@@ -31,12 +31,20 @@ function VoterCard(props) {
     mainAlgoHandler.optInAccount(props.user, parseInt(props.appID));
   };
 
-  // handleClear
+  // handleClearState
   // Description:
   //  Clears the user vote on the blockchain.
-  const handleClear = (e) => {
+  const handleClearState = (e) => {
     e.preventDefault();
-    // TODO: clear vote on blockchain
+    clearState(props.user, props.appID);
+  };
+
+  // handleCloseOut
+  // Description:
+  //  Closes out the user vote on the blockchain.
+  const handleCloseOut = (e) => {
+    e.preventDefault();
+    closeOut(props.user, props.appID);
   };
 
   return (
@@ -97,6 +105,16 @@ function VoterCard(props) {
             You have cast your vote for option{" "}
             {props.electionChoices[props.isVoted]}
           </Card.Text>
+          <Form onSubmit={handleCloseOut}>
+            <Button variant="info" type="submit">
+              Close Out
+            </Button>
+          </Form>
+          <Form onSubmit={handleClearState}>
+            <Button variant="info" type="submit">
+              Clear State
+            </Button>
+          </Form>
         </Card.Body>
       )}
     </Card>

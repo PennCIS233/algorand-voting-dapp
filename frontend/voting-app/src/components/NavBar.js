@@ -7,14 +7,16 @@ function NavBar(props) {
   return (
     <Navbar style={{ backgroundColor: "#201f48" }}>
       <Container>
-        <Navbar.Brand style={{ color: "#0dcaf0", fontSize: "30px" }} href="/">
-          AlgoVoter
-        </Navbar.Brand>
-        {props.connected && (
-          <Button variant="info" onClick={props.refreshState}>
-            Refresh
-          </Button>
-        )}
+        <div>
+          <Navbar.Brand style={{ color: "#0dcaf0", fontSize: "30px" }} href="/">
+            AlgoVoter
+          </Navbar.Brand>
+          {props.connected && (
+            <Button variant="info" onClick={props.refreshState}>
+              Refresh
+            </Button>
+          )}
+        </div>
         {props.connected && (
           <DropdownButton
             variant="info"
