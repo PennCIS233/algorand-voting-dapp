@@ -1,7 +1,7 @@
 import React from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
-import { DropdownButton, Dropdown } from "react-bootstrap";
+import { DropdownButton, Dropdown, Button } from "react-bootstrap";
 
 function NavBar(props) {
   return (
@@ -10,6 +10,11 @@ function NavBar(props) {
         <Navbar.Brand style={{ color: "#0dcaf0", fontSize: "30px" }} href="/">
           AlgoVoter
         </Navbar.Brand>
+        {props.connected && (
+          <Button variant="info" onClick={props.refreshState}>
+            Refresh
+          </Button>
+        )}
         {props.connected && (
           <DropdownButton
             variant="info"

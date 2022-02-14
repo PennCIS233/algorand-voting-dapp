@@ -9,12 +9,7 @@ function ParticipantsCard(props) {
   // Parameters:
   //  user (string) - user to accept into the election
   const handleAccept = (user) => {
-    mainAlgoHandler.updateUserStatus(
-      props.user,
-      user,
-      "yes",
-      parseInt(props.appID)
-    );
+    // TODO: connect this function to AlgoHandler
   };
 
   // handleReject
@@ -23,12 +18,7 @@ function ParticipantsCard(props) {
   // Parameters:
   //  user (string) - user to reject from the election
   const handleReject = (user) => {
-    mainAlgoHandler.updateUserStatus(
-      props.user,
-      user,
-      "no",
-      parseInt(props.appID)
-    );
+    // TODO: connect this function to AlgoHandler
   };
 
   return (

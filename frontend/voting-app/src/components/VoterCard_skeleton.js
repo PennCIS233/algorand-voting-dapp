@@ -16,27 +16,21 @@ function VoterCard(props) {
   // Description:
   //  Sends the vote to the blockchain.
   const handleVoteSubmit = (e) => {
-    e.preventDefault();
-    const choices = props.electionChoices.split(",");
-    let voteValue = choices.indexOf(voteChoice);
-    if (voteValue > -1)
-      mainAlgoHandler.vote(props.user, voteValue, parseInt(props.appID));
+    // TODO: connect to AlgoHandler
   };
 
   // handleOptIn
   // Description:
   //  Opts the user into the election on the blockchain.
   const handleOptIn = (e) => {
-    e.preventDefault();
-    mainAlgoHandler.optInAccount(props.user, parseInt(props.appID));
+    // TODO: connect to AlgoHandler
   };
 
   // handleClear
   // Description:
   //  Clears the user vote on the blockchain.
   const handleClear = (e) => {
-    e.preventDefault();
-    // TODO: clear vote on blockchain
+    // TODO: connect to AlgoHandler
   };
 
   return (
