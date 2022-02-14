@@ -17,7 +17,7 @@ function VoterCard(props) {
   //  Sends the vote to the blockchain.
   const handleVoteSubmit = (e) => {
     e.preventDefault();
-    const choices = props.electionChoices.split(",");
+    const choices = props.electionChoices;
     let voteValue = choices.indexOf(voteChoice);
     if (voteValue > -1)
       mainAlgoHandler.vote(props.user, voteValue, parseInt(props.appID));
@@ -36,7 +36,7 @@ function VoterCard(props) {
   //  Clears the user vote on the blockchain.
   const handleClearState = (e) => {
     e.preventDefault();
-    clearState(props.user, props.appID);
+    mainAlgoHandler.clearState(props.user, props.appID);
   };
 
   // handleCloseOut
@@ -44,7 +44,7 @@ function VoterCard(props) {
   //  Closes out the user vote on the blockchain.
   const handleCloseOut = (e) => {
     e.preventDefault();
-    closeOut(props.user, props.appID);
+    mainAlgoHandler.closeOut(props.user, props.appID);
   };
 
   return (
@@ -79,7 +79,7 @@ function VoterCard(props) {
             <Card.Title>Cast Your Vote</Card.Title>
             <Form onSubmit={handleVoteSubmit}>
               <Form.Group controlId="vote-options">
-                {props.electionChoices.split(",").map((choice) => (
+                {props.electionChoices.map((choice) => (
                   <Form.Check
                     type="radio"
                     key={choice}
