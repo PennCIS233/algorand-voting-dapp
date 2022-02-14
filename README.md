@@ -402,3 +402,7 @@ In the `frontend/src/components/ParticipantsCard.js`, you will find 2 functions 
 2. `handleReject()`
 - **TODO:** Have the creator reject the user from the election
 
+### Step 4.3 - Run application
+
+Now, you have finished your application! You can try running the app in your Chrome browser by running `npm start` in the `frontend/voting-app` folder.
+
