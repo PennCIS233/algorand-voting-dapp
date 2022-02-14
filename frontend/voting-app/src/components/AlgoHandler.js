@@ -200,6 +200,7 @@ class AlgoHandler {
         }
       }
     }
+    console.log(allLocalStates);
 
     // Return your JavaScript object
     return allLocalStates;
