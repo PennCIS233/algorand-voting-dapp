@@ -88,7 +88,8 @@ function ElectionPage() {
               appID={appID}
               electionState={electionState}
               isAccepted={optedAccounts["yes"].includes(mainAccount)}
-              isOpted={optedAccounts["maybe"].includes(mainAccount)}
+              isPending={optedAccounts["maybe"].includes(mainAccount)}
+              isRejected={optedAccounts["no"].includes(mainAccount)}
               isVoted={userVotes[mainAccount]}
               electionChoices={electionChoices}
             />
