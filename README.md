@@ -229,38 +229,15 @@ Step 2: Implement `deploy_create_app`. First, compile the approval and clear sta
 
 Step 3: Implement the `main()` function where you initialize the algod client and define absolute election end time fom the status of the last round. Deploy the application and print the global state. 
 
-## Step 3 - Implement the React front end
 
-To use our application, we could write scripts to interact with the blockchain, but it is much easier to interact with a nice user interface. So, we will be connecting our blockchain to a React frontend to interact with the blockchain!
-
-#### A brief tour of our React application
-
-In this project, we have pre-built the React application for you to connect to, but we'll briefly touch over the file structure of our project. 
-
-First, React is a JavaScript library for building user interfaces. It utilizes a **component-based** structure that encapsulates its own state. Within each component, we specify state (which are variables such as the election ID, or user accounts) and then return a snippet of code that tells React how to render the component. For more information about React itself, you can find the documentation [here] (https://reactjs.org/docs/hello-world.html). We also utilize the `react-bootstrap` library, which has out-of-the-box components to create a nicer UI. Read more about it [here] (https://react-bootstrap.github.io/components/alerts).
-
-Pages:
-- **ConnectPage.js**: The ConnectPage prompts the user to connect to the AlgoSigner browser extension, and once the user is connected, allows the user to input the election id. 
-- **ElectionPage.js**: The ElectionPage holds the majority of the functionality: it lets you see all participants in the election, view information about the election, and allows the user to participate in the election.
-
-Components:
-- **NavBar.js**: The NavBar component allows the participant to choose your current account, so you can participate in the election from that account.
-- **ElectionInfoCard.js**: The ElectionInfoCard component displays the election creator, the last round to participate in the election, the number of votes, the vote options, and a pie chart displaying the vote distribution.
-- **ParticipantsCard.js**: The ParticipantsCard component has three tabs: accepted, rejected, and pending. Each of these categories has a list of participants. The list of accepted users also contains the vote that they chose if they have made one. The list of pending users will also contain Accept/Reject buttons if the current account is a creator account. 
-- **VoterCard.js**: The VoterCard component displays a card that will 
-- **AlgoHandler.js**: The AlgoHandler component contains many helper functions that you will be implementing. You will have to implement functions to interact with the election, such as voting and opting-in, as well as functions to retrieve information about the state of the election.
-
-
-### Step 2.0
-
-## Step 4 - Frontend Logic: `AlgoHandler.js` 
+## Step 3 - Frontend Logic: `AlgoHandler.js` 
   
 If our frontend wants to display relevant information to our users it will need a way to retrieve data from the Algorand blockchain. Similarly, if our frontend wants to allow users to interact with our election smart contract our frontend will need to be able to send transactions to the Algorand blockchain. We will make use of the PureStake Algod client and Indexer client to retrieve information about the current state of our smart contract. We will use the AlgoSDK and AlgoSigner to create, sign, and send transactions to be added to the Algorand TestNet.
 
 #### How
 `frontend/src/components/AlgoHandler.js` is meant to contain all functionality related to retrieving information about the smart contract and sending transactions to the Algorand TestNet.
   
-### Step 4.0 - Getting Familiar with the Tools  
+### Step 3.0 - Getting Familiar with the Tools  
 
 #### JavaScript  
   
@@ -297,14 +274,14 @@ This file exports a singular instance of the class it contains which is meant to
   
 We provide you a skeleton outline with all the necessary functions needed for you to fill out. You will be graded on producing the correct outputs for these functions (for those that have a specified return) and for sending the correct properly-formatted transactions (for those that require sending a transaction) .
 
-### Step 4.1 - AlgoHandler constructor
+### Step 3.1 - AlgoHandler constructor
 
 In `frontend/src/components/AlgoHandler.js` fill out the `TODO` sections. Remember, don't change the variable names. You can define additional variables if needed.
 
 - Set the `this.algodClient` variable
 - Set the `this.indexerClient` variable
 
-### Step 4.2 - Retrieving Data
+### Step 3.2 - Retrieving Data
 
 In `frontend/src/components/AlgoHandler.js` fill out the following 4 functions with the commented functionality. Remember, don't change the function names. Feel free to add helper functions if you want. Remember to use JavaScript's `await` keyword when using `this.algodClient`, `this.algodIndexer`, and `window.AlgoSigner`
 
@@ -342,7 +319,7 @@ In `frontend/src/components/AlgoHandler.js` fill out the following 4 functions w
       ```
       - **Note:** Only include values that are included in the original object. If a user does not have a value for `voted` then don't include the `voted` variable
 
-### Step 4.3 - Sending Transactions
+### Step 3.3 - Sending Transactions
 
 In `frontend/src/components/AlgoHandler.js` fill out the following 6 functions with the commented functionality. Remember, don't change the function names. Feel free to add helper functions if you want. Remember to use JavaScript's `await` when using `this.algodClient`, `this.algodIndexer`, and `window.AlgoSigner`
 
@@ -373,4 +350,55 @@ In `frontend/src/components/AlgoHandler.js` fill out the following 6 functions w
  6. `clearState(address, appID)`
     - **TODO:** Create transaction, sign and send, similar to above
 
+## Step 4 - Implement the React front end
+
+To use our application, we could write scripts to interact with the blockchain, but it is much easier to interact with a nice user interface. So, we will be connecting our blockchain to a React frontend to interact with the blockchain!
+
+#### A brief tour of our React application
+
+In this project, we have pre-built the React application for you to connect to, but we'll briefly touch over the file structure of our project. 
+
+First, React is a JavaScript library for building user interfaces. It utilizes a **component-based** structure that encapsulates its own state. Within each component, we specify state (which are variables such as the election ID, or user accounts) and then return a snippet of code that tells React how to render the component. For more information about React itself, you can find the documentation [here] (https://reactjs.org/docs/hello-world.html). We also utilize the `react-bootstrap` library, which has out-of-the-box components to create a nicer UI. Read more about it [here] (https://react-bootstrap.github.io/components/alerts).
+
+Pages:
+- **ConnectPage.js**: The ConnectPage prompts the user to connect to the AlgoSigner browser extension, and once the user is connected, allows the user to input the election id. 
+- **ElectionPage.js**: The ElectionPage holds the majority of the functionality: it lets you see all participants in the election, view information about the election, and allows the user to participate in the election.
+
+Components:
+- **NavBar.js**: The NavBar component allows the participant to choose your current account, so you can participate in the election from that account.
+- **ElectionInfoCard.js**: The ElectionInfoCard component displays the election creator, the last round to participate in the election, the number of votes, the vote options, and a pie chart displaying the vote distribution.
+- **ParticipantsCard.js**: The ParticipantsCard component has three tabs: accepted, rejected, and pending. Each of these categories has a list of participants. The list of accepted users also contains the vote that they chose if they have made one. The list of pending users will also contain Accept/Reject buttons if the current account is a creator account. 
+- **VoterCard.js**: The VoterCard component displays a card that will 
+- **AlgoHandler.js**: The AlgoHandler component contains many helper functions that you will be implementing. You will have to implement functions to interact with the election, such as voting and opting-in, as well as functions to retrieve information about the state of the election.
+
+We highly recommend taking a look at how the components interact and how values are passed between the components, so that you have a good sense of how the frontend works when filling out the functions!
+
+
+### Step 4.0 - Retrieve State from Blockchain
+
+First, you should implement the `refreshState()` function in the `frontend/src/pages/ElectionPage.js`. Remember, don't change the function names. Remember to use the functions you have written in `AlgoHandler`!
+
+- **TODO:** Get and update global election states (`electionState`, `totalVotes`, and `electionChoices`)
+- **TODO:** Get and update local election states (`optedAccounts`, `userVotes`)
+
+
+### Step 4.1 - Allow Users to Participate in Election
+
+In the `frontend/src/components/VoteCard.js`, you will find 3 functions to implement. Remember to use the functions you have written in `AlgoHandler`!
+
+1. `handleVoteSubmit()`
+- **TODO:** Retrieve the vote from the form and send the vote to the blockchain
+2. `handleOptIn()`
+- **TODO:** Send a transaction to opt in user to the election
+3. `handleClear()`
+- **TODO:** Send a transaction to clear the user's vote from the election
+
+### Step 4.2 - Allow Creator to Accept/Reject Users
+
+In the `frontend/src/components/ParticipantsCard.js`, you will find 2 functions to implement. Remember to use the functions you have written in `AlgoHandler`!
+
+1. `handleAccept()`
+- **TODO:** Have the creator accept the user into the election
+2. `handleReject()`
+- **TODO:** Have the creator reject the user from the election
 
