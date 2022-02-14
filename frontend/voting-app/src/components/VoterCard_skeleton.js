@@ -35,7 +35,7 @@ function VoterCard(props) {
 
   return (
     <Card>
-      {!props.isOpted && !props.isAccepted && (
+      {!props.isOpted && !props.isAccepted && !props.isRejected && (
         <Card.Body>
           <Card.Title>Opt In to the Election</Card.Title>
           <Card.Text>
@@ -50,7 +50,7 @@ function VoterCard(props) {
         </Card.Body>
       )}
 
-      {props.isOpted && !props.isAccepted && (
+      {props.isPending && (
         <Card.Body>
           <Card.Title>Waiting for Acceptance</Card.Title>
           <Card.Text>
@@ -65,7 +65,7 @@ function VoterCard(props) {
             <Card.Title>Cast Your Vote</Card.Title>
             <Form onSubmit={handleVoteSubmit}>
               <Form.Group controlId="vote-options">
-                {props.electionChoices.split(",").map((choice) => (
+                {props.electionChoices.map((choice) => (
                   <Form.Check
                     type="radio"
                     key={choice}
@@ -91,6 +91,25 @@ function VoterCard(props) {
             You have cast your vote for option{" "}
             {props.electionChoices[props.isVoted]}
           </Card.Text>
+        </Card.Body>
+      )}
+
+      {props.isRejected && (
+        <Card.Body>
+          <Card.Title>You Have Been Rejected</Card.Title>
+          <Card.Text>
+            The creator of this election has rejected your request to be able to vote in this election
+          </Card.Text>
+          <Form onSubmit={handleCloseOut}>
+            <Button variant="info" type="submit">
+              Close Out
+            </Button>
+          </Form>
+          <Form onSubmit={handleClearState}>
+            <Button variant="info" type="submit">
+              Clear State
+            </Button>
+          </Form>
         </Card.Body>
       )}
     </Card>
