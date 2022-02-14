@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Button, Form } from "react-bootstrap";
+import { ButtonGroup, Card, Button, Form } from "react-bootstrap";
 import mainAlgoHandler from "../components/AlgoHandler";
 
 function VoterCard(props) {
@@ -103,18 +103,16 @@ function VoterCard(props) {
           <Card.Title>You Voted!</Card.Title>
           <Card.Text>
             You have cast your vote for option{" "}
-            {props.electionChoices[props.isVoted]}
+            {props.electionChoices[props.isVoted]}.
           </Card.Text>
-          <Form onSubmit={handleCloseOut}>
-            <Button variant="info" type="submit">
+          <ButtonGroup>
+            <Button onClick={handleCloseOut} variant="info" type="submit">
               Close Out
             </Button>
-          </Form>
-          <Form onSubmit={handleClearState}>
-            <Button variant="info" type="submit">
+            <Button onClick={handleCloseOut} variant="info" type="submit">
               Clear State
             </Button>
-          </Form>
+          </ButtonGroup>
         </Card.Body>
       )}
 
@@ -122,18 +120,18 @@ function VoterCard(props) {
         <Card.Body>
           <Card.Title>You Have Been Rejected</Card.Title>
           <Card.Text>
-            The creator of this election has rejected your request to be able to vote in this election
+            The creator of this election has rejected your request to be able to
+            vote in this election.
           </Card.Text>
-          <Form onSubmit={handleCloseOut}>
-            <Button variant="info" type="submit">
+
+          <ButtonGroup>
+            <Button onClick={handleCloseOut} variant="info" type="submit">
               Close Out
             </Button>
-          </Form>
-          <Form onSubmit={handleClearState}>
-            <Button variant="info" type="submit">
+            <Button onClick={handleCloseOut} variant="info" type="submit">
               Clear State
             </Button>
-          </Form>
+          </ButtonGroup>
         </Card.Body>
       )}
     </Card>

@@ -1,5 +1,12 @@
 import React from "react";
-import { Card, Button, Accordion, Tabs, Tab } from "react-bootstrap";
+import {
+  Card,
+  Button,
+  Accordion,
+  Tabs,
+  Tab,
+  ButtonGroup,
+} from "react-bootstrap";
 import mainAlgoHandler from "./AlgoHandler";
 
 function ParticipantsCard(props) {
@@ -66,7 +73,9 @@ function ParticipantsCard(props) {
                     <Accordion.Header>
                       {user.substring(0, 20) + "..."}
                     </Accordion.Header>
-                    <Accordion.Body>Creator: {user}</Accordion.Body>
+                    <Accordion.Body>
+                      <b>Creator:</b> {user}
+                    </Accordion.Body>
                   </Accordion.Item>
                 ))}
             </Accordion>
@@ -83,21 +92,24 @@ function ParticipantsCard(props) {
                       {user.substring(0, 20) + "..."}
                     </Accordion.Header>
                     <Accordion.Body>
-                      Creator: {user}
+                      <b>Creator:</b> {user}
                       {props.isCreator && (
                         <div>
-                          <Button
-                            onClick={() => handleAccept(user)}
-                            variant="success"
-                          >
-                            Accept
-                          </Button>
-                          <Button
-                            onClick={() => handleReject(user)}
-                            variant="danger"
-                          >
-                            Reject
-                          </Button>
+                          <ButtonGroup>
+                            <Button
+                              onClick={() => handleAccept(user)}
+                              variant="success"
+                            >
+                              Accept
+                            </Button>
+
+                            <Button
+                              onClick={() => handleReject(user)}
+                              variant="danger"
+                            >
+                              Reject
+                            </Button>
+                          </ButtonGroup>
                         </div>
                       )}
                     </Accordion.Body>
