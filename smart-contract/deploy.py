@@ -409,14 +409,13 @@ def main():
     try:
         app_id = deploy_create_app(algod_client, creator_private_key, election_end, num_vote_options, vote_options)
         print('App creation succeeded')
-        
+        print("Global state:",
+              read_global_state(algod_client, account.address_from_private_key(creator_private_key), app_id))
 
     except Exception as e:
         print('App creation failed')
         print(e)
         # raise 'App creation failed'
-
-    print("Global state:", read_global_state(algod_client, account.address_from_private_key(creator_private_key), app_id),)
 
 
 if __name__ == "__main__":
