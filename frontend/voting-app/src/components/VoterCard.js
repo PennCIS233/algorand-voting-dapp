@@ -17,7 +17,7 @@ function VoterCard(props) {
   //  Sends the vote to the blockchain.
   const handleVoteSubmit = (e) => {
     e.preventDefault();
-    const choices = props.electionChoices.split(",");
+    const choices = props.electionChoices;
     let voteValue = choices.indexOf(voteChoice);
     if (voteValue > -1)
       mainAlgoHandler.vote(props.user, voteValue, parseInt(props.appID));
@@ -36,7 +36,7 @@ function VoterCard(props) {
   //  Clears the user vote on the blockchain.
   const handleClearState = (e) => {
     e.preventDefault();
-    clearState(props.user, props.appID);
+    mainAlgoHandler.clearState(props.user, parseInt(props.appID));
   };
 
   // handleCloseOut
@@ -44,12 +44,12 @@ function VoterCard(props) {
   //  Closes out the user vote on the blockchain.
   const handleCloseOut = (e) => {
     e.preventDefault();
-    closeOut(props.user, props.appID);
+    mainAlgoHandler.closeOut(props.user, parseInt(props.appID));
   };
 
   return (
     <Card>
-      {!props.isOpted && !props.isAccepted && (
+      {!props.isPending && !props.isAccepted && !props.isRejected && (
         <Card.Body>
           <Card.Title>Opt In to the Election</Card.Title>
           <Card.Text>
@@ -64,7 +64,7 @@ function VoterCard(props) {
         </Card.Body>
       )}
 
-      {props.isOpted && !props.isAccepted && (
+      {props.isPending && (
         <Card.Body>
           <Card.Title>Waiting for Acceptance</Card.Title>
           <Card.Text>
@@ -79,7 +79,7 @@ function VoterCard(props) {
             <Card.Title>Cast Your Vote</Card.Title>
             <Form onSubmit={handleVoteSubmit}>
               <Form.Group controlId="vote-options">
-                {props.electionChoices.split(",").map((choice) => (
+                {props.electionChoices.map((choice) => (
                   <Form.Check
                     type="radio"
                     key={choice}
@@ -104,6 +104,25 @@ function VoterCard(props) {
           <Card.Text>
             You have cast your vote for option{" "}
             {props.electionChoices[props.isVoted]}
+          </Card.Text>
+          <Form onSubmit={handleCloseOut}>
+            <Button variant="info" type="submit">
+              Close Out
+            </Button>
+          </Form>
+          <Form onSubmit={handleClearState}>
+            <Button variant="info" type="submit">
+              Clear State
+            </Button>
+          </Form>
+        </Card.Body>
+      )}
+
+      {props.isRejected && (
+        <Card.Body>
+          <Card.Title>You Have Been Rejected</Card.Title>
+          <Card.Text>
+            The creator of this election has rejected your request to be able to vote in this election
           </Card.Text>
           <Form onSubmit={handleCloseOut}>
             <Button variant="info" type="submit">
