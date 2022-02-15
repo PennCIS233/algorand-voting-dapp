@@ -35,7 +35,7 @@ function ElectionInfoCard(props) {
         <Card.Title>Election Info</Card.Title>
         <ListGroup>
           <ListGroup.Item>
-            <b>Creator ID: </b>
+            <b>Creator Address: </b>
             {props.state["Creator"] ? props.state["Creator"] : ""}
           </ListGroup.Item>
           <ListGroup.Item>
@@ -57,9 +57,7 @@ function ElectionInfoCard(props) {
         <Container className="px-2" style={{ width: "75%", height: "75%" }}>
           <PieChart
             data={currVotes}
-            label={({ dataEntry }) =>
-              dataEntry.title + `: ${Math.round(dataEntry.percentage)} %`
-            }
+            label={({ dataEntry }) => dataEntry.title + `: ${dataEntry.value}`}
             labelStyle={(index) => ({
               fill: currVotes[index].color,
               fontSize: "5px",

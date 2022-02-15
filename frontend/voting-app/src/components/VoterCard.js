@@ -109,7 +109,7 @@ function VoterCard(props) {
             <Button onClick={handleCloseOut} variant="info" type="submit">
               Close Out
             </Button>
-            <Button onClick={handleCloseOut} variant="info" type="submit">
+            <Button onClick={handleClearState} variant="info" type="submit">
               Clear State
             </Button>
           </ButtonGroup>
@@ -128,7 +128,7 @@ function VoterCard(props) {
             <Button onClick={handleCloseOut} variant="info" type="submit">
               Close Out
             </Button>
-            <Button onClick={handleCloseOut} variant="info" type="submit">
+            <Button onClick={handleClearState} variant="info" type="submit">
               Clear State
             </Button>
           </ButtonGroup>

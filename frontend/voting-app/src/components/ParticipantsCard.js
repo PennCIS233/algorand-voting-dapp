@@ -59,7 +59,7 @@ function ParticipantsCard(props) {
                       {user.substring(0, 20) + "..."}
                     </Accordion.Header>
                     <Accordion.Body>
-                      <b>Creator:</b> {user}
+                      <b>User Address:</b> {user}
                       <br />
                       {props.electionChoices[props.userVotes[user]] && (
                         <div>
@@ -84,7 +84,7 @@ function ParticipantsCard(props) {
                       {user.substring(0, 20) + "..."}
                     </Accordion.Header>
                     <Accordion.Body>
-                      <b>Creator:</b> {user}
+                      <b>User Address:</b> {user}
                     </Accordion.Body>
                   </Accordion.Item>
                 ))}
@@ -102,7 +102,7 @@ function ParticipantsCard(props) {
                       {user.substring(0, 20) + "..."}
                     </Accordion.Header>
                     <Accordion.Body>
-                      <b>Creator:</b> {user}
+                      <b>User Address:</b> {user}
                       {props.isCreator && (
                         <div>
                           <ButtonGroup>

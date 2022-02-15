@@ -38,22 +38,20 @@ function ConnectPage() {
       <NavBar />
       <Container>
         <Row className="px-3 mt-3">
-          <Row>
-            <Col>
-              <Card className="mt-5">
-                <Card.Body>
-                  <Card.Title>Connect to AlgoSigner</Card.Title>
-                  <Button
-                    variant="info"
-                    onClick={connectAlgoSigner}
-                    disabled={isConnected}
-                  >
-                    Connect
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
+          <Col>
+            <Card className="mt-5">
+              <Card.Body>
+                <Card.Title>Connect to AlgoSigner</Card.Title>
+                <Button
+                  variant="info"
+                  onClick={connectAlgoSigner}
+                  disabled={isConnected}
+                >
+                  Connect
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
         </Row>
       </Container>
       <Container>
