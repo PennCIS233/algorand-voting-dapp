@@ -39,9 +39,12 @@ function ParticipantsCard(props) {
   };
 
   return (
-    <Card>
+    <Card className="h-100">
       <Card.Body>
         <Card.Title>Opted In Users</Card.Title>
+        <Card.Subtitle className="mb-2 text-muted">
+          See what everyone else is doing
+        </Card.Subtitle>
         <Tabs
           defaultActiveKey="Accepted"
           id="uncontrolled-tab-example"

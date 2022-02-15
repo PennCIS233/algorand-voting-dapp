@@ -48,10 +48,13 @@ function VoterCard(props) {
   };
 
   return (
-    <Card>
+    <Card className="h-100">
       {!props.isPending && !props.isAccepted && !props.isRejected && (
         <Card.Body>
-          <Card.Title>Opt In to the Election</Card.Title>
+          <Card.Title>Opt-In to the Election</Card.Title>
+          <Card.Subtitle className="mb-2 text-muted">
+            You have to ask for permission first!
+          </Card.Subtitle>
           <Card.Text>
             To participate in the election, you must opt-in. If the creator of
             the election accepts, you can vote!
@@ -67,6 +70,9 @@ function VoterCard(props) {
       {props.isPending && (
         <Card.Body>
           <Card.Title>Waiting for Acceptance</Card.Title>
+          <Card.Subtitle className="mb-2 text-muted">
+            Hopefully the creator will respond soon...
+          </Card.Subtitle>
           <Card.Text>
             Waiting for the creator of the election to accept...
           </Card.Text>
@@ -77,6 +83,9 @@ function VoterCard(props) {
         <div>
           <Card.Body>
             <Card.Title>Cast Your Vote</Card.Title>
+            <Card.Subtitle className="mb-2 text-muted">
+              Make your voice heard!
+            </Card.Subtitle>
             <Form onSubmit={handleVoteSubmit}>
               <Form.Group controlId="vote-options">
                 {props.electionChoices.map((choice) => (
@@ -101,6 +110,9 @@ function VoterCard(props) {
       {props.isVoted !== undefined && (
         <Card.Body>
           <Card.Title>You Voted!</Card.Title>
+          <Card.Subtitle className="mb-2 text-muted">
+            You're all done!
+          </Card.Subtitle>
           <Card.Text>
             You have cast your vote for option{" "}
             {props.electionChoices[props.isVoted]}.

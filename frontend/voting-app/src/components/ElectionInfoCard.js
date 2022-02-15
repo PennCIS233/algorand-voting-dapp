@@ -30,9 +30,12 @@ function ElectionInfoCard(props) {
     : [];
 
   return (
-    <Card>
+    <Card className="h-100">
       <Card.Body>
         <Card.Title>Election Info</Card.Title>
+        <Card.Subtitle className="mb-2 text-muted">
+          See how the election is going
+        </Card.Subtitle>
         <ListGroup>
           <ListGroup.Item>
             <b>Creator Address: </b>
@@ -53,24 +56,25 @@ function ElectionInfoCard(props) {
           </ListGroup.Item>
         </ListGroup>
       </Card.Body>
-      {currVotes.length > 0 && (
-        <Container className="px-2" style={{ width: "75%", height: "75%" }}>
-          <PieChart
-            data={currVotes}
-            label={({ dataEntry }) => dataEntry.title + `: ${dataEntry.value}`}
-            labelStyle={(index) => ({
-              fill: currVotes[index].color,
-              fontSize: "5px",
-              fontFamily: "sans-serif",
-            })}
-            radius={27}
-            labelPosition={112}
-            animate
-          />
-        </Container>
-      )}
     </Card>
   );
 }
 
 export default ElectionInfoCard;
+
+/**
+ * {currVotes.length > 0 && (
+        <PieChart
+          data={currVotes}
+          label={({ dataEntry }) => dataEntry.title + `: ${dataEntry.value}`}
+          labelStyle={(index) => ({
+            fill: currVotes[index].color,
+            fontSize: "5px",
+            fontFamily: "sans-serif",
+          })}
+          radius={11}
+          labelPosition={112}
+          animate
+        />
+      )}
+ */

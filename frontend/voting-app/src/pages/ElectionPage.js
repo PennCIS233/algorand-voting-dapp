@@ -33,20 +33,23 @@ function ElectionPage() {
   //  Calls API to get election state and list of all users that have opted-in
   const refreshState = () => {
     console.log("refreshing state...");
-    mainAlgoHandler.getElectionState(location.state.appID).then((res) => {
-      if (!res) {
-        // TODO: handle incorrect election
-      }
-      let newTotalVotes = [];
-      for (let i = 0; i < res["NumVoteOptions"]; i++) {
-        newTotalVotes.push(res[`VotesFor${i}`]);
-      }
+    mainAlgoHandler
+      .getElectionState(location.state.appID)
+      .then((res) => {
+        let newTotalVotes = [];
+        for (let i = 0; i < res["NumVoteOptions"]; i++) {
+          newTotalVotes.push(res[`VotesFor${i}`]);
+        }
 
-      let newElectionChoices = res["VoteOptions"].split(",");
-      setElectionState(res);
-      setTotalVotes(newTotalVotes);
-      setElectionChoices(newElectionChoices);
-    });
+        let newElectionChoices = res["VoteOptions"].split(",");
+        setElectionState(res);
+        setTotalVotes(newTotalVotes);
+        setElectionChoices(newElectionChoices);
+      })
+      .catch((err) => {
+        console.log(err);
+        // TODO: handle error
+      });
 
     console.log(electionState);
 
@@ -73,6 +76,10 @@ function ElectionPage() {
           }
         }
         setUserVotes(newUserVotes);
+      })
+      .catch((err) => {
+        console.log(err);
+        // TODO: handle error
       });
   };
 
@@ -103,8 +110,8 @@ function ElectionPage() {
         refreshState={refreshState}
       />
       <Container>
-        <Row className="mt-3 align-items-center">
-          <CardGroup>
+        <Row xs={1} md={2} className="g-4 mt-3">
+          <Col>
             <ParticipantsCard
               appID={appID}
               users={accounts}
@@ -114,14 +121,14 @@ function ElectionPage() {
               optedAccounts={optedAccounts}
               electionChoices={electionChoices}
             />
+          </Col>
+          <Col>
             <ElectionInfoCard
               currVotes={totalVotes}
               appID={appID}
               state={electionState}
             />
-          </CardGroup>
-        </Row>
-        <Row>
+          </Col>
           <Col>
             <VoterCard
               user={mainAccount}
