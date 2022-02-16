@@ -2,7 +2,14 @@ import { Card, ListGroup, Container } from "react-bootstrap";
 import "chart.js/auto";
 import { Chart } from "react-chartjs-2";
 
+/*
+ * Props:
+ *  - appID (string): id of the election
+ *  - currVotes (list of integers): number of votes for each choice
+ *  - state (JSON): global state of the election
+ */
 function ElectionInfoCard(props) {
+  // list of colors to include in the pie chart
   const colorList = [
     "#3181ba",
     "#632656",
@@ -15,6 +22,7 @@ function ElectionInfoCard(props) {
     "#142d6a",
   ];
 
+  // JSON of data for the pie chart (in the specified format)
   const data = {
     labels: props.state["VoteOptions"]
       ? props.state["VoteOptions"].split(",")
@@ -30,6 +38,10 @@ function ElectionInfoCard(props) {
     ],
   };
 
+  /*
+   * Render the card with a list of election info, as well as a pie chart
+   * with the number of votes for each choice.
+   */
   return (
     <Card className="h-100">
       <Card.Body>

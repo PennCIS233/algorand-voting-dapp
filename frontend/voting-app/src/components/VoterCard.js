@@ -2,19 +2,32 @@ import React, { useState } from "react";
 import { ButtonGroup, Card, Button, Form } from "react-bootstrap";
 import mainAlgoHandler from "../components/AlgoHandler";
 
+/*
+ * Props:
+ *  - appID (string): id of the election
+ *  - user (string): user that is the current selection in the dropdown
+ *  - electionState (JSON): global state of the election
+ *  - isAccepted (boolean): true if the user has been accepted
+ *  - isPending (boolean): true if the user has opted-in but not been accepted/ rejected
+ *  - isRejected (boolean): true if the user has been rejected
+ *  - is Voted (boolean): true if the user has voted in the election already
+ *  - electionChoices (string) - comma-separated string of the election choices
+ */
 function VoterCard(props) {
-  const [voteChoice, setVoteChoice] = useState("");
+  const [voteChoice, setVoteChoice] = useState(""); // holds the vote option chosen on the radio select form
 
-  // handleVoteSelect
-  // Description:
-  //  Updates the states when the user changes their vote option
+  /* handleVoteSelect
+   * Description:
+   *  Updates the states when the user changes their vote option
+   */
   const handleVoteSelect = (e) => {
     setVoteChoice(e.target.value);
   };
 
-  // handleVoteSubmit
-  // Description:
-  //  Sends the vote to the blockchain.
+  /* handleVoteSubmit
+   * Description:
+   *  Sends the vote to the blockchain.
+   */
   const handleVoteSubmit = (e) => {
     e.preventDefault();
     const choices = props.electionChoices;
@@ -23,30 +36,40 @@ function VoterCard(props) {
       mainAlgoHandler.vote(props.user, voteValue, parseInt(props.appID));
   };
 
-  // handleOptIn
-  // Description:
-  //  Opts the user into the election on the blockchain.
+  /* handleOptIn
+   * Description:
+   *  Opts the user into the election on the blockchain.
+   * */
   const handleOptIn = (e) => {
     e.preventDefault();
     mainAlgoHandler.optInAccount(props.user, parseInt(props.appID));
   };
 
-  // handleClearState
-  // Description:
-  //  Clears the user vote on the blockchain.
+  /* handleClearState
+   * Description:
+   *  Clears the user vote on the blockchain.
+   */
   const handleClearState = (e) => {
     e.preventDefault();
     mainAlgoHandler.clearState(props.user, parseInt(props.appID));
   };
 
-  // handleCloseOut
-  // Description:
-  //  Closes out the user vote on the blockchain.
+  /* handleCloseOut
+   *  Description:
+   *   Closes out the user vote on the blockchain.
+   */
   const handleCloseOut = (e) => {
     e.preventDefault();
     mainAlgoHandler.closeOut(props.user, parseInt(props.appID));
   };
 
+  /*
+   * Render the card which allows the user to participate in the election.
+   * In the beginning, the user can opt-in, and then the card shows a page
+   * which waits for acceptance. If the user is rejected, then they are done.
+   * If they are accepted, they have the option to vote in the election. Once
+   * they vote, they can clear state / close out.
+   */
   return (
     <Card className="h-50 mt-1">
       {!props.isPending && !props.isAccepted && !props.isRejected && (
