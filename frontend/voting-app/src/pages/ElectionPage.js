@@ -9,31 +9,37 @@ import ElectionInfoCard from "../components/ElectionInfoCard";
 import { useLocation } from "react-router-dom";
 
 function ElectionPage() {
+  /*
+   * Location lets us access the state (appID and accounts) passed to the component from the ConnectPage.
+   */
   let location = useLocation();
+  const appID = location.state.appID; // appID that the user entered
+  const accounts = location.state.accts; // accounts that are connected to AlgoSigner
 
-  // constant variables for page
-  const appID = location.state.appID;
-  const accounts = location.state.accts;
-
-  // variables that change state
-  const [isError, setIsError] = useState(false);
-  const [electionState, setElectionState] = useState({});
-  const [mainAccount, setMainAccount] = useState("");
-  const [totalVotes, setTotalVotes] = useState([]);
-  const [electionChoices, setElectionChoices] = useState([]);
-  const [userVotes, setUserVotes] = useState({});
+  /*
+   * Here we define the stored state for this component.
+   */
+  const [isError, setIsError] = useState(false); // boolean set to true if there is an error retrieving the electionState
+  const [electionState, setElectionState] = useState({}); // JSON containing all global variables for the application
+  const [mainAccount, setMainAccount] = useState(
+    accounts.length > 0 ? accounts[0] : ""
+  ); // string that is set to the current account
+  const [totalVotes, setTotalVotes] = useState([]); // array of integers storing the total number of votes for each choice
+  const [electionChoices, setElectionChoices] = useState([]); // array of strings listing the choices in the election
+  const [userVotes, setUserVotes] = useState({}); // JSON containing a mapping of user addresses to their votes in the election
   const [optedAccounts, setOptedAccounts] = useState({
     maybe: [],
     yes: [],
     no: [],
-  });
+  }); // JSON of lists containing the user addresses who have are accepted, rejected, and pending
 
-  // refreshState
-  // Description:
-  //  Calls API to get election state and list of all users that have opted-in
+  /* refreshState
+   * Description:
+   * Calls API to get election state and list of all users that have opted-in.
+   */
   const refreshState = () => {
     console.log("refreshing state...");
-    if (accounts.length > 0) setMainAccount(accounts[0]);
+
     mainAlgoHandler
       .getElectionState(location.state.appID)
       .then((res) => {
@@ -84,23 +90,31 @@ function ElectionPage() {
       });
   };
 
-  // useEffect
-  // Description:
-  //  Retrieves election state when component is first rendered
+  /* useEffect
+   * Description:
+   *  Retrieves election state when component is first rendered
+   */
   useEffect(() => {
     refreshState();
   }, []);
 
-  // handleMainAccountChange
-  // Description:
-  //  Updates the main account and updates the state
-  // Parameters:
-  //   user (string) - user to change main account to
+  /* handleMainAccountChange
+   * Description:
+   *  Updates the main account and updates the state
+   * Parameters:
+   *  user (string) - user to change main account to
+   */
   const handleMainAccountChange = (user) => {
     setMainAccount(user);
     refreshState();
   };
 
+  /*
+   * Render the main election page. It displays the NavBar at the top of the page,
+   * as well as three Cards - the global election info, the election participants,
+   * and a form to participate in the election. If isError is true, then a Modal
+   * (a popup) is displayed.
+   */
   return (
     <>
       <NavBar
@@ -122,16 +136,7 @@ function ElectionPage() {
               optedAccounts={optedAccounts}
               electionChoices={electionChoices}
             />
-          </Col>
-          <Col>
-            <ElectionInfoCard
-              currVotes={totalVotes}
-              appID={appID}
-              state={electionState}
-            />
-          </Col>
-          {accounts.length > 0 && (
-            <Col>
+            {accounts.length > 0 && (
               <VoterCard
                 user={mainAccount}
                 appID={appID}
@@ -142,8 +147,16 @@ function ElectionPage() {
                 isVoted={userVotes[mainAccount]}
                 electionChoices={electionChoices}
               />
-            </Col>
-          )}
+            )}
+          </Col>
+
+          <Col>
+            <ElectionInfoCard
+              currVotes={totalVotes}
+              appID={appID}
+              state={electionState}
+            />
+          </Col>
         </Row>
       </Container>
       <Modal show={isError}>

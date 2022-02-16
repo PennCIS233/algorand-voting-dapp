@@ -48,7 +48,7 @@ function VoterCard(props) {
   };
 
   return (
-    <Card className="h-100">
+    <Card className="h-50 mt-1">
       {!props.isPending && !props.isAccepted && !props.isRejected && (
         <Card.Body>
           <Card.Title>Opt-In to the Election</Card.Title>
@@ -104,6 +104,10 @@ function VoterCard(props) {
           <Card.Text>
             You have cast your vote for option{" "}
             {props.electionChoices[props.isVoted]}.
+          </Card.Text>
+          <Card.Text>
+            If you'd like to have your vote removed, you can either close out or
+            clear state below.
           </Card.Text>
           <ButtonGroup>
             <Button onClick={handleCloseOut} variant="info" type="submit">

@@ -9,12 +9,22 @@ import {
 } from "react-bootstrap";
 import mainAlgoHandler from "./AlgoHandler";
 
+/*
+ * Props:
+ *  - appID (string): id of the election
+ *  - users (list of strings): user addresses that are connected to AlgoSigner
+ *  - user (string): user that is the current selection in the dropdown
+ *  - isCreator (boolean): true if the current user is the creator of the election
+ *  - optedAccounts (JSON of lists of strings) - lists of users that are accepted, rejected and pending
+ *  - electionChoices (string) - comma-separated string of the election choices
+ */
 function ParticipantsCard(props) {
-  // handleAccept
-  // Description:
-  //  Makes call to approve a user when 'Accept' button is pressed
-  // Parameters:
-  //  user (string) - user to accept into the election
+  /* handleAccept
+   * Description:
+   *   Makes call to approve a user when 'Accept' button is pressed
+   * Parameters:
+   *  user (string) - user to accept into the election
+   */
   const handleAccept = (user) => {
     mainAlgoHandler.updateUserStatus(
       props.user,
@@ -24,11 +34,12 @@ function ParticipantsCard(props) {
     );
   };
 
-  // handleReject
-  // Description:
-  //  Makes call to approve a user when 'Reject' button is pressed
-  // Parameters:
-  //  user (string) - user to reject from the election
+  /* handleReject
+   * Description:
+   *  Makes call to approve a user when 'Reject' button is pressed
+   * Parameters:
+   *  user (string) - user to reject from the election
+   */
   const handleReject = (user) => {
     mainAlgoHandler.updateUserStatus(
       props.user,
@@ -38,8 +49,14 @@ function ParticipantsCard(props) {
     );
   };
 
+  /*
+   * Render a card containing three tabs - "Accepted", "Rejected", and "Pending". All tabs
+   * contain a list of Accordions that allow the user to click and view more information about
+   * any user that has opted-in to the election. If the user is the creator, they can accept/reject
+   * users in the "Pending" tab.
+   */
   return (
-    <Card className="h-100">
+    <Card className="h-50">
       <Card.Body>
         <Card.Title>Opted In Users</Card.Title>
         <Tabs

@@ -7,7 +7,19 @@ import {
   Button,
 } from "react-bootstrap";
 
+/*
+ * Props:
+ *  - connected (boolean): true if the user is connected to AlgoSigner
+ *  - handlerUserUpdate (function): handles behavior when the user dropdown selection changes
+ *  - accounts (list of strings): user addresses that are connected to AlgoSigner
+ *  - mainAccount (string): user that is the current selection in the dropdown
+ *  - refreshState (function): handles behavior when refresh button is clicked
+ */
 function NavBar(props) {
+  /*
+   * Render the navigation bar at the top of the page. It displays the logo ("AlgoVoter"),
+   * a dropdown button to choose the account to work with, and a refresh button.
+   */
   return (
     <Navbar
       style={{ backgroundColor: "#201f48" }}
