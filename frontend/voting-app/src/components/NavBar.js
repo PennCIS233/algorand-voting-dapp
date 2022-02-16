@@ -19,7 +19,7 @@ function NavBar(props) {
         </Navbar.Brand>
 
         <Navbar.Collapse className="justify-content-end">
-          {props.connected && (
+          {props.connected && props.accounts.length > 0 && (
             <DropdownButton
               variant="info"
               id="choose-user"

@@ -42,11 +42,7 @@ function ConnectPage() {
             <Card className="mt-5">
               <Card.Body>
                 <Card.Title>Connect to AlgoSigner</Card.Title>
-                <Button
-                  variant="info"
-                  onClick={connectAlgoSigner}
-                  disabled={isConnected}
-                >
+                <Button variant="info" onClick={connectAlgoSigner}>
                   Connect
                 </Button>
               </Card.Body>

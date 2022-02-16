@@ -1,41 +1,39 @@
 import { Card, ListGroup, Container } from "react-bootstrap";
-import { PieChart } from "react-minimal-pie-chart";
+import "chart.js/auto";
+import { Chart } from "react-chartjs-2";
 
 function ElectionInfoCard(props) {
-  // createVoteFormat
-  // Description:
-  //  Transforms list of user votes into a JSON object
-  // Parameters:
-  //  votes (array) - list of number of votes for each option
-  //  options (array) - list of vote options
-  // Returns:
-  //  returns (object) in the format that the PieChart component accepts
-  const createVoteFormat = (votes, options) => {
-    let res = [];
-    const colors = ["#3181ba", "#45134c", "#632656", "#4dc8e9"];
-    for (let i = 0; i < votes.length; i++) {
-      if (votes[i]) {
-        res.push({
-          title: options[i],
-          value: votes[i],
-          color: colors[i % 4],
-        });
-      }
-    }
-    return res;
-  };
+  const colorList = [
+    "#3181ba",
+    "#632656",
+    "#4dc8e9",
+    "#45134c",
+    "#793ea8",
+    "#5ce3fe",
+    "#4e0d4d",
+    "#2379a8",
+    "#142d6a",
+  ];
 
-  const currVotes = props.state["VoteOptions"]
-    ? createVoteFormat(props.currVotes, props.state["VoteOptions"].split(","))
-    : [];
+  const data = {
+    labels: props.state["VoteOptions"]
+      ? props.state["VoteOptions"].split(",")
+      : [],
+    datasets: [
+      {
+        label: "Vote Count",
+        data: props.currVotes,
+        backgroundColor: colorList.slice(0, props.currVotes.length),
+        hoverOffset: 4,
+        radius: "75%",
+      },
+    ],
+  };
 
   return (
     <Card className="h-100">
       <Card.Body>
         <Card.Title>Election Info</Card.Title>
-        <Card.Subtitle className="mb-2 text-muted">
-          See how the election is going
-        </Card.Subtitle>
         <ListGroup>
           <ListGroup.Item>
             <b>Creator Address: </b>
@@ -55,26 +53,14 @@ function ElectionInfoCard(props) {
               "0"}
           </ListGroup.Item>
         </ListGroup>
+        {props.currVotes.reduce((a, b) => a + b, 0) > 0 && (
+          <Container className="mt-3 px-5">
+            <Chart type="pie" data={data} />
+          </Container>
+        )}
       </Card.Body>
     </Card>
   );
 }
 
 export default ElectionInfoCard;
-
-/**
- * {currVotes.length > 0 && (
-        <PieChart
-          data={currVotes}
-          label={({ dataEntry }) => dataEntry.title + `: ${dataEntry.value}`}
-          labelStyle={(index) => ({
-            fill: currVotes[index].color,
-            fontSize: "5px",
-            fontFamily: "sans-serif",
-          })}
-          radius={11}
-          labelPosition={112}
-          animate
-        />
-      )}
- */

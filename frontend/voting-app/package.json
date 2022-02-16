@@ -9,10 +9,11 @@
     "algosdk": "^1.13.1",
     "bootstrap": "^5.1.3",
     "bootstrap-react": "^0.5.0-alpha.14",
+    "chart.js": "^3.7.1",
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.1",
+    "react-chartjs-2": "^4.0.1",
     "react-dom": "^17.0.2",
-    "react-minimal-pie-chart": "^8.2.0",
     "react-router-dom": "^6.2.1",
     "react-scripts": "4.0.3",
     "web-vitals": "^2.1.4"

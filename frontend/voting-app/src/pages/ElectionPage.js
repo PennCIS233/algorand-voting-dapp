@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Container, CardGroup } from "react-bootstrap";
+import { Row, Col, Container, Modal, Button } from "react-bootstrap";
 import mainAlgoHandler from "../components/AlgoHandler";
 import NavBar from "../components/NavBar";
-
 import VoterCard from "../components/VoterCard";
 import ParticipantsCard from "../components/ParticipantsCard";
 import ElectionInfoCard from "../components/ElectionInfoCard";
@@ -17,8 +16,9 @@ function ElectionPage() {
   const accounts = location.state.accts;
 
   // variables that change state
+  const [isError, setIsError] = useState(false);
   const [electionState, setElectionState] = useState({});
-  const [mainAccount, setMainAccount] = useState(accounts[0]);
+  const [mainAccount, setMainAccount] = useState("");
   const [totalVotes, setTotalVotes] = useState([]);
   const [electionChoices, setElectionChoices] = useState([]);
   const [userVotes, setUserVotes] = useState({});
@@ -33,6 +33,7 @@ function ElectionPage() {
   //  Calls API to get election state and list of all users that have opted-in
   const refreshState = () => {
     console.log("refreshing state...");
+    if (accounts.length > 0) setMainAccount(accounts[0]);
     mainAlgoHandler
       .getElectionState(location.state.appID)
       .then((res) => {
@@ -48,7 +49,7 @@ function ElectionPage() {
       })
       .catch((err) => {
         console.log(err);
-        // TODO: handle error
+        setIsError(true);
       });
 
     console.log(electionState);
@@ -79,7 +80,7 @@ function ElectionPage() {
       })
       .catch((err) => {
         console.log(err);
-        // TODO: handle error
+        setIsError(true);
       });
   };
 
@@ -129,20 +130,36 @@ function ElectionPage() {
               state={electionState}
             />
           </Col>
-          <Col>
-            <VoterCard
-              user={mainAccount}
-              appID={appID}
-              electionState={electionState}
-              isAccepted={optedAccounts["yes"].includes(mainAccount)}
-              isPending={optedAccounts["maybe"].includes(mainAccount)}
-              isRejected={optedAccounts["no"].includes(mainAccount)}
-              isVoted={userVotes[mainAccount]}
-              electionChoices={electionChoices}
-            />
-          </Col>
+          {accounts.length > 0 && (
+            <Col>
+              <VoterCard
+                user={mainAccount}
+                appID={appID}
+                electionState={electionState}
+                isAccepted={optedAccounts["yes"].includes(mainAccount)}
+                isPending={optedAccounts["maybe"].includes(mainAccount)}
+                isRejected={optedAccounts["no"].includes(mainAccount)}
+                isVoted={userVotes[mainAccount]}
+                electionChoices={electionChoices}
+              />
+            </Col>
+          )}
         </Row>
       </Container>
+      <Modal show={isError}>
+        <Modal.Header>
+          <Modal.Title>Error</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          There was an error when retrieving the application state. Please check
+          that you entered the correct application ID.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="info" href="/">
+            Return to Connect Page
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }
