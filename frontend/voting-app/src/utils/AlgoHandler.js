@@ -1,7 +1,6 @@
 import { secrets } from "./secrets";
 const algosdk = require("algosdk");
 
-
 // This will handle all algosdk, indexer, and AlgoSigner code
 class AlgoHandler {
   constructor() {
@@ -45,7 +44,7 @@ class AlgoHandler {
     }
 
     // Retrieve all the AlgoSigner accounts on the TestNet
-    // Note they will be in this format: [{address: 'fsdaklfjdsa'}, {address: 'fsdafsdfer'}, etc]
+    // Note they will be in this format: [{address: "fsdaklfjdsa"}, {address: "fsdafsdfer"}, etc]
     let tempAccounts = await window.AlgoSigner.accounts({
       ledger: "TestNet"
     });
@@ -55,7 +54,7 @@ class AlgoHandler {
     });
 
 
-    // Return the accounts in array format: ['address1', 'address2', 'address3', etc]
+    // Return the accounts in array format: ["address1", "address2", "address3", etc]
     return accounts;
   }
 
@@ -78,10 +77,10 @@ class AlgoHandler {
    * @example 
    * // returns 
    * //   {
-   * //     'Creator': 'fjlasjfskfa...',
-   * //     'VoteOptions': 'A,B,C,D',
-   * //     'VotesFor0': 0,
-   * //     'VotesFor1': 0,
+   * //     "Creator": "fjlasjfskfa...",
+   * //     "VoteOptions": "A,B,C,D",
+   * //     "VotesFor0": 0,
+   * //     "VotesFor1": 0,
    * //     ...
    * //   } 
    * getElectionState(appID)
@@ -134,12 +133,12 @@ class AlgoHandler {
    * @example 
    * // returns 
    * //   {
-   * //     'jsdalkfjsd...': {
-   * //       'can_vote': 'yes', 
-   * //       'voted': 2
+   * //     "jsdalkfjsd...": {
+   * //       "can_vote": "yes", 
+   * //       "voted": 2
    * //     }, 
-   * //     'fdsfdsaf...': {
-   * //       'can_vote': 'no'
+   * //     "fdsfdsaf...": {
+   * //       "can_vote": "no"
    * //     }
    * //   }
    * getAllLocalStates(appID)
@@ -153,7 +152,7 @@ class AlgoHandler {
 
     // The resultant JavaScript object (dictionary) may have a complex form
     // Try to console.log it out to see the structure
-    let accounts = accountInfo['accounts'];
+    let accounts = accountInfo["accounts"];
     console.log(accounts);
 
     // Go through the data and fill allLocalStates which contains all the user's local states
@@ -203,7 +202,7 @@ class AlgoHandler {
 
     // send the message with AlgoSigner
     let tx = await window.AlgoSigner.send({
-      ledger: 'TestNet',
+      ledger: "TestNet",
       tx: signedTxs[0].blob
     });
 
@@ -242,7 +241,7 @@ class AlgoHandler {
    * @param {number} appID - App ID (aka index) of the smart contract app.
    */
   async updateUserStatus(creatorAddress, userAddress, yesOrNo, appID) {
-    console.log(`${creatorAddress} attempting to ${yesOrNo == 'yes' ? 'approve' : 'deny'} account ${userAddress}`);
+    console.log(`${creatorAddress} attempting to ${yesOrNo == "yes" ? "approve" : "deny"} account ${userAddress}`);
 
     // get the suggested params for the transaction
     let params = await this.algodClient.getTransactionParams().do();
@@ -254,7 +253,7 @@ class AlgoHandler {
     // and then use the public key value
     let appArgs = [];
     let decodedAddress = algosdk.decodeAddress(userAddress);
-    appArgs.push(new Uint8Array(Buffer.from('update_user_status')));
+    appArgs.push(new Uint8Array(Buffer.from("update_user_status")));
     appArgs.push(decodedAddress.publicKey);
     appArgs.push(new Uint8Array(Buffer.from(yesOrNo)));
 
@@ -284,7 +283,7 @@ class AlgoHandler {
    *
    * @param {string} address - Address of the user trying to vote.
    * @param {number} optionIndex - Index (starting at 0) corresponding to the user's vote, 
-   * ie in 'A,B,C' the optionIndex for C would be index 2.
+   * ie in "A,B,C" the optionIndex for C would be index 2.
    * @param {number} appID - App ID (aka index) of the smart contract app.
    */
   async vote(address, optionIndex, appID) {
@@ -297,7 +296,7 @@ class AlgoHandler {
     // Strings need to be encoded into Uint8Array
     // Ints need to be encoded using algosdk's inbuilt encodeUint64 function
     let appArgs = [];
-    appArgs.push(new Uint8Array(Buffer.from('vote')));
+    appArgs.push(new Uint8Array(Buffer.from("vote")));
     appArgs.push(algosdk.encodeUint64(optionIndex));
 
     // create the transaction with proper application argument array

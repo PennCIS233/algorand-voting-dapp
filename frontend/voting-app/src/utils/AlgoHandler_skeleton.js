@@ -31,17 +31,17 @@ class AlgoHandler {
     // This variable will be returned after populated
     var accounts = [];
 
-    // Attempt to connect to AlgoSigner, note you will have to use the 'await' keyword
+    // Attempt to connect to AlgoSigner, note you will have to use the "await" keyword
     // If this fails or an error occurs, return an empty array
     // TODO -----------------------------------------------------------------------------
 
 
     // Retrieve all the AlgoSigner accounts on the TestNet
-    // Note they may be in this format: [{address: 'address1'}, {address: 'address2'}, etc]
+    // Note they may be in this format: [{address: "address1"}, {address: "address2"}, etc]
     // TODO -----------------------------------------------------------------------------
 
 
-    // Return the addresses in array format: ['address1', 'address2', 'address3', etc]
+    // Return the addresses in array format: ["address1", "address2", "address3", etc]
     return accounts;
   }
 
@@ -64,10 +64,10 @@ class AlgoHandler {
    * @example 
    * // returns 
    * //   {
-   * //     'Creator': 'fjlasjfskfa...',
-   * //     'VoteOptions': 'A,B,C,D',
-   * //     'VotesFor0': 0,
-   * //     'VotesFor1': 0,
+   * //     "Creator": "fjlasjfskfa...",
+   * //     "VoteOptions": "A,B,C,D",
+   * //     "VotesFor0": 0,
+   * //     "VotesFor1": 0,
    * //     ...
    * //   } 
    * getElectionState(appID)
@@ -120,12 +120,12 @@ class AlgoHandler {
    * @example 
    * // returns 
    * //   {
-   * //     'jsdalkfjsd...': {
-   * //       'can_vote': 'yes', 
-   * //       'voted': 2
+   * //     "jsdalkfjsd...": {
+   * //       "can_vote": "yes", 
+   * //       "voted": 2
    * //     }, 
-   * //     'fdsfdsaf...': {
-   * //       'can_vote': 'no'
+   * //     "fdsfdsaf...": {
+   * //       "can_vote": "no"
    * //     }
    * //   }
    * getAllLocalStates(appID)
@@ -221,7 +221,7 @@ class AlgoHandler {
    *
    * @param {string} address - Address of the user trying to vote.
    * @param {number} optionIndex - Index (starting at 0) corresponding to the user's vote, 
-   * ie in 'A,B,C' the optionIndex for C would be index 2.
+   * ie in "A,B,C" the optionIndex for C would be index 2.
    * @param {number} appID - App ID (aka index) of the smart contract app.
    */
   async vote(address, optionIndex, appID) {
