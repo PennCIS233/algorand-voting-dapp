@@ -1,4 +1,6 @@
+import { secrets } from "./secrets";
 const algosdk = require("algosdk");
+
 
 // This will handle all algosdk, indexer, and AlgoSigner code
 class AlgoHandler {
@@ -11,19 +13,12 @@ class AlgoHandler {
         return;
       }
     });
-    console.log("New AlgoHandler");
 
-    // The algoClient handles creating Algorand transactions
-    const algodToken = {
-      "X-API-Key": "OtAhhF0GEa3GnYbsgghbx4L9qO9Ebq6J9m1sjOS0",
-    };
-    const algodServer = "https://testnet-algorand.api.purestake.io/ps2";
-    const algodPort = "";
-    this.algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
+    // Setup the algod client using the secrets imported variable
+    this.algodClient = new algosdk.Algodv2(secrets.algodHeader, secrets.algodServer, "");
 
-    // The indexerClient handles searching the Algorand blockchain for information
-    const indexerServer = 'https://testnet-algorand.api.purestake.io/idx2';
-    this.indexerClient = new algosdk.Indexer(algodToken, indexerServer, algodPort);
+    // Setup the indexer client using the secrets imported variable
+    this.indexerClient = new algosdk.Indexer(secrets.algodHeader, secrets.indexerServer, "");
   }
 
   /** 

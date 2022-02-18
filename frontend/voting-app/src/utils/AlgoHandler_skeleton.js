@@ -1,3 +1,4 @@
+import { secrets } from "./secrets"; // create your secrets.js file using the template
 const algosdk = require("algosdk");
 
 // This will handle all algosdk, indexer, and AlgoSigner code
@@ -12,11 +13,11 @@ class AlgoHandler {
       }
     });
 
-    // Setup the algod client using your PureStake token, and Purestake algod server url
+    // Setup the algod client using the secrets imported variable
     // TODO -----------------------------------------------------------------------------
     this.algodClient = null;
 
-    // Setup the indexer client using your PureStake token, and PureStake indexer server url
+    // Setup the indexer client using the secrets imported variable
     // TODO -----------------------------------------------------------------------------
     this.indexerClient = null;
   }
