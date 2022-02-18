@@ -45,21 +45,6 @@ class AlgoHandler {
     return accounts;
   }
 
-  // isCreator
-  // Description:
-  //  Checks and returns boolean on whether the given user (address) is the creator of the given app (appID)
-  // Parameters:
-  //  appID (number) - ID of the app
-  //  address (string) - address of the specified user's account, the address of the alleged creator
-  // Returns:
-  //  returns (bool) - whether the given address is the creator of the election at electionAddress
-  async isCreator(appID, address) {
-    // There are two potential ways to accomplish this task
-    // The first is to check the created apps of the user and see if the appID is included
-    // The second is to check the global state of the smart contract and compare the decoded 'Creator' value
-    // TODO -----------------------------------------------------------------------------
-  }
-
   // decodes bytes to strings for values from the smart contract app
   decode(encoded) {
     return Buffer.from(encoded, "base64").toString();
