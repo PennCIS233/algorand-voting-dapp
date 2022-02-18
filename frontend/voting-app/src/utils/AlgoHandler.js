@@ -87,9 +87,9 @@ class AlgoHandler {
     return false;
   }
 
-  // decodes bytes to strings
-  decode(encoded) {
-    return Buffer.from(encoded, "base64").toString();
+  // decodes bytes to string
+  bytesToString(bytes) {
+    return Buffer.from(bytes, "base64").toString();
   }
 
   // getElectionState
@@ -122,14 +122,14 @@ class AlgoHandler {
       console.log(x);
 
       // decode the object key
-      let key = this.decode(x["key"]);
+      let key = this.bytesToString(x["key"]);
 
       // Bytes values need to be decoded
-      // Addresses stored as bytes  need a special decoding process which we have done for you :)
+      // Addresses stored as bytes need a special decoding process which we have done for you :)
       let bytesVal =
         key == "Creator"
           ? algosdk.encodeAddress(Buffer.from(x["value"]["bytes"], "base64"))
-          : this.decode(x["value"]["bytes"]);
+          : this.bytesToString(x["value"]["bytes"]);
       
       // uint types don't need to be decoded
       let uintVal = x["value"]["uint"];
@@ -176,7 +176,7 @@ class AlgoHandler {
 
     // Go through the data and fill allLocalStates which contains all the user's local states
     // Note that the *keys* of smart contract local state variables will need to be decoded using 
-    //   Buffer.from(value, "base64").toString() or our helper this.decode(value) function
+    //   Buffer.from(value, "base64").toString() or our helper this.bytesToString(value) function
     // The actual values will also need to be decoded if they are bytes
     // If they are uints they do not need decoding
     for (let acc of accounts) {
@@ -188,9 +188,9 @@ class AlgoHandler {
         for (let app of apps) {
           if (app["id"] == appID) {
             for (let keyValue of app["key-value"]) {
-              let key = this.decode(keyValue["key"]);
+              let key = this.bytesToString(keyValue["key"]);
               if (key == "can_vote") {
-                let value = this.decode(keyValue["value"]["bytes"]);
+                let value = this.bytesToString(keyValue["value"]["bytes"]);
                 allLocalStates[address][key] = value;
               } else if (key == "voted") {
                 allLocalStates[address][key] = keyValue["value"]["uint"];
