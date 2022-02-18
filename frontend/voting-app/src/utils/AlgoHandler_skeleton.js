@@ -46,8 +46,8 @@ class AlgoHandler {
   }
 
   // decodes bytes to strings for values from the smart contract app
-  decode(encoded) {
-    return Buffer.from(encoded, "base64").toString();
+  bytesToString(bytes) {
+    return Buffer.from(bytes, "base64").toString();
   }
 
   // getElectionState
@@ -80,14 +80,14 @@ class AlgoHandler {
       console.log(x);
 
       // decode the object key
-      let key = this.decode(x["key"]);
+      let key = this.bytesToString(x["key"]);
 
       // Bytes values need to be decoded
       // Addresses stored as bytes  need a special decoding process which we have done for you :)
       let bytesVal =
         key == "Creator"
           ? algosdk.encodeAddress(Buffer.from(x["value"]["bytes"], "base64"))
-          : this.decode(x["value"]["bytes"]);
+          : this.bytesToString(x["value"]["bytes"]);
       
       // uint types don't need to be decoded
       let uintVal = x["value"]["uint"];
@@ -135,7 +135,7 @@ class AlgoHandler {
 
     // Go through the data and fill allLocalStates to contain all the users' local states
     // Note that the *keys* of smart contract local state variables will need to be decoded using 
-    //   Buffer.from(value, "base64").toString() or, equivalently, our helper this.decode(value) function
+    //   Buffer.from(value, "base64").toString() or, equivalently, our helper this.bytesToString(value) function
     // The actual values will also need to be decoded if they are bytes
     // If they are uints they do not need decoding
     // TODO -----------------------------------------------------------------------------
