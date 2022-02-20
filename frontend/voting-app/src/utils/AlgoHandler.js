@@ -251,6 +251,8 @@ class AlgoHandler {
     // Addresses, *only* when passed as arguments, need to be decoded with algosdk inbuilt 
     // decodeAddress function
     // and then use the public key value
+    // Remember the first argument for an application call should be the identifier
+    // In this case the identifier is "update_user_status"
     let appArgs = [];
     let decodedAddress = algosdk.decodeAddress(userAddress);
     appArgs.push(new Uint8Array(Buffer.from("update_user_status")));
@@ -295,6 +297,8 @@ class AlgoHandler {
     // Setup the application argument array, note that application arguments need to be encoded
     // Strings need to be encoded into Uint8Array
     // Ints need to be encoded using algosdk's inbuilt encodeUint64 function
+    // Remember the first argument for an application call should be the identifier
+    // In this case the identifier is "vote"
     let appArgs = [];
     appArgs.push(new Uint8Array(Buffer.from("vote")));
     appArgs.push(algosdk.encodeUint64(optionIndex));
@@ -357,6 +361,6 @@ class AlgoHandler {
 }
 
 // create and export a singular AlgoHandler instance
-var mainAlgoHandler = new AlgoHandler();
+const mainAlgoHandler = new AlgoHandler();
 
 export default mainAlgoHandler;
