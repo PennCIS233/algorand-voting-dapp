@@ -56,7 +56,7 @@ function ParticipantsCard(props) {
    * users in the "Pending" tab.
    */
   return (
-    <Card className="h-50">
+    <Card className="h-100" style={{ overflowY: "scroll" }}>
       <Card.Body>
         <Card.Title>Opted In Users</Card.Title>
         <Tabs
@@ -70,7 +70,7 @@ function ParticipantsCard(props) {
           >
             <Accordion>
               {props.optedAccounts["yes"] &&
-                props.optedAccounts["yes"].map((user) => (
+                duplicateArr(props.optedAccounts["yes"], 1).map((user) => (
                   <Accordion.Item eventKey={user} key={`yes-${user}`}>
                     <Accordion.Header>
                       {user.substring(0, 20) + "..."}
