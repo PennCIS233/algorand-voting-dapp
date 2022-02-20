@@ -8,6 +8,7 @@ import {
 } from "react-bootstrap";
 import mainAlgoHandler from "../components/AlgoHandler";
 
+
 /*
  * Props:
  *  - appID (string): id of the election

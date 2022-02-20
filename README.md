@@ -1,4 +1,4 @@
-# Practical Homework 1: Algorand Election dApp
+# Practical Homework 2: Algorand Election dApp
 
 In this homework you will build an election dApp (decentralized app), creating a smart contract on the Algorand network and a webapp frontend.
 
@@ -13,7 +13,7 @@ The webapp frontend will allow users to easily interact with the smart contract 
 Smart contracts have seen a large uptick in use cases and are being adopted worldwide as a method of decentralized. Smart contracts utilize the blockchain's power to ensure **transparency**, **verifiability**, and **decentralization**.
 
 - **Transparency** - The compiled code resides publicly on the blockchain. Any transaction interacting with the smart contract is also public.
-- **Verifiability** - User's can verify that their interactions with the smart contract actually occurred and produced the exact results that were wanted by looking at the public blockchain transactions
+- **Verifiability** - Users can verify that their interactions with the smart contract actually occurred and produced the exact results that were expected by looking at the public blockchain transactions
 - **Decentralization** - There is no single point of failure since the blockchain network is decentralized.
 
 #### Relevant articles
@@ -38,10 +38,10 @@ A set of arrays can be passed with any application transaction that instructs th
 
 ### Storage and state manipulation
 
-Storage can be either global or local. Local storage refers to storing values in an accounts balance record if that account participates in the contract. Global storage is data that is specifically stored on the blockchain for the contract globally. You can manipulate states with following PyTeal operations:
+Storage can be either global or local. Global storage is data that is specifically stored on the blockchain for the contract globally. Global storage is limited to 64 key/value pairs. When a contract needs to store more data, for example to store data associated to each account that uses the smart contract (such as if the account is a registered voter), global storage cannot be used. Instead, local storage must be used. Local storage is also stored on the blockchain but contrary to global storage, there is one local storage per account that "opts in" in the contract.  You can manipulate states with following PyTeal operations:
 
-- Reading and writing to application global state with App.globalPut, App.globalGet, App.globalDel.
-- Reading and writing to account local state with App.localPut, App.localGet, App.localDel.
+- Reading and writing to application global state with `App.globalPut`, `App.globalGet`, `App.globalDel`.
+- Reading and writing to account local state with `App.localPut`, `App.localGet`, `App.localDel`.
 - Refer to this link for more specific syntax details: https://pyteal.readthedocs.io/en/stable/state.html
 
 ## Overview
@@ -52,7 +52,7 @@ Storage can be either global or local. Local storage refers to storing values in
 
 ### Step 0.0 - Complete Practical Homework
 
-1 In [Practical Homework 1](https://github.com/PennCIS233/Practical-HW1) you install **Python** and **Pip**, setup your **PureStake account**, and install **PyCharm**.
+In [Practical Homework 1](https://github.com/PennCIS233/Practical-HW1) you install **Python** and **Pip**, setup your **PureStake account**, and install **PyCharm**.
 
 If you have not setup any of those please refer to the [Practical HW 1](https://github.com/PennCIS233/Practical-HW1).
 
@@ -66,7 +66,7 @@ Once you have Google Chrome installed add the AlgoSigner extension at this [link
 
 ### Step 0.2 - Setup AlgoSigner Accounts
 
-In practical homework 1 you created two Algorand accounts. Account A and Account B. Once you have Algorand installed on Chrome do the following.
+In Practical Homework 1 you created two Algorand accounts. Account A and Account B. Once you have Algorand installed on Chrome do the following.
 
 - Import Account A and Account B into AlgoSigner **on the TestNet**
   - Save the addresses in form.md
@@ -80,43 +80,56 @@ A walkthrough on how to do both of these can be seen here:
 
 ### Step 0.3 - Fund AlgoSigner Accounts
 
-In the same way as practical homework 1, in order to use your accounts you need to fund them. Use a [dispenser](https://bank.testnet.algorand.network/) to fund the accounts.
+In the same way as Practical Homework 1, in order to use your accounts you need to fund them. Use a [dispenser](https://bank.testnet.algorand.network/) to fund the accounts.
+
+Note that if you successfully finished Practical Homework 1, your two accounts must already have Algos in it and you can skip those tests.
 
 ### Step 0.4 - Install PyTeal
 
 Install the PyTeal library, `pyteal`, by typing this into your terminal:
 
 ```bash
-pip3 install pyteal
+python3 -m pip install pyteal
 ```
+
+If you are using Windows, you may need to replace `python3` by `python` everywhere.
 
 ### Step 0.5 - Install Node.js and set up environment
 
-First, check if you have Node installed by running `node -v; npm -v`. You should have a Node version of at least x.x.x.
+First, check if you have Node installed by running `node -v; npm -v`. You should have a Node version of at least 12.
 
 If you do not have Node.js, you can download it [here] (https://nodejs.org/en/download/).
+If you are using MacOS, it is recommended to install Node.JS using [HomeBrew](https://brew.sh/) as follows:
+```bash
+brew install node
+```
 
-Next, download the files for this project. Open your terminal, and `cd` into the TODO directory. Once inside the directory, type `npm install`, which will download all the dependencies required for the project. Specifically, the dependencies specified in package.json will be downloaded into a node_modules/ directory.
+Next, download the files for this project. Open your terminal, and `cd` into the `frontend` directory. Once inside the directory, type `npm install`, which will download all the dependencies required for the project. Specifically, the dependencies specified in package.json will be downloaded into a node_modules/ directory.
 
-To see i fyou have everything working, type `npm start`. You should see a basic webpage appear in your browser at localhost:3000. If you made it this far, then your setup has been successful!
+To see if you have everything working, type `npm start`. You should see a basic webpage appear in your browser at localhost:3000. If you made it this far, then your setup has been successful!
 
 ## Step 1 - Create the smart contract
 
+The smart contract is inside the `smart-contract` folder.
+
+We recall that the smart contract will be written in Python using PyTeal.
+
 ### Design Overview:
 
-In `election_smart_contract.py`, you will be creating a smart contract that conducts an election with multiple discrete choices. You will define each choice as a byte string and user accounts will be able to register and vote for any of the choices. There is a configurable election period defined by global variable, `ElectionEnd` which is relative to the current time
+In `election_smart_contract.py`, you will be creating a smart contract that conducts an election with multiple discrete choices. You will define each choice as a byte string and user accounts will be able to register and vote for any of the choices. There is a configurable election period defined by global variable, `ElectionEnd`, a round number denoting when the election will end, relative to the current time. 
 
-- An account must register in order to vote
-- Accounts cannot vote more than once. Accounts that close out of the application before the voting period has concluded, denoted by the global variable, ElectionEnd
-- The creator of the election has to approve every account that opts in
+Voting Requirements: 
 
-Here's simplified overview of the election smart contract:
+- An account must register in order to vote.
+- Accounts cannot vote more than once. Accounts that close out of the application before the voting period has concluded, denoted by the global variable, `ElectionEnd`, will have their vote removed.
+- The creator of the election has to approve every account that opts in.
+
+Smart contract process:
 
 1.  Creator deploys smart contract
 2.  User(s) opt-in to the contract
 3.  Creator approves/reject user's ability to vote
-4.  Approved user can cast vote once
-    4b. Approved user who voted can remove their vote (potentially then revote) if they closeout or clear program
+4.  Approved user can cast vote once. Approved user who voted can remove their vote (potentially then revote) if they closeout or clear program
 5.  Repeat 2 to 4 for each user who opts-in before the election end
 6.  Election ends and no further changes (opt-ins, votes, approvals/rejects) can be made to the election
 
@@ -124,6 +137,8 @@ Smart contracts are implemented using two programs:
 
 - `ApprovalProgram`: Responsible for processing all application calls to the contract and implementing most of the logic of an application. Handles opting in, approving users to vote, and casting votes. Used to close out accounts and can control if a close out is allowed or not.
 - `ClearStateProgram`: uses the clear call to remove the smart contract from the balance record of user accounts. This method of opting out cannot be stopped by the smart contract.
+
+![alt text](https://github.com/PennCIS233/Practical-HW2/blob/main/smart-contract/Smart_Contract_Architecture.png)
 
 ### Global Variables
 
@@ -158,92 +173,100 @@ For standardization, we require everyone use the same global variable names in t
 
 ### Approval Program
 
-#### Main Conditional
+#### `election_params.py`, `secrets.py`, `delete_app.py`
 
-The heart of the smart contract is a simple logical switch statement used to route evaluation to different set of logic based on a Transaction's `OnComplete` value (defined in `create_app`). This logic allows the contract to choose which operation to run based on how the contract is called. For example, if Txn.application_id() is 0, then the on_creation sequence will run. If `Txn.on_completion()` is `OnComplete.OptIn`, the `on_register` sequence will run. We've completed the first few cases for you.
+Copy the files `election_param.template.py` and `secrets.template.py` into `election_params.py` and `secrets.py`.
 
-#### Creation
+Input your token and the private mnemonics of the accounts you want to register for the voting election in `secrets.py`. One of these will be the Creator account. Input the election parameters in `election_params.py`, where you will declare local and global ints and bytes for the local and glboal state schema, and define the election period, and the voting options. 
 
-Implement `on_create`: This sequence runs when the smart contract is created. It takes arguments from creation and puts them into the proper global variables.
+`election_smart_contract.py` will import values from both these files as parameters for the election you will create and accounts who opt in and vote. You can create and deploy new smart contracts based on new parameters or accounts. Since each account can only create up to 10 apps unless apps are deleted, feel free to run delete_app.py to delete previously created apps if the limit is reached.
 
-Step 1: Store the values of election parameters passed from the application arguments of the election that was created.
+#### Step 1.1: Main Conditional 
 
-- the creator as whoever deployed the smart contract
-- the round number for the end of the election
-- the different options to vote for,
-- the number of options there are to vote for
+The heart of the smart contract is a simple logical switch statement used to route evaluation to different sets of logic based on a Transaction's `OnComplete` value (defined in `create_app`). This logic allows the contract to choose which operation to run based on how the contract is called. For example, if `Txn.application_id()` is 0, then the on_creation sequence will run. If `Txn.on_completion()` is `OnComplete.OptIn`, the `on_register` sequence will run. If `Txn.application_args[0] == Bytes("vote")` then we want the `on_vote` sequence to be called. We've completed the first few cases for you.
 
-Although there are many ways to store the vote options, for the purposes of this project, we want you to store them as a string of options separated by commas e.g., "A,B,C,D". Note that index-wise, A=0, B=1, C=2, D=3
+**TODO:** Implement the `program` conditional. 
 
-Step 2: For all vote options, set initial vote tallies corresponding to all vote options to 0 where the keys are the vote options.
+#### Step 1.2: Creation
 
-#### Close-out
+**TODO:** `on_create`: This sequence runs when the smart contract is created. It takes arguments from creation and puts them into the proper global variables.
+- Store the values of election parameters passed from the application arguments of the election that was created.
+  - the creator as whoever deployed the smart contract
+  - the round number for the end of the election
+  - the different options to vote for,
+  - the number of options there are to vote for
+- For all vote options, set initial vote tallies corresponding to all vote options to 0 where the keys are the vote options.
 
-Implement `on_closeout`, which is called when user removes interaction with this smart contract from their account.
+Although there are many ways to store the vote options, for the purposes of this project, we want you to store them as a string of options separated by commas e.g., "A,B,C,D". Note that index-wise, A=0, B=1, C=2, D=3. 
 
-Step 1: Removes the user's vote from the correct vote tally if the user closes out of program before the end of the election.
 
-Step 2: Check that the voter is still in the election period and has actually voted. If so, update vote tally by subtracting one vote for whom the user voted for.
 
-#### Registration
+#### 1.3 Close-out
 
-Implement `on_register`, a function that is called when sender/user opts-in to the smart contract
-Check users are registering before the end of the election period and set user's voting status to "maybe."
+**TODO:** Implement `on_closeout`, which is called when user removes interaction with this smart contract from their account.
+- Removes the user's vote from the correct vote tally if the user closes out of program before the end of the election.
+- Check that the voter is still in the election period and has actually voted. If so, update vote tally by subtracting one vote for whom the user voted for.
 
-#### Update user logic
+#### 1.4 Registration
 
-Implement `on_update_user_status`, which is called when creator wants to approve/disapprove of a user who opted-in the election.
-`on_update_user_status` variables:
+**TODO:** Implement `on_register`, a function that is called when sender/user opts-in to the smart contract. 
+- Check users are registering before the end of the election period and set user's voting status to "maybe."
 
-- address_to_approve (bytes): 32-byte address that creator wants to approve/disapprove
-- is_user_approved (bytes): “yes” if creator wants address to be able to vote, “no” if the creator wants address to not be able to vote
+#### 1.5 Update user logic
 
-Step 1: Fetch the creator's decision to approve or reject a user acccount and update user's voting status accordingly.
+**TODO:** Implement `on_update_user_status`, which is called when creator wants to approve/disapprove of a user who opted-in the election.
+- Fetch the creator's decision to approve or reject a user acccount and update user's voting status accordingly.
+- Only the creator can approve or disapprove users and users can only be approved before the election ends.
+- Think about how the given user's address and creator's decision are stored
 
-Step 2: Only the creator can approve or disapprove users and users can only be approved before the election ends.
+The `on_update_user_status` sequence expects the following values in arguments 1 and 2 of the `Txn.application_args` array:
+- `address_to_approve` (bytes): 32-byte address that creator wants to approve/disapprove
+- `is_user_approved` (bytes): “yes” if creator wants address to be able to vote, “no” if the creator wants address to not be able to vote
 
-Step 3: Think about how the given user's address and creator's decision are stored
+#### 1.6 User Voting Logic:
 
-#### User Voting Logic:
-
-Implement `on_vote`, a function that is called when the txn sender/user votes. The logic in this sequence properly casts a user's vote and updates the local and global states accordingly.
+**TODO:** Implement `on_vote`, a function that is called when the txn sender/user votes. The logic in this sequence properly casts a user's vote and updates the local and global states accordingly.
+- Check that the election isn't over and that user is allowed to vote using get_sender_can_vote.
+- Check using `get_vote_of_sender` to check if the user has already voted. If so, return a 0. Otherwise, get the choice that the user wants to vote for from the application arguments.
+- Update the vote tally for the user's choice under the corresponding global variables.
+- Record the user has successfully voted by writing the choice they voted for to the user's "voted" key to reflect their choice. Make sure that the vote choice is within index bounds of the vote options.
 
 `on_vote` variables:
 
 - choice (int): Index for option the sender/user wants to vote for
 
-STEP 1: Check that the election isn't over and that user is allowed to vote using get_sender_can_vote.
 
-STEP 2: Check using `get_vote_of_sender` to check if the user has already voted. If so, return a 0. Otherwise, get the choice that the user wants to vote for from the application arguments.
-
-STEP 3: Update the vote tally for the user's choice under the corresponding global variables.
-
-STEP 4: Record the user has successfully voted by writing the choice they voted for to the user's "voted" key to reflect their choice. Make sure that the vote choice is within index bounds of the vote options.
 
 ### Clear State Program
 
-Implement the `clear_state_program()` function, which handles the logic of when an account clears its participation in a smart contract. Just like the `close_out` sequence, ensure the user clears state of program before the end of voting period and remove their vote from the correct vote tally.
+**TODO:** Implement the `clear_state_program()` function, which handles the logic of when an account clears its participation in a smart contract. 
+- Just like the `close_out` sequence, ensure the user clears state of program before the end of voting period and remove their vote from the correct vote tally.
+
 
 ## Step 2 - Implement the smart contract deploy script
 
-In the deploy script, you will implement functions that are used to interact with the smart contract and deploy the voting contract in the `main()` function.
+In the deploy script, you will deploy the voting contract using an ApplicationCall transaction in `create_app` and complete the `main()` function.
 
-Smart contracts are implemented using `ApplicationCall` transactions. These transaction types are as follows:
+**TODO:** Implement `create_app`. The creator will deploy the app using this method. This method has 7 parameters:
+- `sender`: address, representing the creator of the app
+- `sp`: suggested parameters obtained from the network
+- `on_complete`: enum value, representing NoOp. Describes the action to be taken following the execution of the approval program or clear state program. 
+- `approval_program`: compiled program
+- `clear program`: compiled program
+- `local_schema`: maximum local storage allocation, immutable
+- `global_schema`: maximum global storage allocation, immutable
 
-- `NoOp` - Generic application calls to execute the `ApprovalProgram`.
-- `OptIn` - Accounts use this transaction to begin participating in a smart contract. Participation enables local storage usage.
-- `DeleteApplication` - Transaction to delete the application.
-- `UpdateApplication` - Transaction to update TEAL Programs for a contract.
-- `CloseOut` - Accounts use this transaction to close out their participation in the contract. This call can fail based on the TEAL logic, preventing the account from removing the contract from its balance record.
-- `ClearState` - Similar to `CloseOut`, but the transaction will always clear a contract from the account’s balance record whether the program succeeds or fails.
 
-Step 1: Implement the `create_app`, `opt_in_app`, `call_app_approve_voter`, `call_app`, `delete_app`, `close_out_app`, and `clear_app` functions using the types of transaction application calls mentioned above.
 
-Refer to this link for specific transaction calls for the application methods mentioned above: https://developer.algorand.org/docs/get-details/dapps/smart-contracts/frontend/apps/.
+**TODO:** Implement `deploy_create_app`. First, compile the approval and clear state programs to TEAL assembly, then to binary. Create the application and the application arguments which should include a list of election parameters you defined previously as global variables: `election_end`, `num_vote_options`, `vote_options`.
 
-Step 2: Implement `deploy_create_app`. First, compile the approval and clear state programs to TEAL assembly, then to binary. Create the application and the application arguments which should include a list of election parameters you defined previously as global variables: `election_end`, `num_vote_options`, `vote_options`.
+**TODO:** Implement the `main()` function where you initialize the algod client and define absolute election end time fom the status of the last round. Deploy the application and print the global state.
 
-Step 3: Implement the `main()` function where you initialize the algod client and define absolute election end time fom the status of the last round. Deploy the application and print the global state.
+
+### Test smart contract using `simple_tests.py`
+
+Test your smart contract functions by running the testing script simple_tests.py. Feel free to add your own tests as the ones we have provided are not comprehensive. We only test that basic functionalities are working, namely the creation and initial variable setup, two users opting in, the creator correctly approving two users, approved users being able to vote, and closing out the app. 
+
 
 ## Step 3 - Frontend Logic: `AlgoHandler.js`
 
@@ -251,7 +274,7 @@ If our frontend wants to display relevant information to our users it will need 
 
 #### How
 
-`frontend/src/components/AlgoHandler.js` is meant to contain all functionality related to retrieving information about the smart contract and sending transactions to the Algorand TestNet.
+`frontend/src/utils/AlgoHandler.js` is meant to contain all functionality related to retrieving information about the smart contract and sending transactions to the Algorand TestNet.
 
 ### Step 3.0 - Getting Familiar with the Tools
 
@@ -267,7 +290,17 @@ We do not assume that you have extensive knowledge about JavaScript. JavaScript 
 
 In Practical Homework 1 and parts of this homework you have used the Python version of the AlgoSDK. The frontend will make use of the JavaScript version of the AlgoSDK. Both versions are very similar in functionality and even close in syntax.
 
-Take a look at the documentation here for how the Javscript AlgoSDK interacts with smart contracts:
+In general, smart contracts are implemented using `ApplicationCall` transactions in the AlgoSDK. These transaction types are as follows:
+- `NoOp` - Generic application calls to execute the `ApprovalProgram`.
+- `OptIn` - Accounts use this transaction to begin participating in a smart contract. Participation enables local storage usage.
+- `DeleteApplication` - Transaction to delete the application.
+- `UpdateApplication` - Transaction to update TEAL Programs for a contract.
+- `CloseOut` - Accounts use this transaction to close out their participation in the contract. This call can fail based on the TEAL logic, preventing the account from removing the contract from its balance record.
+- `ClearState` - Similar to `CloseOut`, but the transaction will always clear a contract from the account’s balance record whether the program succeeds or fails.
+
+You will be using the types of transaction application calls mentioned above to implement the `optInAccount`, `updateUserStatus`, `vote`, `closeOut`, and `clearState` functions.
+
+Take a look at the documentation here to understand how the Javscript AlgoSDK interacts with smart contracts and the specific syntax to use:
 
 - [https://developer.algorand.org/docs/get-details/dapps/smart-contracts/frontend/apps/](https://developer.algorand.org/docs/get-details/dapps/smart-contracts/frontend/apps/)
 - https://algorand.github.io/js-algorand-sdk/
@@ -287,7 +320,9 @@ Purestake has an API setup for querying historical data from the Algorand blockc
 
 Take a look at this example to see how it uses the Indexer to read the local state of all accounts which opted-in to the application: https://developer.algorand.org/solutions/example-digital-exchange-smart-contract-application/
 
-#### AlgoHandler.js `frontend/src/components/AlgoHandler.js`
+In `frontend/src/utils/` create a new file `frontend/src/utils/secrets.js` with the same format as `frontend/src/utils/secrets.template.js` using your PureStake API key.
+
+#### AlgoHandler.js `frontend/src/utils/AlgoHandler.js`
 
 This file exports a singular instance of the class it contains which is meant to encapsulate data retrieval and transaction-sending from and to the Algorand blockchain.
 
@@ -295,30 +330,27 @@ We provide you a skeleton outline with all the necessary functions needed for yo
 
 ### Step 3.1 - AlgoHandler constructor
 
-In `frontend/src/components/AlgoHandler.js` fill out the `TODO` sections. Remember, don't change the variable names. You can define additional variables if needed.
+In `frontend/src/utils/AlgoHandler.js` fill out the `TODO` sections. Remember, don't change the variable names. You can define additional variables if needed.
 
 - Set the `this.algodClient` variable
 - Set the `this.indexerClient` variable
 
 ### Step 3.2 - Retrieving Data
 
-In `frontend/src/components/AlgoHandler.js` fill out the following 4 functions with the commented functionality. Remember, don't change the function names. Feel free to add helper functions if you want. Remember to use JavaScript's `await` keyword when using `this.algodClient`, `this.algodIndexer`, and `window.AlgoSigner`
+In `frontend/src/utils/AlgoHandler.js` fill out the following 3 functions with the commented functionality. Remember, don't change the function names. Feel free to add helper functions if you want. Remember to use JavaScript's `await` keyword when using `this.algodClient`, `this.algodIndexer`, and `window.AlgoSigner`
 
 #### Relevant Documentation
 
 - https://developer.algorand.org/solutions/example-digital-exchange-smart-contract-application/
 - https://github.com/PureStake/algosigner/blob/develop/docs/dApp-integration.md#algosignerconnect
 
-1.  `getAlgoSignerAccounts()`
+1. `getAlgoSignerAccounts()`
     - **TODO:** Connect to AlgoSigner
     - **TODO:** Retrieve all addresses in array format and return them
-2.  `isCreator(appID, address)`
-    - **TODO:** Return a boolean based on if the given `address` is the creator of the app at `appID`
-    - **HINT:** Two possible approaches are given in the code comments
-3.  `getElectionState(appID)`
+2. `getElectionState(appID)`
     - **TODO:** Use `this.algodClient` to retrieve the app details
     - The rest is filled out for you :)
-4.  `getAllLocalStates(appID)`
+3. `getAllLocalStates(appID)`
     - **TODO:** Use `this.indexerClient` to find all accounts who are associated with the given app
     - **TODO:** Take the data and format it into a neat JavaScript object (nearly equivalent to a Python dictionary) as specified
       - Example:
@@ -340,7 +372,7 @@ In `frontend/src/components/AlgoHandler.js` fill out the following 4 functions w
 
 ### Step 3.3 - Sending Transactions
 
-In `frontend/src/components/AlgoHandler.js` fill out the following 6 functions with the commented functionality. Remember, don't change the function names. Feel free to add helper functions if you want. Remember to use JavaScript's `await` when using `this.algodClient`, `this.algodIndexer`, and `window.AlgoSigner`
+In `frontend/src/utils/AlgoHandler.js` fill out the following 6 functions with the commented functionality. Remember, don't change the function names. Feel free to add helper functions if you want. Remember to use JavaScript's `await` when using `this.algodClient`, `this.algodIndexer`, and `window.AlgoSigner`.
 
 #### Relevant Documentation
 
@@ -358,12 +390,13 @@ In `frontend/src/components/AlgoHandler.js` fill out the following 6 functions w
     - **TODO:** Sign and send the transaction with our `this.signAndSend` function
 3.  `updateUserStatus(creatorAddress, userAddress, yesOrNo, appID)`
     - **TODO:** Get the suggested params from `this.algodClient`
-    - **TODO:** Set up the transaction app arguments
+    - **TODO:** Set up the transaction app arguments (remember the first argument should be the smart contract method identifier, in this case that's `"update_user_status"` )
     - **TODO:** Create the transaction
       - Include both the creator's address and user's address in the optional address array when creating the transaction (different from app args)
     - **TODO:** Sign and send the transaction with our `this.signAndSend` function
 4.  `vote(address, optionIndex, appID)`
-    - **TODO:** Create app parameters, create transaction, sign and send
+    - **TODO:** Create app parameters (remember the first argument should be the smart contract method identifier, in this case that's `"vote"` )
+    - **TODO**, create transaction, sign and send
 5.  `closeOut(address, appID)`
     - **TODO:** Create transaction, sign and send, similar to above
 6.  `clearState(address, appID)`
