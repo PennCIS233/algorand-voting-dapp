@@ -49,11 +49,6 @@ function ParticipantsCard(props) {
     );
   };
 
-  const duplicateArr = (arr, times) =>
-    Array(times)
-      .fill([...arr])
-      .reduce((a, b) => a.concat(b));
-
   /*
    * Render a card containing three tabs - "Accepted", "Rejected", and "Pending". All tabs
    * contain a list of Accordions that allow the user to click and view more information about
