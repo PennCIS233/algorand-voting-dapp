@@ -172,6 +172,7 @@ function ElectionPage() {
               currVotes={totalVotes}
               appID={appID}
               state={electionState}
+              latestRound={latestRound}
             />
           </Col>
         </Row>
