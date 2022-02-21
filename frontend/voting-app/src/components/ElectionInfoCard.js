@@ -56,7 +56,7 @@ function ElectionInfoCard(props) {
             <a href={"https://testnet.algoexplorer.io/address/" + props.state["Creator"]} target="_blank">{props.state["Creator"] ? props.state["Creator"] : ""}</a>
           </ListGroup.Item>
           <ListGroup.Item>
-            <b>Last Round to Vote: </b>
+            <b>Election End Round: </b>
             {props.state["ElectionEnd"]}
           </ListGroup.Item>
           <ListGroup.Item>
