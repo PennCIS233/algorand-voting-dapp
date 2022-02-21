@@ -343,14 +343,18 @@ In `frontend/src/utils/AlgoHandler.js` fill out the following 3 functions with t
 
 - https://developer.algorand.org/solutions/example-digital-exchange-smart-contract-application/
 - https://github.com/PureStake/algosigner/blob/develop/docs/dApp-integration.md#algosignerconnect
+- https://developer.algorand.org/docs/archive/build-apps/connect/
 
 1. `getAlgoSignerAccounts()`
     - **TODO:** Connect to AlgoSigner
     - **TODO:** Retrieve all addresses in array format and return them
-2. `getElectionState(appID)`
+2. `getLatestRound()`
+    - **TODO:** Retrieve the Algod client status
+    - **TODO:** Return the `"last-round"` value of the retrieved status
+3. `getElectionState(appID)`
     - **TODO:** Use `this.algodClient` to retrieve the app details
     - The rest is filled out for you :)
-3. `getAllLocalStates(appID)`
+4. `getAllLocalStates(appID)`
     - **TODO:** Use `this.indexerClient` to find all accounts who are associated with the given app
     - **TODO:** Take the data and format it into a neat JavaScript object (nearly equivalent to a Python dictionary) as specified
       - Example:
