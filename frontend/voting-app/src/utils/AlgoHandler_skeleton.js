@@ -91,10 +91,7 @@ class AlgoHandler {
 
       // Bytes values need to be decoded
       // Addresses stored as bytes need a special decoding process which we have done for you :)
-      let bytesVal =
-        key == "Creator"
-          ? algosdk.encodeAddress(Buffer.from(x["value"]["bytes"], "base64"))
-          : this.base64ToString(x["value"]["bytes"]);
+      let bytesVal = this.base64ToString(x["value"]["bytes"]);
       
       // uint types don't need to be decoded
       let uintVal = x["value"]["uint"];
@@ -105,6 +102,9 @@ class AlgoHandler {
       // set the value for the key in our newState object to the correct value
       newState[key] = valType == 1 ? bytesVal : uintVal;
     }
+
+    // Add the creator's address
+    newState["Creator"] = app["params"]["creator"];
 
     // return the newState
     return newState;
@@ -204,7 +204,7 @@ class AlgoHandler {
     // Strings need to be encoded into Uint8Array
     // Addresses, *only* when passed as *arguments*, need to be decoded with algosdk inbuilt 
     // decodeAddress function and have their public key value used
-    // Remember the first argument for an application call should be the identifier
+    // The first argument should be the identifier of the smart contract method.
     // In this case the identifier is "update_user_status"
     // TODO -----------------------------------------------------------------------------
 
@@ -227,7 +227,7 @@ class AlgoHandler {
    * @param {number} appID - App ID (aka index) of the smart contract app.
    */
   async vote(address, optionIndex, appID) {
-    // Remember the first argument for an application call should be the identifier
+    // The first argument should be the identifier of the smart contract method.
     // In this case the identifier is "vote"
     // TODO -----------------------------------------------------------------------------
   }
