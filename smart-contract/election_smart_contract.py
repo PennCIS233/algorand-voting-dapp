@@ -17,9 +17,6 @@ def approval_program():
 
     on_creation = Seq(
         [
-            # the creator is whoever deployed the smart contract
-            App.globalPut(Bytes("Creator"), Txn.sender()),
-
             # ensure all required arguments are present
             Assert(Txn.application_args.length() == Int(3)),
 
@@ -45,8 +42,8 @@ def approval_program():
         ]
     )
 
-    # call to determine whether the current transaction sender is the creator
-    is_creator = Txn.sender() == App.globalGet(Bytes("Creator"))
+    # call to determine whether the current transaction sender is the creator of the smart contract
+    is_creator = Txn.sender() == Global.creator_address()
 
     # value sender voted for, a number indicating index in the VoteOptions string faux-array
     get_vote_of_sender = App.localGetEx(Int(0), App.id(), Bytes("voted"))

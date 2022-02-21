@@ -95,6 +95,8 @@ class AlgoHandler {
     // The data might have a complex structure, feel free to console.log it to see the structure
 
     // Go through the data and add the global state variables and values to our newState object (dictionary)
+    console.log(`app`);
+    console.log(app);
     console.log("Application's global state:");
     for (let x of app["params"]["global-state"]) {
       console.log(x);
@@ -103,11 +105,7 @@ class AlgoHandler {
       let key = this.base64ToString(x["key"]);
 
       // Bytes values need to be decoded
-      // Addresses stored as bytes need a special decoding process which we have done for you :)
-      let bytesVal =
-        key == "Creator"
-          ? algosdk.encodeAddress(Buffer.from(x["value"]["bytes"], "base64"))
-          : this.base64ToString(x["value"]["bytes"]);
+      let bytesVal = this.base64ToString(x["value"]["bytes"]);
       
       // uint types don't need to be decoded
       let uintVal = x["value"]["uint"];
@@ -118,6 +116,8 @@ class AlgoHandler {
       // set the value for the key in our newState object to the correct value
       newState[key] = valType == 1 ? bytesVal : uintVal;
     }
+
+    newState["Creator"] = app["params"]["creator"];
 
     // return the newState
     return newState;
