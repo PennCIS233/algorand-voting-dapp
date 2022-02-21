@@ -6,7 +6,7 @@ import {
   DropdownButton,
   Dropdown,
 } from "react-bootstrap";
-import mainAlgoHandler from "../components/AlgoHandler";
+import mainAlgoHandler from "../utils/AlgoHandler";
 
 
 /*

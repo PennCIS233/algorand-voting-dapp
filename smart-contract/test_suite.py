@@ -460,7 +460,6 @@ class TestElection1(unittest.TestCase):
         time.sleep(1)
         # check global variables setup
         global_state = read_global_state(client, account_addresses[0], TestElection1.app_id)
-        self.assertEqual(global_state["Creator"], account_addresses[0], "Creator variable is NOT correct")
         self.assertEqual(global_state["VoteOptions"], vote_options, "VoteOptions variable is NOT correct")
         self.assertEqual(global_state["ElectionEnd"], election_end, "ElectionEnd variable is NOT correct")
         for i in range(0, 4):
