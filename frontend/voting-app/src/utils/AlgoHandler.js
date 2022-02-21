@@ -85,7 +85,7 @@ class AlgoHandler {
    * Retrieves and returns the current global variable values in the given app (appID).
    *
    * @param {number} appID - App ID (aka index) of the Algorand smart contract app.
-   * @return {object} - Javascript object of election variables mapped to their respective values.
+   * @returns {object} - Javascript object of election variables mapped to their respective values.
    * 
    * @example 
    * // returns 

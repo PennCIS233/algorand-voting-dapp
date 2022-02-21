@@ -42,7 +42,7 @@ function ElectionInfoCard(props) {
    * Estimate the end date of the election.
    * @param {number} latestRound - latest round as a number.
    * @param {number} endRound - end round of the election as a number.
-   * @return {string} - human readable date as a string.
+   * @returns {string} - human readable date as a string.
    */
   const estimateEndDate = (latestRound, endRound) => {
     const secondsPerRound = 4.5;
