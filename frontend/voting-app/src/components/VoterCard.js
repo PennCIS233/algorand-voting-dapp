@@ -78,7 +78,7 @@ function VoterCard(props) {
    * they vote, they can clear state / close out.
    */
   return (
-    <Card className="mt-4 mb-4 text-center">
+    <Card className="mb-4">
       {!props.isPending && !props.isAccepted && !props.isRejected && (
         <Card.Body>
           <Card.Title>Opt-In to the Election</Card.Title>

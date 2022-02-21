@@ -128,15 +128,33 @@ function ElectionPage() {
       <Container>
         <Row xs={1} md={2} className="g-4 mt-3">
           <Col>
-            <ParticipantsCard
-              appID={appID}
-              users={accounts}
-              user={mainAccount}
-              userVotes={userVotes}
-              isCreator={electionState["Creator"] === mainAccount}
-              optedAccounts={optedAccounts}
-              electionChoices={electionChoices}
-            />
+            {/* <Container> */}
+              <Row>
+                {accounts.length > 0 && (
+                  <VoterCard
+                    user={mainAccount}
+                    appID={appID}
+                    electionState={electionState}
+                    isAccepted={optedAccounts["yes"].includes(mainAccount)}
+                    isPending={optedAccounts["maybe"].includes(mainAccount)}
+                    isRejected={optedAccounts["no"].includes(mainAccount)}
+                    isVoted={userVotes[mainAccount]}
+                    electionChoices={electionChoices}
+                  />
+                )}
+              </Row>
+              <Row>
+                <ParticipantsCard
+                  appID={appID}
+                  users={accounts}
+                  user={mainAccount}
+                  userVotes={userVotes}
+                  isCreator={electionState["Creator"] === mainAccount}
+                  optedAccounts={optedAccounts}
+                  electionChoices={electionChoices}
+                />
+              </Row>
+            {/* </Container> */}
           </Col>
 
           <Col>
@@ -145,22 +163,6 @@ function ElectionPage() {
               appID={appID}
               state={electionState}
             />
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            {accounts.length > 0 && (
-              <VoterCard
-                user={mainAccount}
-                appID={appID}
-                electionState={electionState}
-                isAccepted={optedAccounts["yes"].includes(mainAccount)}
-                isPending={optedAccounts["maybe"].includes(mainAccount)}
-                isRejected={optedAccounts["no"].includes(mainAccount)}
-                isVoted={userVotes[mainAccount]}
-                electionChoices={electionChoices}
-              />
-            )}
           </Col>
         </Row>
       </Container>
