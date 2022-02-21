@@ -70,7 +70,7 @@ function ParticipantsCard(props) {
           >
             <Accordion>
               {props.optedAccounts["yes"] &&
-                duplicateArr(props.optedAccounts["yes"], 1).map((user) => (
+                props.optedAccounts["yes"].map((user) => (
                   <Accordion.Item eventKey={user} key={`yes-${user}`}>
                     <Accordion.Header>
                       {user.substring(0, 20) + "..."}
