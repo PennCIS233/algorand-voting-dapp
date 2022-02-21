@@ -43,6 +43,8 @@ function ElectionPage() {
     mainAlgoHandler
       .getElectionState(location.state.appID)
       .then((res) => {
+        console.log(res);
+        
         let newTotalVotes = [];
         for (let i = 0; i < res["NumVoteOptions"]; i++) {
           newTotalVotes.push(res[`VotesFor${i}`]);
@@ -53,36 +55,31 @@ function ElectionPage() {
         setTotalVotes(newTotalVotes);
         setElectionChoices(newElectionChoices);
       })
-      .catch((err) => {
-        console.log(err);
-        setIsError(true);
-      });
-
-    console.log(electionState);
-
-    mainAlgoHandler
-      .getAllLocalStates(parseInt(appID))
-      .then((allLocalStates) => {
-        let newOptedAccounts = {
-          yes: [],
-          no: [],
-          maybe: [],
-        };
-        for (const address in allLocalStates) {
-          let canVote = allLocalStates[address]["can_vote"];
-          if ("can_vote" in allLocalStates[address]) {
-            newOptedAccounts[canVote].push(address);
+      .then(() => {
+        mainAlgoHandler
+        .getAllLocalStates(parseInt(appID))
+        .then((allLocalStates) => {
+          let newOptedAccounts = {
+            yes: [],
+            no: [],
+            maybe: [],
+          };
+          for (const address in allLocalStates) {
+            let canVote = allLocalStates[address]["can_vote"];
+            if ("can_vote" in allLocalStates[address]) {
+              newOptedAccounts[canVote].push(address);
+            }
           }
-        }
-        setOptedAccounts(newOptedAccounts);
+          setOptedAccounts(newOptedAccounts);
 
-        let newUserVotes = {};
-        for (const address in allLocalStates) {
-          if ("voted" in allLocalStates[address]) {
-            newUserVotes[address] = allLocalStates[address]["voted"];
+          let newUserVotes = {};
+          for (const address in allLocalStates) {
+            if ("voted" in allLocalStates[address]) {
+              newUserVotes[address] = allLocalStates[address]["voted"];
+            }
           }
-        }
-        setUserVotes(newUserVotes);
+          setUserVotes(newUserVotes);
+        })
       })
       .catch((err) => {
         console.log(err);
