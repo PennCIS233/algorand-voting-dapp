@@ -96,7 +96,7 @@ If you are using Windows, you may need to replace `python3` by `python` everywhe
 
 ### Step 0.5 - Install Node.js and set up environment
 
-First, check if you have Node installed by running `node -v; npm -v`. You should have a Node version of at least 12.
+First, check if you have Node installed by running `node -v; npm -v`. You should have a Node version of at least 12.xx.xx.
 
 If you do not have Node.js, you can download it [here] (https://nodejs.org/en/download/).
 If you are using MacOS, it is recommended to install Node.JS using [HomeBrew](https://brew.sh/) as follows:
@@ -104,7 +104,7 @@ If you are using MacOS, it is recommended to install Node.JS using [HomeBrew](ht
 brew install node
 ```
 
-Next, download the files for this project. Open your terminal, and `cd` into the `frontend` directory. Once inside the directory, type `npm install`, which will download all the dependencies required for the project. Specifically, the dependencies specified in package.json will be downloaded into a node_modules/ directory.
+Next, download the files for this project. Open your terminal, and `cd` into the `frontend` directory. Once inside the directory, type `npm install`, which will download all the dependencies required for the project. Specifically, the dependencies specified in `package.json` will be downloaded into a `node_modules/` directory.
 
 To see if you have everything working, type `npm start`. You should see a basic webpage appear in your browser at localhost:3000. If you made it this far, then your setup has been successful!
 
@@ -116,7 +116,7 @@ We recall that the smart contract will be written in Python using PyTeal.
 
 ### Design Overview:
 
-In `election_smart_contract.py`, you will be creating a smart contract that conducts an election with multiple discrete choices. You will define each choice as a byte string and user accounts will be able to register and vote for any of the choices. There is a configurable election period defined by global variable, `ElectionEnd`, a round number denoting when the election will end, relative to the current time. 
+In `election_smart_contract.py`, you will be creating a smart contract that conducts an election with multiple discrete choices. You will define each choice as a byte string, and user accounts will be able to register and vote for any of the choices. There is a configurable election period defined by global variable, `ElectionEnd`, a round number denoting when the election will end, relative to the current time. 
 
 Voting Requirements: 
 
@@ -179,7 +179,7 @@ Copy the files `election_param.template.py` and `secrets.template.py` into `elec
 
 Input your token and the private mnemonics of the accounts you want to register for the voting election in `secrets.py`. One of these will be the Creator account. Input the election parameters in `election_params.py`, where you will declare local and global ints and bytes for the local and glboal state schema, and define the election period, and the voting options. 
 
-`election_smart_contract.py` will import values from both these files as parameters for the election you will create and accounts who opt in and vote. You can create and deploy new smart contracts based on new parameters or accounts. Since each account can only create up to 10 apps unless apps are deleted, feel free to run delete_app.py to delete previously created apps if the limit is reached.
+`election_smart_contract.py` will import values from both these files as parameters for the election you will create and accounts who opt in and vote. You can create and deploy new smart contracts based on new parameters or accounts. Since each account can only create up to 10 apps unless apps are deleted, feel free to run `delete_app.py` to delete previously created apps if the limit is reached.
 
 #### Step 1.1: Main Conditional 
 
@@ -265,7 +265,7 @@ In the deploy script, you will deploy the voting contract using an ApplicationCa
 
 ### Test smart contract using `simple_tests.py`
 
-Test your smart contract functions by running the testing script simple_tests.py. Feel free to add your own tests as the ones we have provided are not comprehensive. We only test that basic functionalities are working, namely the creation and initial variable setup, two users opting in, the creator correctly approving two users, approved users being able to vote, and closing out the app. 
+Test your smart contract functions by running the testing script `simple_tests.py`. Feel free to add your own tests as the ones we have provided are not comprehensive. We only test that basic functionalities are working, namely the creation and initial variable setup, two users opting in, the creator correctly approving two users, approved users being able to vote, and closing out the app. 
 
 
 ## Step 3 - Frontend Logic: `AlgoHandler.js`
@@ -288,7 +288,7 @@ We do not assume that you have extensive knowledge about JavaScript. JavaScript 
 
 #### AlgoSDK
 
-In Practical Homework 1 and parts of this homework you have used the Python version of the AlgoSDK. The frontend will make use of the JavaScript version of the AlgoSDK. Both versions are very similar in functionality and even close in syntax.
+In Practical Homework 1 and the first part of this homework, you have used the Python version of the AlgoSDK. The frontend will make use of the JavaScript version of the AlgoSDK. Both versions are very similar in functionality and even close in syntax.
 
 In general, smart contracts are implemented using `ApplicationCall` transactions in the AlgoSDK. These transaction types are as follows:
 - `NoOp` - Generic application calls to execute the `ApprovalProgram`.
@@ -425,6 +425,4 @@ Components:
 - **VoterCard.js**: The VoterCard component displays a card that will
 - **AlgoHandler.js**: The AlgoHandler component contains many helper functions that you will be implementing. You will have to implement functions to interact with the election, such as voting and opting-in, as well as functions to retrieve information about the state of the election.
 
-We highly recommend taking a look at the files themselves, so that you have a good sense of how the frontend works so that when you complete the extension of this project!
-
-You can try running the app in your Chrome browser by running `npm start` in the `frontend/voting-app` folder.
+We highly recommend taking a look at the files themselves, so that you have a good sense of how the frontend works! You can try running the app in your Chrome browser by running `npm start` in the `frontend/voting-app` folder.
