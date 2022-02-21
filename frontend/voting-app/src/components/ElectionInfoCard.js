@@ -38,6 +38,15 @@ function ElectionInfoCard(props) {
     ],
   };
 
+
+  const convertRoundToTime = (latestRound, futureRound) => {
+    let roundToSeconds = (futureRound - latestRound) * 4.5;
+    let date = new Date(Date.now());
+    date.setSeconds(roundToSeconds);
+
+    return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} at ${date.getHours()}:${date.getMinutes()}`;
+  }
+
   /*
    * Render the card with a list of election info, as well as a pie chart
    * with the number of votes for each choice.
@@ -61,7 +70,7 @@ function ElectionInfoCard(props) {
           </ListGroup.Item>
           <ListGroup.Item>
             <b>Election End Round: </b>
-            <span className={props.latestRound >= props.state["ElectionEnd"] ? "text-danger" : ""}>{props.state["ElectionEnd"]}</span>
+            <span className={props.latestRound >= props.state["ElectionEnd"] ? "text-danger" : ""}>{props.state["ElectionEnd"]}</span> (estimated {convertRoundToTime(props.latestRound, props.state["ElectionEnd"])})
           </ListGroup.Item>
           <ListGroup.Item>
             <b>Vote Options:</b> {props.state["VoteOptions"]}
