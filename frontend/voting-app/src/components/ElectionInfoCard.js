@@ -70,7 +70,10 @@ function ElectionInfoCard(props) {
           </ListGroup.Item>
           <ListGroup.Item>
             <b>Election End Round: </b>
-            <span className={props.latestRound >= props.state["ElectionEnd"] ? "text-danger" : ""}>{props.state["ElectionEnd"]}</span> (estimated {convertRoundToTime(props.latestRound, props.state["ElectionEnd"])})
+            <span className={props.latestRound >= props.state["ElectionEnd"] ? "text-danger" : ""}>{props.state["ElectionEnd"]} </span> 
+            {props.latestRound < props.state["ElectionEnd"] && 
+              <span>(estimated {convertRoundToTime(props.latestRound, props.state["ElectionEnd"])})</span>
+            }
           </ListGroup.Item>
           <ListGroup.Item>
             <b>Vote Options:</b> {props.state["VoteOptions"]}
