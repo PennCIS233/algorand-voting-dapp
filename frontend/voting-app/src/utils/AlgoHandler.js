@@ -72,7 +72,10 @@ class AlgoHandler {
    * Retrieves and returns the last Algorand TestNet round
    * @returns {Number} - the last Algorand TestNet round
    */
-  async getLastestRound() {
+  async getLatestRound() {
+    // Retrieve the algod client status
+    // Return the "last-round" value from that status
+    // TODO -----------------------------------------------------------------------------
     let status = await this.algodClient.status().do();
 
     return status["last-round"];
