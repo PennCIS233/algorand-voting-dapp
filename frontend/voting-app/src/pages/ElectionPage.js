@@ -20,6 +20,7 @@ function ElectionPage() {
    * Here we define the stored state for this component.
    */
   const [isError, setIsError] = useState(false); // boolean set to true if there is an error retrieving the electionState
+  const [latestRound, setLatestRound] = useState(0); // number value for the most recent Algorand TestNet round
   const [electionState, setElectionState] = useState({}); // JSON containing all global variables for the application
   const [mainAccount, setMainAccount] = useState(
     accounts.length > 0 ? accounts[0] : ""
@@ -45,45 +46,54 @@ function ElectionPage() {
     console.log("refreshing state...");
 
     mainAlgoHandler
-      .getElectionState(appID)
+      .getLatestRound()
       .then((res) => {
-        console.log(res);
+        console.log(`Latest Round: ${res}`);
 
-        let newTotalVotes = [];
-        for (let i = 0; i < res["NumVoteOptions"]; i++) {
-          newTotalVotes.push(res[`VotesFor${i}`]);
-        }
-
-        let newElectionChoices = res["VoteOptions"].split(",");
-        setElectionState(res);
-        setTotalVotes(newTotalVotes);
-        setElectionChoices(newElectionChoices);
+        setLatestRound(res);
       })
       .then(() => {
         mainAlgoHandler
-        .getAllLocalStates(parseInt(appID))
-        .then((allLocalStates) => {
-          let newOptedAccounts = {
-            yes: [],
-            no: [],
-            maybe: [],
-          };
-          for (const address in allLocalStates) {
-            let canVote = allLocalStates[address]["can_vote"];
-            if ("can_vote" in allLocalStates[address]) {
-              newOptedAccounts[canVote].push(address);
-            }
-          }
-          setOptedAccounts(newOptedAccounts);
+          .getElectionState(appID)
+          .then((res) => {
+            console.log(res);
 
-          let newUserVotes = {};
-          for (const address in allLocalStates) {
-            if ("voted" in allLocalStates[address]) {
-              newUserVotes[address] = allLocalStates[address]["voted"];
+            let newTotalVotes = [];
+            for (let i = 0; i < res["NumVoteOptions"]; i++) {
+              newTotalVotes.push(res[`VotesFor${i}`]);
             }
-          }
-          setUserVotes(newUserVotes);
-        })
+
+            let newElectionChoices = res["VoteOptions"].split(",");
+            setElectionState(res);
+            setTotalVotes(newTotalVotes);
+            setElectionChoices(newElectionChoices);
+          })
+          .then(() => {
+            mainAlgoHandler
+            .getAllLocalStates(parseInt(appID))
+            .then((allLocalStates) => {
+              let newOptedAccounts = {
+                yes: [],
+                no: [],
+                maybe: [],
+              };
+              for (const address in allLocalStates) {
+                let canVote = allLocalStates[address]["can_vote"];
+                if ("can_vote" in allLocalStates[address]) {
+                  newOptedAccounts[canVote].push(address);
+                }
+              }
+              setOptedAccounts(newOptedAccounts);
+
+              let newUserVotes = {};
+              for (const address in allLocalStates) {
+                if ("voted" in allLocalStates[address]) {
+                  newUserVotes[address] = allLocalStates[address]["voted"];
+                }
+              }
+              setUserVotes(newUserVotes);
+            })
+          })
       })
       .catch((err) => {
         console.log(err);
@@ -128,15 +138,31 @@ function ElectionPage() {
       <Container>
         <Row xs={1} md={2} className="g-4 mt-3">
           <Col>
-            <ParticipantsCard
-              appID={appID}
-              users={accounts}
-              user={mainAccount}
-              userVotes={userVotes}
-              isCreator={electionState["Creator"] === mainAccount}
-              optedAccounts={optedAccounts}
-              electionChoices={electionChoices}
-            />
+            <Row>
+              {accounts.length > 0 && (
+                <VoterCard
+                  user={mainAccount}
+                  appID={appID}
+                  electionState={electionState}
+                  isAccepted={optedAccounts["yes"].includes(mainAccount)}
+                  isPending={optedAccounts["maybe"].includes(mainAccount)}
+                  isRejected={optedAccounts["no"].includes(mainAccount)}
+                  isVoted={userVotes[mainAccount]}
+                  electionChoices={electionChoices}
+                />
+              )}
+            </Row>
+            <Row>
+              <ParticipantsCard
+                appID={appID}
+                users={accounts}
+                user={mainAccount}
+                userVotes={userVotes}
+                isCreator={electionState["Creator"] === mainAccount}
+                optedAccounts={optedAccounts}
+                electionChoices={electionChoices}
+              />
+            </Row>
           </Col>
 
           <Col>
@@ -144,23 +170,8 @@ function ElectionPage() {
               currVotes={totalVotes}
               appID={appID}
               state={electionState}
+              latestRound={latestRound}
             />
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            {accounts.length > 0 && (
-              <VoterCard
-                user={mainAccount}
-                appID={appID}
-                electionState={electionState}
-                isAccepted={optedAccounts["yes"].includes(mainAccount)}
-                isPending={optedAccounts["maybe"].includes(mainAccount)}
-                isRejected={optedAccounts["no"].includes(mainAccount)}
-                isVoted={userVotes[mainAccount]}
-                electionChoices={electionChoices}
-              />
-            )}
           </Col>
         </Row>
       </Container>

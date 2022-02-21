@@ -68,11 +68,24 @@ class AlgoHandler {
     return Buffer.from(encodedString, "base64").toString();
   }
 
+  /**
+   * Retrieves and returns the last Algorand TestNet round
+   * @returns {Number} - the last Algorand TestNet round
+   */
+  async getLatestRound() {
+    // Retrieve the algod client status
+    // Return the "last-round" value from that status
+    // TODO -----------------------------------------------------------------------------
+    let status = await this.algodClient.status().do();
+
+    return status["last-round"];
+  }
+
   /** 
    * Retrieves and returns the current global variable values in the given app (appID).
    *
    * @param {number} appID - App ID (aka index) of the Algorand smart contract app.
-   * @return {object} - Javascript object of election variables mapped to their respective values.
+   * @returns {object} - Javascript object of election variables mapped to their respective values.
    * 
    * @example 
    * // returns 
