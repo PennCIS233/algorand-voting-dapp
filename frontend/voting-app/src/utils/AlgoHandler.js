@@ -68,6 +68,16 @@ class AlgoHandler {
     return Buffer.from(encodedString, "base64").toString();
   }
 
+  /**
+   * Retrieves and returns the last Algorand TestNet round
+   * @returns {Number} - the last Algorand TestNet round
+   */
+  async getLastestRound() {
+    let status = await this.algodClient.status().do();
+
+    return status["last-round"];
+  }
+
   /** 
    * Retrieves and returns the current global variable values in the given app (appID).
    *
