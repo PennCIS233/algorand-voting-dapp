@@ -48,8 +48,12 @@ function ElectionInfoCard(props) {
         <Card.Title>Election Info</Card.Title>
         <ListGroup>
           <ListGroup.Item>
+            <b>App ID: </b>
+            <a href={"https://testnet.algoexplorer.io/application/" + props.appID} target="_blank">{props.appID}</a>
+          </ListGroup.Item>
+          <ListGroup.Item>
             <b>Creator Address: </b>
-            {props.state["Creator"] ? props.state["Creator"] : ""}
+            <a href={"https://testnet.algoexplorer.io/address/" + props.state["Creator"]} target="_blank">{props.state["Creator"] ? props.state["Creator"] : ""}</a>
           </ListGroup.Item>
           <ListGroup.Item>
             <b>Last Round to Vote: </b>
